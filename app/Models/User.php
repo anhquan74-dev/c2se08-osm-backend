@@ -20,9 +20,25 @@ class User extends Authenticatable implements JWTSubject
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'full_name',
         'email',
         'password',
+        'role_id',
+        'birthday',
+        'gender',
+        'phone_number',
+        'avatar',
+        'banner_photos',
+        'introduction',
+        'favorite',
+        'appointment_schedule',
+        'total_rate',
+        'total_star',
+        'avg_star',
+        'clicks',
+        'views',
+        'click_rate',
+        'valid_flag',
     ];
 
     /**
@@ -44,11 +60,13 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
-	public function getJWTIdentifier() {
-		return $this->getKey();
-	}
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
 
-	public function getJWTCustomClaims() {
-		return [];
-	}
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
 }
