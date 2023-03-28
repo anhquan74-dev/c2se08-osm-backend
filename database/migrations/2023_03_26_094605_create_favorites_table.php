@@ -15,8 +15,10 @@ return new class extends Migration
     {
         Schema::create('favorites', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('customer_id');
-            $table->bigInteger('provider_id');
+            // $table->bigInteger('customer_id');
+            $table->foreignId('customer_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
+            // $table->bigInteger('provider_id');
+            $table->foreignId('provider_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();
         });
     }

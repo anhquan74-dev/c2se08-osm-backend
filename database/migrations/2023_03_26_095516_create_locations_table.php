@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('locations', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user_id');
+            $table->foreignId('user_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
             $table->string('address');
             $table->bigInteger('province_id');
             $table->string('province_name');

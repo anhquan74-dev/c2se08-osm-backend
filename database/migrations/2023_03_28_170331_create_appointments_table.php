@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('appointments', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('service_id');
-            $table->bigInteger('package_id');
+            $table->foreignId('package_id')->nullable()->constrained('packages')->onUpdate('cascade')->onDelete('cascade');
             $table->bigInteger('provider_id');
             $table->bigInteger('customer_id');
             $table->string('full_name');

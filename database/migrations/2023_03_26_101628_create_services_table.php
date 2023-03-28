@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('services', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger("category_id");
-            $table->bigInteger("provider_id");
+            $table->foreignId('category_id')->nullable()->constrained('categories')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('provider_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
             $table->bigInteger("avg_price");
             $table->bigInteger("max_price");
             $table->bigInteger("min_price");

@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('feedbacks', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('appointment_id');
+            $table->foreignId('appointment_id')->constrained('appointments')->onDelete('cascade')->onUpdate('cascade');
             $table->bigInteger('customer_id');
             $table->bigInteger('package_id');
             $table->string('comment');

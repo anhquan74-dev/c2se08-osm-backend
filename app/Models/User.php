@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -40,7 +41,26 @@ class User extends Authenticatable implements JWTSubject
         'click_rate',
         'valid_flag',
     ];
-
+    // Relationship 
+    // 1 - n with Favorite table
+    public function favorite1(): HasMany
+    {
+        return $this->hasMany(Favorite::class, 'customer_id');
+    }
+    public function favorite2(): HasMany
+    {
+        return $this->hasMany(Favorite::class, 'provider_id');
+    }
+    // 1 - n with location
+    public function location(): HasMany
+    {
+        return $this->hasMany(Location::class, 'user_id');
+    }
+    // 1 - n with service
+    public function service(): HasMany
+    {
+        return $this->hasMany(Service::class, 'provider_id');
+    }
     /**
      * The attributes that should be hidden for serialization.
      *

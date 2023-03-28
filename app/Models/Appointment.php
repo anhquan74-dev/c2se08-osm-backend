@@ -4,10 +4,23 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Appointment extends Model
 {
     use HasFactory;
+    // Relationship
+    // 1 - 1 with Feedback table
+    public function feedback(): HasOne
+    {
+        return $this->hasOne(Feedback::class, 'appointment_id');
+    }
+    // Belong to Package Table
+    public function package(): BelongsTo
+    {
+        return $this->belongsTo(Package::class, 'package_id');
+    }
     protected $fillable = [
         'service_id',
         'package_id',
