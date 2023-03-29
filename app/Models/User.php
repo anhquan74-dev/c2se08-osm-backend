@@ -45,6 +45,11 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Service::class, 'provider_id');
     }
+    // 1 - n with appointment
+    public function appointment(): HasMany
+    {
+        return $this->hasMany(Appointment::class, 'customer_id');
+    }
     protected $fillable = [
         'email',
         'password',
