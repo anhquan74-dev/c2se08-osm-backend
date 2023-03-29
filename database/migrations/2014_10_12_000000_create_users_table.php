@@ -6,44 +6,33 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('full_name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->bigInteger('role_id');
-            $table->timestamp('birthday');
-            $table->string('gender');
-            $table->string('phone_number');
-            $table->string('banner_photos');
-            $table->text('introduction');
-            $table->boolean('favorite');
-            $table->boolean('appointment_schedule');
-            $table->bigInteger('total_rate');
-            $table->bigInteger('total_star');
-            $table->float('avg_star');
-            $table->bigInteger('clicks');
-            $table->bigInteger('views');
-            $table->float('click_rate');
-            $table->boolean('valid_flag');
+            $table->string('full_name');
+            $table->timestamp('birthday')->nullable();
+            $table->string('gender')->nullable();
+            $table->string('phone_number')->nullable();
+            $table->string('avatar')->nullable();
+            $table->text('introduction')->nullable();
+            $table->boolean('is_favorite')->nullable();
+            $table->boolean('is_working')->nullable();
+            $table->bigInteger('total_rate')->nullable();
+            $table->bigInteger('total_star')->nullable();
+            $table->float('avg_star')->nullable();
+            $table->bigInteger('clicks')->nullable();
+            $table->bigInteger('views')->nullable();
+            $table->float('click_rate')->nullable();
+            $table->boolean('is_valid_flag')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists('users');

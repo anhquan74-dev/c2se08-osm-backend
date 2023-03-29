@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -14,48 +15,66 @@ class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    // Relationship 
+    // 1 - n with Favorite table
+    // public function favorite1(): HasMany
+    // {
+    //     return $this->hasMany(Favorite::class, 'customer_id');
+    // }
+    // public function favorite2(): HasMany
+    // {
+    //     return $this->hasMany(Favorite::class, 'provider_id');
+    // }
+    // 1 - n with location
+    public function location(): HasMany
+    {
+        return $this->hasMany(Location::class, 'user_id');
+    }
+    // 1 - n with banner
+    public function banner(): HasMany
+    {
+        return $this->hasMany(Banner::class, 'provider_id');
+    }
+    // 1 - n with post
+    public function post(): HasMany
+    {
+        return $this->hasMany(Post::class, 'author_id');
+    }
+    // 1 - n with service
+    public function service(): HasMany
+    {
+        return $this->hasMany(Service::class, 'provider_id');
+    }
+    // 1 - n with appointment
+    public function appointment(): HasMany
+    {
+        return $this->hasMany(Appointment::class, 'customer_id');
+    }
     protected $fillable = [
-        'full_name',
         'email',
         'password',
-        'role_id',
+        'full_name',
         'birthday',
         'gender',
         'phone_number',
         'avatar',
-        'banner_photos',
         'introduction',
-        'favorite',
-        'appointment_schedule',
+        'is_favorite',
+        'is_working',
         'total_rate',
         'total_star',
         'avg_star',
         'clicks',
         'views',
         'click_rate',
-        'valid_flag',
+        'is_valid_flag',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];

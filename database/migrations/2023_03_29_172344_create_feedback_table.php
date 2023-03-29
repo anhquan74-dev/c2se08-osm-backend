@@ -13,15 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('posts', function (Blueprint $table) {
+        Schema::create('feedback', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->text('content');
-            $table->text('description');
-            $table->string('author');
-            $table->timestamp('date');
-            $table->string('tags');
-            $table->boolean('valid_flag');
+            $table->foreignId('appointment_id')->nullable()->constrained('appointments')->onUpdate('cascade')->onDelete('cascade');
+            $table->string('comment')->nullable();
+            $table->string('reply')->nullable();
+            $table->bigInteger('star')->nullable();
+            $table->date('reply_at')->nullable();
             $table->timestamps();
         });
     }
@@ -33,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('posts');
+        Schema::dropIfExists('feedback');
     }
 };
