@@ -17,15 +17,15 @@ return new class extends Migration
             $table->id();
             $table->foreignId('category_id')->nullable()->constrained('categories')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('provider_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->bigInteger("avg_price");
-            $table->bigInteger("max_price");
-            $table->bigInteger("min_price");
-            $table->boolean("is_negotiable");
-            $table->bigInteger("total_rate");
-            $table->bigInteger("total_star");
-            $table->float("avg_star");
-            $table->bigInteger("number_of_packages");
-            $table->boolean("valid_flag");
+            $table->bigInteger('avg_price')->nullable();
+            $table->bigInteger('max_price')->nullable();
+            $table->bigInteger('min_price')->nullable();
+            $table->boolean('is_negotiable')->nullable();
+            $table->bigInteger('total_rate')->nullable();
+            $table->bigInteger('total_star')->nullable();
+            $table->float('avg_star')->nullable();
+            $table->bigInteger('number_of_packages')->nullable();
+            $table->boolean('is_valid_flag')->nullable();
             $table->timestamps();
         });
     }

@@ -6,34 +6,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::create('packages', function (Blueprint $table) {
             $table->id();
             $table->foreignId('service_id')->nullable()->constrained('services')->onUpdate('cascade')->onDelete('cascade');
-            $table->string('name');
-            $table->text('description');
-            $table->bigInteger('price');
-            $table->bigInteger('total_rate');
-            $table->bigInteger('total_star');
-            $table->float('avg_star');
-            $table->boolean('is_negotiable');
-            $table->bigInteger('view_priority');
-            $table->boolean('valid_flag');
+            $table->string('name')->nullable();
+            $table->text('description')->nullable();
+            $table->bigInteger('price')->nullable();
+            $table->bigInteger('total_rate')->nullable();
+            $table->bigInteger('total_star')->nullable();
+            $table->float('avg_star')->nullable();
+            $table->boolean('is_negotiable')->nullable();
+            $table->bigInteger('view_priority')->nullable();
+            $table->boolean('is_valid_flag')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists('packages');

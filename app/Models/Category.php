@@ -20,6 +20,6 @@ class Category extends Model
         'logo',
         'total_provider',
         'view_priority',
-        'valid_flag',
+        'is_valid_flag',
     ];
 }

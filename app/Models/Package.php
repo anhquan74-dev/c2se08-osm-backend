@@ -5,17 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Package extends Model
 {
     use HasFactory;
     // Relationship
-    // 1 - n with Appointment Table
-    public function appointment(): HasMany
-    {
-        return $this->hasMany(Appointment::class, 'package_id');
-    }
     // Belong to Service Table
     public function service(): BelongsTo
     {
@@ -31,6 +25,6 @@ class Package extends Model
         'avg_star',
         'is_negotiable',
         'view_priority',
-        'valid_flag',
+        'is_valid_flag',
     ];
 }

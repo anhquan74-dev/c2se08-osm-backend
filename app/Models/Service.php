@@ -5,17 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Service extends Model
 {
     use HasFactory;
     // Relationship
-    // 1 - n with Package Table
-    public function package(): HasMany
-    {
-        return $this->hasMany(Package::class, 'service_id');
-    }
     // Belong to User Table
     public function user(): BelongsTo
     {
@@ -37,6 +31,6 @@ class Service extends Model
         'total_star',
         'avg_star',
         'number_of_packages',
-        'valid_flag',
+        'is_valid_flag',
     ];
 }

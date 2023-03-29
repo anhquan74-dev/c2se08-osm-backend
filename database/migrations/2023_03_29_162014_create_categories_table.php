@@ -6,29 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string("name");
-            $table->string("logo");
-            $table->integer("total_provider");
-            $table->bigInteger("view_priority");
-            $table->boolean("valid_flag");
+            $table->string('name')->nullable();
+            $table->string('logo')->nullable();
+            $table->integer('total_provider')->nullable();
+            $table->bigInteger('view_priority')->nullable();
+            $table->boolean('is_valid_flag')->nullable();
             $table->timestamps();
         });
     }
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists('categories');
