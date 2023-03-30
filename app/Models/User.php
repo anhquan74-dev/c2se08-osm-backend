@@ -16,15 +16,38 @@ class User extends Authenticatable implements JWTSubject
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     // Relationship 
-    // 1 - n with Favorite table
-    // public function favorite1(): HasMany
-    // {
-    //     return $this->hasMany(Favorite::class, 'customer_id');
-    // }
-    // public function favorite2(): HasMany
-    // {
-    //     return $this->hasMany(Favorite::class, 'provider_id');
-    // }
+    // n - n with RoleDetails Table
+    public function roleDetails()
+    {
+        return $this->belongsToMany(RoleDetails::class, 'role_detail_users');
+    }
+    //1 - n with Favorite table
+    public function favoriteCustomer(): HasMany
+    {
+        return $this->hasMany(Favorite::class, 'customer_id');
+    }
+    public function favoriteProvider(): HasMany
+    {
+        return $this->hasMany(Favorite::class, 'provider_id');
+    }
+    //1 - n with Notify table
+    public function notifyCustomer(): HasMany
+    {
+        return $this->hasMany(Notify::class, 'customer_id');
+    }
+    public function notifyProvider(): HasMany
+    {
+        return $this->hasMany(Notify::class, 'provider_id');
+    }
+    //1 - n with Message table
+    public function messageCustomer(): HasMany
+    {
+        return $this->hasMany(Message::class, 'customer_id');
+    }
+    public function messageProvider(): HasMany
+    {
+        return $this->hasMany(Message::class, 'provider_id');
+    }
     // 1 - n with location
     public function location(): HasMany
     {
