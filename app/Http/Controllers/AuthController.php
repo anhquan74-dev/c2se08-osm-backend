@@ -4,33 +4,38 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Validator;
 
 class AuthController extends Controller
 {
-	/**
-	 * Create a new AuthController instance.
-	 *
-	 * @return void
-	 */
 	public function __construct()
 	{
 		$this->middleware('auth:api', ['except' => ['login']]);
 	}
 
-	/**
-	 * Get a JWT via given credentials.
-	 *
-	 * @return \Illuminate\Http\JsonResponse
-	 */
-	public function login()
+	// Login 
+	public function login(Request $request)
 	{
-		$credentials = request(['email', 'password']);
-
-		if (! $token = auth()->attempt($credentials)) {
-			return response()->json(['error' => 'Unauthorized'], 401);
+		$validator = Validator::make($request->all(), [
+			'email' => 'required|string|email|max:255',
+			'password' => 'required|string|min:6'
+		]);
+		if ($validator->fails()) {
+			return response()->json($validator->errors());
 		}
-
-		return $this->respondWithToken($token);
+		if (!$token = auth()->attempt($validator->validated())) {
+			return response()->json([
+				'statusCode' => 404,
+				'message' => 'Email or password is incorrect!'
+			]);
+		} else {
+			$userProfile = User::where('id', auth()->user()->id)->first();
+			dd($userProfile);
+			return $this->respondWithToken($token);
+		}
 	}
 
 	/**
@@ -77,7 +82,7 @@ class AuthController extends Controller
 		return response()->json([
 			'access_token' => $token,
 			'token_type' => 'bearer',
-			'expires_in' => auth()->factory()->getTTL() * 60
+			'expires_in' => auth()->factory()->getTTL() * 60000
 		]);
 	}
 }

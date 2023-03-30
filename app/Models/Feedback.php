@@ -13,7 +13,7 @@ class Feedback extends Model
     // Belong to Appointment 1 - 1 
     public function appointment(): BelongsTo
     {
-        return $this->belongsTo(Appointment::class);
+        return $this->belongsTo(Appointment::class, 'appointment_id');
     }
     protected $fillable = [
         'appointment_id',
