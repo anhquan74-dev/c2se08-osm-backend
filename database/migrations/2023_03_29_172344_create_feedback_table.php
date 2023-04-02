@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('feedback', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('appointment_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('appointment_id')->constrained('appointments')->onDelete('cascade')->onUpdate('cascade');
             $table->string('comment')->nullable();
             $table->string('reply')->nullable();
             $table->bigInteger('star')->nullable();

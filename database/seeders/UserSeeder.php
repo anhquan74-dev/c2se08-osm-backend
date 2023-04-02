@@ -27,6 +27,19 @@ class UserSeeder extends Seeder
             ],
             [
                 'id' => 2,
+                'email' => 'provider@gmail.com',
+                'password' => Hash::make("123456"),
+                'full_name' => 'Provider',
+                'birthday' => date('Y-m-d H:i:s'),
+                'gender' => 'Male',
+                'phone_number' => "0123456789",
+                'avatar' => 'avatar_provider',
+                'introduction' => '',
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ],
+            [
+                'id' => 3,
                 'email' => 'customer@gmail.com',
                 'password' => Hash::make("123456"),
                 'full_name' => 'Customer',
@@ -38,19 +51,7 @@ class UserSeeder extends Seeder
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s'),
             ],
-            [
-                'id' => 3,
-                'email' => 'provider@gmail.com',
-                'password' => Hash::make("123456"),
-                'full_name' => 'Provider',
-                'birthday' => date('Y-m-d H:i:s'),
-                'gender' => 'Male',
-                'phone_number' => "0123456789",
-                'avatar' => 'avatar_provider',
-                'introduction' => '',
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ]
+
         ];
         foreach ($users as $user) {
             User::create($user);

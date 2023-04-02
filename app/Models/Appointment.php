@@ -14,7 +14,7 @@ class Appointment extends Model
     // 1 - 1 with Feedback Table
     public function feedback(): HasOne
     {
-        return $this->hasOne(Feedback::class);
+        return $this->hasOne(Feedback::class, 'appointment_id');
     }
 
     // Belong to Package Table
