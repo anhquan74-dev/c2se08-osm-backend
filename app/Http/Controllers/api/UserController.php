@@ -143,4 +143,8 @@ class UserController extends Controller
         }
     }
     // Searching, paginating and sorting customers
+    public function searchPaginationCustomers(Request $request)
+    {
+        dd(request('q'));
+    }
 }
