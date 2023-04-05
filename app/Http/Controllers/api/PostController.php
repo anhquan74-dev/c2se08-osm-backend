@@ -3,84 +3,135 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
-use App\Http\Requests\StorePostRequest;
-use App\Http\Requests\UpdatePostRequest;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Validator;
 
 class PostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    // Get all posts
+    public function getAllPosts()
     {
-        //
+        $posts = Post::all();
+        return response()->json([
+            'data' => $posts,
+            'statusCode' => 200,
+            'message' => 'Get all posts successful!',
+        ]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    // Get post by Id
+    public function getPostById(Request $request)
     {
-        //
+        if ($request->id) {
+            $postInfo = Post::find($request->id);
+            if ($postInfo->isEmpty()) {
+                return response()->json([
+                    'statusCode' => 404,
+                    'message' => 'Not found!',
+                ]);
+            }
+            return response()->json([
+                'data' => $postInfo,
+                'statusCode' => 200,
+                'message' => 'Get post info successfully!',
+            ]);
+        }
+        return response()->json([
+            'statusCode' => 400,
+            'message' => 'Missing post id parameter!',
+        ]);
     }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StorePostRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StorePostRequest $request)
+    // Create a new post
+    public function createNewPost(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|min:2|max:255',
+            'author_id' => 'required|numeric'
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors());
+        }
+        $post = Post::create([
+            'title' => $request->title,
+            'content' => $request->content,
+            'description' => $request->description,
+            'author_id' => $request->author_id,
+            'date' => $request->date,
+            'tags' => $request->tags,
+            'is_valid_flag' => false,
+        ]);
+        return response()->json([
+            'data' => $post,
+            'statusCode' => 201,
+            'message' => 'Successful created!',
+        ]);
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Post  $post
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Post $post)
+    // Update post
+    public function updatePost(Request $request)
     {
-        //
+        if ($request->id) {
+            $postUpdate = Post::find($request->id);
+            if ($postUpdate) {
+                $validator = Validator::make($request->all(), [
+                    'title' => 'string|min:2|max:255',
+                ]);
+                if ($validator->fails()) {
+                    return response()->json([
+                        "statusCode" => 400,
+                        "message" => "Validation error!",
+                        "errors" => $validator->errors()
+                    ]);
+                }
+                Post::where('id', $request->id)->update([
+                    'title' => $request->title,
+                    'content' => $request->content,
+                    'description' => $request->description,
+                    'date' => $request->date,
+                    'tags' => $request->tags,
+                    'is_valid_flag' => $request->is_valid_flag,
+                ]);
+                return response()->json([
+                    'statusCode' => 200,
+                    'message' => 'Post updated successfully!',
+                ]);
+            } else {
+                return response()->json([
+                    "statusCode" => 404,
+                    "message" => "Can't find the post you want to update!"
+                ]);
+            }
+        }
+        return response()->json([
+            'statusCode' => 400,
+            'message' => 'Missing post id parameter!',
+        ]);
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Post  $post
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Post $post)
+    // Hard delete post
+    public function hardDeletePost(Request $request)
     {
-        //
+        if ($request->id) {
+            $checkPost = Post::where('id', $request->id)->first();
+            if ($checkPost) {
+                Post::where('id', $request->id)->delete();
+                return response()->json([
+                    'statusCode' => 200,
+                    'message' => 'Deleted post successfully!',
+                ]);
+            } else {
+                return response()->json([
+                    "statusCode" => 404,
+                    "message" => "Can't find the post you want to delete!"
+                ]);
+            }
+        }
+        return response()->json([
+            'statusCode' => 400,
+            'message' => 'Missing post id parameter!',
+        ]);
     }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdatePostRequest  $request
-     * @param  \App\Models\Post  $post
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdatePostRequest $request, Post $post)
+    // Searching, paginating and sorting posts
+    public function searchPaginationPosts(Request $request)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Post  $post
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Post $post)
-    {
-        //
+        dd(request('q'));
     }
 }
