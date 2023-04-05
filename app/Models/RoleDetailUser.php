@@ -9,7 +9,7 @@ class RoleDetailUser extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'role_id',
+        'role_details_id',
         'user_id',
     ];
 }
