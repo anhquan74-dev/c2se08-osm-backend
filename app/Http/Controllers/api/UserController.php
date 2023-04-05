@@ -47,9 +47,6 @@ class UserController extends Controller
                 ->where('users.id', $request->id)
                 ->where('role_detail_users.role_details_id', 3)
                 ->get()->map(function ($customerInfo) {
-                    unset($customerInfo->user_id);
-                    unset($customerInfo->created_at);
-                    unset($customerInfo->updated_at);
                     unset($customerInfo->email_verified_at);
                     unset($customerInfo->remember_token);
                     unset($customerInfo->is_favorite);
@@ -61,6 +58,7 @@ class UserController extends Controller
                     unset($customerInfo->views);
                     unset($customerInfo->click_rate);
                     unset($customerInfo->introduction);
+                    unset($customerInfo->password);
                     return $customerInfo;
                 });
             if ($customerInfo->isEmpty()) {
@@ -185,7 +183,6 @@ class UserController extends Controller
     public function hardDeleteCustomer(Request $request)
     {
         if ($request->id) {
-            // $checkCustomer = User::where('id', $request->id)->first();
             $checkCustomer = User::find($request->id);
             if ($checkCustomer) {
                 $destination = 'uploads/avatar/' . $checkCustomer->avatar;
@@ -217,7 +214,7 @@ class UserController extends Controller
     // Get all provider
     public function getAllProviders()
     {
-        $providers = User::whereHas('user_role_details', function ($query) {
+        $providers = User::with('roleDetails')->whereHas('roleDetails', function ($query) {
             return $query->where('role_details_id', '=', 2);
         })->get();
         return response()->json([
@@ -234,12 +231,11 @@ class UserController extends Controller
                 ->join('role_detail_users', 'users.id', '=', 'role_detail_users.user_id')
                 ->join('role_details', 'role_details.id', '=', 'role_detail_users.role_details_id')
                 ->where('users.id', $request->id)
+                ->where('role_detail_users.role_details_id', 2)
                 ->get()->map(function ($providerInfo) {
-                    unset($providerInfo->user_id);
-                    unset($providerInfo->created_at);
-                    unset($providerInfo->updated_at);
                     unset($providerInfo->email_verified_at);
                     unset($providerInfo->remember_token);
+                    unset($providerInfo->password);
                     return $providerInfo;
                 });
             if ($providerInfo->isEmpty()) {
@@ -289,7 +285,7 @@ class UserController extends Controller
         ]);
         RoleDetailUser::create([
             'user_id' => $provider->id,
-            'role_details_id' => 3
+            'role_details_id' => 2
         ]);
         return response()->json([
             'data' => $provider,
@@ -305,7 +301,6 @@ class UserController extends Controller
             if ($providerUpdate) {
                 if ($request->file('avatar') == null) {
                     $validatorUpdate = Validator::make($request->all(), [
-                        'email' => 'string|email|max:255|unique:users',
                         'full_name' => 'string|min:2|max:255',
                     ]);
                     if ($validatorUpdate->fails()) {
@@ -315,7 +310,6 @@ class UserController extends Controller
                             "errors" => $validatorUpdate->errors()
                         ]);
                     }
-                    $providerUpdate->email = $request->email;
                     $providerUpdate->full_name = $request->full_name;
                     $providerUpdate->birthday = $request->birthday;
                     $providerUpdate->gender = $request->gender;
@@ -333,12 +327,11 @@ class UserController extends Controller
                     $providerUpdate->save();
                     return response()->json([
                         'statusCode' => 200,
-                        'message' => 'Customer updated successfully!',
+                        'message' => 'Provider updated successfully!',
                     ]);
                 }
                 if ($request->hasFile('avatar')) {
                     $validatorUpdate = Validator::make($request->all(), [
-                        'email' => 'string|email|max:255|unique:users',
                         'full_name' => 'string|min:2|max:255',
                         'avatar' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                     ]);
@@ -356,7 +349,6 @@ class UserController extends Controller
                     $image = $request->file('avatar');
                     $fileName = Str::random(5) . date('YmdHis') . '.' . $image->getClientOriginalExtension();
                     $image->move('uploads/avatar/', $fileName);
-                    $providerUpdate->email = $request->email;
                     $providerUpdate->full_name = $request->full_name;
                     $providerUpdate->birthday = $request->birthday;
                     $providerUpdate->gender = $request->gender;
@@ -394,8 +386,13 @@ class UserController extends Controller
     public function hardDeleteProvider(Request $request)
     {
         if ($request->id) {
-            $checkProvider = User::where('id', $request->id)->first();
+            $checkProvider =
+                User::find($request->id);
             if ($checkProvider) {
+                $destination = 'uploads/avatar/' . $checkProvider->avatar;
+                if (File::exists($destination)) {
+                    File::delete($destination);
+                }
                 User::where('id', $request->id)->delete();
                 return response()->json([
                     'statusCode' => 200,
