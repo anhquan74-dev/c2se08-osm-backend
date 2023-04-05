@@ -5,82 +5,26 @@ namespace App\Http\Controllers;
 use App\Models\Banner;
 use App\Http\Requests\StoreBannerRequest;
 use App\Http\Requests\UpdateBannerRequest;
+use Illuminate\Support\Facades\File;
+use Illuminate\Http\Request;
 
 class BannerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function createMultipleBanners(Request $request)
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreBannerRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreBannerRequest $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Banner  $banner
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Banner $banner)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Banner  $banner
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Banner $banner)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateBannerRequest  $request
-     * @param  \App\Models\Banner  $banner
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateBannerRequest $request, Banner $banner)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Banner  $banner
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Banner $banner)
-    {
-        //
+        if ($request->has('banners')) {
+            foreach ($request->file('banners') as $banner) {
+                $bannerName = 'Provider-' . $request->provider_id . '-banner-' . time() . rand(1, 1000) . '.' . $banner->extension();
+                $banner->move(public_path('uploads/provider-banner'), $bannerName);
+                Banner::create([
+                    'provider_id' => $request->provider_id,
+                    'image' => $bannerName
+                ]);
+            }
+        }
+        return response()->json([
+            'statusCode' => 201,
+            'message' => 'Add banners successfully!',
+        ]);
     }
 }
