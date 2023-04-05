@@ -19,21 +19,21 @@ Route::get('/customers-search', [UserController::class, 'searchPaginationCustome
 Route::get('/providers', [UserController::class, 'getAllProviders']);
 Route::get('/providers/{id}', [UserController::class, 'getProviderById']);
 Route::post('/providers', [UserController::class, 'createNewProvider']);
-Route::put('/providers/{id}', [UserController::class, 'updateProvider']);
+Route::post('/providers/{id}', [UserController::class, 'updateProvider']);
 Route::delete('/providers/{id}', [UserController::class, 'hardDeleteProvider']);
 
 // Category's routes
 Route::get('/categories', [CategoryController::class, 'getAllCategories']);
 Route::get('/categories/{id}', [CategoryController::class, 'getCategoriesById']);
 Route::post('/categories', [CategoryController::class, 'createNewCategories']);
-Route::put('/categories/{id}', [CategoryController::class, 'updateCategories']);
+Route::post('/categories/{id}', [CategoryController::class, 'updateCategories']);
 Route::delete('/categories/{id}', [CategoryController::class, 'hardDeleteCategories']);
 
 // Post's routes
 Route::get('/posts', [PostController::class, 'getAllPosts']);
 Route::get('/posts/{id}', [PostController::class, 'getPostsById']);
 Route::post('/posts', [PostController::class, 'createNewPosts']);
-Route::put('/posts/{id}', [PostController::class, 'updatePosts']);
+Route::post('/posts/{id}', [PostController::class, 'updatePosts']);
 Route::delete('/posts/{id}', [PostController::class, 'hardDeletePosts']);
 
 // Banner's routes
