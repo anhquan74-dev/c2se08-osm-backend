@@ -117,10 +117,7 @@ class UserController extends Controller
             $customerUpdate = User::find($request->id);
             if ($customerUpdate) {
                 if ($request->file('avatar') == null) {
-
-                    dd('ko file');
                     $validatorUpdate = Validator::make($request->all(), [
-                        'email' => 'string|email|max:255|unique:users',
                         'full_name' => 'string|min:2|max:255',
                     ]);
                     if ($validatorUpdate->fails()) {
@@ -130,7 +127,6 @@ class UserController extends Controller
                             "errors" => $validatorUpdate->errors()
                         ]);
                     }
-                    $customerUpdate->email = $request->email;
                     $customerUpdate->full_name = $request->full_name;
                     $customerUpdate->birthday = $request->birthday;
                     $customerUpdate->gender = $request->gender;
@@ -143,10 +139,7 @@ class UserController extends Controller
                     ]);
                 }
                 if ($request->hasFile('avatar')) {
-                    dd('co file');
-
                     $validatorUpdate = Validator::make($request->all(), [
-                        'email' => 'string|email|max:255|unique:users',
                         'full_name' => 'string|min:2|max:255',
                         'avatar' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                     ]);
@@ -164,7 +157,6 @@ class UserController extends Controller
                     $image = $request->file('avatar');
                     $fileName = Str::random(5) . date('YmdHis') . '.' . $image->getClientOriginalExtension();
                     $image->move('uploads/avatar/', $fileName);
-                    $customerUpdate->email = $request->email;
                     $customerUpdate->full_name = $request->full_name;
                     $customerUpdate->birthday = $request->birthday;
                     $customerUpdate->gender = $request->gender;
@@ -193,8 +185,13 @@ class UserController extends Controller
     public function hardDeleteCustomer(Request $request)
     {
         if ($request->id) {
-            $checkCustomer = User::where('id', $request->id)->first();
+            // $checkCustomer = User::where('id', $request->id)->first();
+            $checkCustomer = User::find($request->id);
             if ($checkCustomer) {
+                $destination = 'uploads/avatar/' . $checkCustomer->avatar;
+                if (File::exists($destination)) {
+                    File::delete($destination);
+                }
                 User::where('id', $request->id)->delete();
                 return response()->json([
                     'statusCode' => 200,

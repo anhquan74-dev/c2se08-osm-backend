@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/customers', [UserController::class, 'getAllCustomers']);
 Route::get('/customers/{id}', [UserController::class, 'getCustomerById']);
 Route::post('/customers', [UserController::class, 'createNewCustomer']);
-Route::put('/customers/{id}', [UserController::class, 'updateCustomer']);
+Route::post('/customers/{id}', [UserController::class, 'updateCustomer']);
 Route::delete('/customers/{id}', [UserController::class, 'hardDeleteCustomer']);
 Route::get('/customers-search', [UserController::class, 'searchPaginationCustomers']);
 
