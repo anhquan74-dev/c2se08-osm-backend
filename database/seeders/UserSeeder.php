@@ -51,6 +51,19 @@ class UserSeeder extends Seeder
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s'),
             ],
+            [
+                'id' => 4,
+                'email' => 'customer2@gmail.com',
+                'password' => Hash::make("123456"),
+                'full_name' => 'Customer2',
+                'birthday' => date('Y-m-d H:i:s'),
+                'gender' => 'Female',
+                'phone_number' => "0123456789",
+                'avatar' => 'avatar_customer',
+                'introduction' => '',
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ],
 
         ];
         foreach ($users as $user) {

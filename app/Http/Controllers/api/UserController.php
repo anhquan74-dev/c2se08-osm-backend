@@ -17,9 +17,20 @@ class UserController extends Controller
     // Get all customer
     public function getAllCustomers()
     {
-        $customers = User::whereHas('user_role_details', function ($query) {
-            return $query->where('role_id', '=', 3);
-        })->get();
+        $customers = User::with('roleDetails')->whereHas('roleDetails', function ($query) {
+            return $query->where('role_details_id', '=', 3);
+        })->get()->map(function ($customers) {
+            unset($customers->introduction);
+            unset($customers->is_favorite);
+            unset($customers->is_working);
+            unset($customers->total_rate);
+            unset($customers->total_star);
+            unset($customers->avg_star);
+            unset($customers->clicks);
+            unset($customers->views);
+            unset($customers->click_rate);
+            return $customers;
+        });
         return response()->json([
             'data' => $customers,
             'statusCode' => 200,
@@ -32,8 +43,9 @@ class UserController extends Controller
         if ($request->id) {
             $customerInfo = DB::table('users')
                 ->join('role_detail_users', 'users.id', '=', 'role_detail_users.user_id')
-                ->join('role_details', 'role_details.id', '=', 'role_detail_users.role_id')
+                ->join('role_details', 'role_details.id', '=', 'role_detail_users.role_details_id')
                 ->where('users.id', $request->id)
+                ->where('role_detail_users.role_details_id', 3)
                 ->get()->map(function ($customerInfo) {
                     unset($customerInfo->user_id);
                     unset($customerInfo->created_at);
@@ -90,7 +102,7 @@ class UserController extends Controller
         ]);
         RoleDetailUser::create([
             'user_id' => $customer->id,
-            'role_id' => 3
+            'role_details_id' => 3
         ]);
         return response()->json([
             'data' => $customer,
@@ -105,6 +117,8 @@ class UserController extends Controller
             $customerUpdate = User::find($request->id);
             if ($customerUpdate) {
                 if ($request->file('avatar') == null) {
+
+                    dd('ko file');
                     $validatorUpdate = Validator::make($request->all(), [
                         'email' => 'string|email|max:255|unique:users',
                         'full_name' => 'string|min:2|max:255',
@@ -129,6 +143,8 @@ class UserController extends Controller
                     ]);
                 }
                 if ($request->hasFile('avatar')) {
+                    dd('co file');
+
                     $validatorUpdate = Validator::make($request->all(), [
                         'email' => 'string|email|max:255|unique:users',
                         'full_name' => 'string|min:2|max:255',
@@ -205,7 +221,7 @@ class UserController extends Controller
     public function getAllProviders()
     {
         $providers = User::whereHas('user_role_details', function ($query) {
-            return $query->where('role_id', '=', 2);
+            return $query->where('role_details_id', '=', 2);
         })->get();
         return response()->json([
             'data' => $providers,
@@ -219,7 +235,7 @@ class UserController extends Controller
         if ($request->id) {
             $providerInfo = DB::table('users')
                 ->join('role_detail_users', 'users.id', '=', 'role_detail_users.user_id')
-                ->join('role_details', 'role_details.id', '=', 'role_detail_users.role_id')
+                ->join('role_details', 'role_details.id', '=', 'role_detail_users.role_details_id')
                 ->where('users.id', $request->id)
                 ->get()->map(function ($providerInfo) {
                     unset($providerInfo->user_id);
@@ -276,7 +292,7 @@ class UserController extends Controller
         ]);
         RoleDetailUser::create([
             'user_id' => $provider->id,
-            'role_id' => 3
+            'role_details_id' => 3
         ]);
         return response()->json([
             'data' => $provider,
