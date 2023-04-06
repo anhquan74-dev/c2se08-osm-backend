@@ -85,8 +85,6 @@ class CategoryController extends Controller
                 if ($request->file('logo') == null) {
                     $validatorUpdate = Validator::make($request->all(), [
                         'name' => 'string|min:2|max:255',
-                        'total_provider' => 'numeric',
-                        'view_priority' => 'numeric',
                     ]);
                     if ($validatorUpdate->fails()) {
                         return response()->json([
@@ -109,8 +107,6 @@ class CategoryController extends Controller
                     $validatorUpdate = Validator::make($request->all(), [
                         'name' => 'string|min:2|max:255',
                         'logo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                        'total_provider' => 'numeric',
-                        'view_priority' => 'numeric',
                     ]);
                     if ($validatorUpdate->fails()) {
                         return response()->json([
@@ -153,8 +149,12 @@ class CategoryController extends Controller
     public function hardDeleteCategory(Request $request)
     {
         if ($request->id) {
-            $checkCategory = Category::where('id', $request->id)->first();
+            $checkCategory = Category::find($request->id);
             if ($checkCategory) {
+                $destination = 'uploads/category-logo/' . $checkCategory->logo;
+                if (File::exists($destination)) {
+                    File::delete($destination);
+                }
                 Category::where('id', $request->id)->delete();
                 return response()->json([
                     'statusCode' => 200,

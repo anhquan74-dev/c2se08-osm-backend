@@ -27,7 +27,7 @@ Route::get('/categories', [CategoryController::class, 'getAllCategories']);
 Route::get('/categories/{id}', [CategoryController::class, 'getCategoryById']);
 Route::post('/categories', [CategoryController::class, 'createNewCategory']);
 Route::post('/categories/{id}', [CategoryController::class, 'updateCategory']);
-Route::delete('/categories/{id}', [CategoryController::class, 'hardDeleteCategory']);
+Route::post('/hard-delete-category/{id}', [CategoryController::class, 'hardDeleteCategory']);
 
 // Post's routes
 Route::get('/posts', [PostController::class, 'getAllPosts']);
