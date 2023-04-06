@@ -42,6 +42,22 @@ class PostController extends Controller
             'message' => 'Missing post id parameter!',
         ]);
     }
+    // Get all posts by author_id
+    public function getAllPostsByAuthorId(Request $request)
+    {
+        if (!$request->author_id) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Missing author_id parameter!',
+            ]);
+        }
+        $posts = Post::where('author_id', '=', $request->author_id)->get();
+        return response()->json([
+            'data' => $posts,
+            'statusCode' => 200,
+            'message' => 'Get all posts successful!',
+        ]);
+    }
     // Create a new post
     public function createNewPost(Request $request)
     {
