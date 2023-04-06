@@ -4,6 +4,7 @@
    https://www.apachefriends.org/download.html
 3. Clone source dev
 4. cd vào folder chạy: composer install
-5. Tạo db theo .env
-6. CHạy: php artisan migrate:refresh --seed
-7. Chạy: php artisan serve để khởi động serve
+5. Tạo .env (copy từ .env.example)
+6. Tạo db theo .env 
+7. CHạy: php artisan migrate:refresh --seed
+8. Chạy: php artisan serve để khởi động serve
