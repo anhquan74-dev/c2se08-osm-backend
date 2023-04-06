@@ -1,10 +1,10 @@
 <?php
 
 use App\Http\Controllers\api\UserController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\BannerController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\PostController;
+use App\Http\Controllers\api\AuthController;
+use App\Http\Controllers\api\BannerController;
+use App\Http\Controllers\api\CategoryController;
+use App\Http\Controllers\api\PostController;
 use Illuminate\Support\Facades\Route;
 
 // Customer's routes
@@ -31,10 +31,10 @@ Route::delete('/categories/{id}', [CategoryController::class, 'hardDeleteCategor
 
 // Post's routes
 Route::get('/posts', [PostController::class, 'getAllPosts']);
-Route::get('/posts/{id}', [PostController::class, 'getPostsById']);
-Route::post('/posts', [PostController::class, 'createNewPosts']);
-Route::post('/posts/{id}', [PostController::class, 'updatePosts']);
-Route::delete('/posts/{id}', [PostController::class, 'hardDeletePosts']);
+Route::get('/posts/{id}', [PostController::class, 'getPostById']);
+Route::post('/posts', [PostController::class, 'createNewPost']);
+Route::post('/posts/{id}', [PostController::class, 'updatePost']);
+Route::delete('/posts/{id}', [PostController::class, 'hardDeletePost']);
 
 // Banner's routes
 Route::post('/banners', [BannerController::class, 'createMultipleBanners']);

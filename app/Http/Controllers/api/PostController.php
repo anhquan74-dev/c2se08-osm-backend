@@ -1,11 +1,17 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\api;
 
 use App\Models\Post;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Validator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
+
 
 class PostController extends Controller
 {
@@ -24,7 +30,7 @@ class PostController extends Controller
     {
         if ($request->id) {
             $postInfo = Post::find($request->id);
-            if ($postInfo->isEmpty()) {
+            if (!$postInfo) {
                 return response()->json([
                     'statusCode' => 404,
                     'message' => 'Not found!',
@@ -50,6 +56,13 @@ class PostController extends Controller
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors());
+        }
+        $checkExistAuthor = User::find($request->author_id);
+        if (!$checkExistAuthor) {
+            return response()->json([
+                'statusCode' => 404,
+                'message' => 'Can not find the corresponding author!',
+            ]);
         }
         $post = Post::create([
             'title' => $request->title,
