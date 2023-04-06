@@ -36,6 +36,18 @@ Route::post('/posts', [PostController::class, 'createNewPost']);
 Route::post('/posts/{id}', [PostController::class, 'updatePost']);
 Route::delete('/posts/{id}', [PostController::class, 'hardDeletePost']);
 
+// need test
+// Location's routes
+Route::get('/locations', [LocationController::class, 'getAllLocations']);
+Route::get('/locations/{id}', [LocationController::class, 'getLocationById']);
+Route::post('/locations', [LocationController::class, 'createNewLocation']);
+Route::post('/locations/{id}', [LocationController::class, 'updateLocation']);
+Route::delete('/locations/{id}', [LocationController::class, 'hardDeleteLocation']);
+
+
+
+
+
 // Banner's routes
 Route::post('/banners', [BannerController::class, 'createMultipleBanners']);
 
