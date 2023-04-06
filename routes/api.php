@@ -5,6 +5,7 @@ use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\BannerController;
 use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\api\PostController;
+use App\Http\Controllers\api\ServiceController;
 use Illuminate\Support\Facades\Route;
 
 // Customer's routes
@@ -40,10 +41,19 @@ Route::delete('/posts/{id}', [PostController::class, 'hardDeletePost']);
 // Location's routes
 Route::get('/locations', [LocationController::class, 'getAllLocations']);
 Route::get('/locations/{id}', [LocationController::class, 'getLocationById']);
+Route::get('/locations-by-user/{user_id}', [LocationController::class, 'getAllLocationsByUserId']);
 Route::post('/locations', [LocationController::class, 'createNewLocation']);
 Route::post('/locations/{id}', [LocationController::class, 'updateLocation']);
 Route::delete('/locations/{id}', [LocationController::class, 'hardDeleteLocation']);
 
+// Service's routes
+Route::get('/services', [ServiceController::class, 'getAllServices']);
+Route::get('/services/{id}', [ServiceController::class, 'getServiceById']);
+Route::get('/services-by-provider/{provider_id}', [ServiceController::class, 'getAllServicesByProviderId']);
+Route::get('/services-by-category/{category_id}', [ServiceController::class, 'getAllServicesByCategoryId']);
+Route::post('/services', [ServiceController::class, 'createNewService']);
+Route::post('/services/{id}', [ServiceController::class, 'updateService']);
+Route::delete('/services/{id}', [ServiceController::class, 'hardDeleteService']);
 
 
 
