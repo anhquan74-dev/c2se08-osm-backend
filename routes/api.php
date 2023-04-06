@@ -4,6 +4,7 @@ use App\Http\Controllers\api\UserController;
 use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\BannerController;
 use App\Http\Controllers\api\CategoryController;
+use App\Http\Controllers\api\PackageController;
 use App\Http\Controllers\api\PostController;
 use App\Http\Controllers\api\ServiceController;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +34,7 @@ Route::post('/hard-delete-category/{id}', [CategoryController::class, 'hardDelet
 // Post's routes
 Route::get('/posts', [PostController::class, 'getAllPosts']);
 Route::get('/posts/{id}', [PostController::class, 'getPostById']);
+Route::get('/posts-by-author/{author_id}', [PostController::class, 'getAllPostsByAuthorId']);
 Route::post('/posts', [PostController::class, 'createNewPost']);
 Route::post('/posts/{id}', [PostController::class, 'updatePost']);
 Route::delete('/posts/{id}', [PostController::class, 'hardDeletePost']);
@@ -55,7 +57,13 @@ Route::post('/services', [ServiceController::class, 'createNewService']);
 Route::post('/services/{id}', [ServiceController::class, 'updateService']);
 Route::delete('/services/{id}', [ServiceController::class, 'hardDeleteService']);
 
-
+// Package's routes
+Route::get('/packages', [PackageController::class, 'getAllPackages']);
+Route::get('/packages/{id}', [PackageController::class, 'getPackageById']);
+Route::get('/packages-by-service/{provider_id}', [PackageController::class, 'getAllPackagesByServiceId']);
+Route::post('/packages', [PackageController::class, 'createNewPackage']);
+Route::post('/packages/{id}', [PackageController::class, 'updatePackage']);
+Route::delete('/packages/{id}', [PackageController::class, 'hardDeletePackage']);
 
 
 // Banner's routes
