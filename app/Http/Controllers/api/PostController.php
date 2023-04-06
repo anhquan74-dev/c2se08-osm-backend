@@ -7,11 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Validator;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
-
 
 class PostController extends Controller
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\api;
 
 use App\Models\Category;
 use App\Http\Controllers\Controller;
@@ -26,7 +26,7 @@ class CategoryController extends Controller
     {
         if ($request->id) {
             $categoryInfo = Category::find($request->id);
-            if ($categoryInfo->isEmpty()) {
+            if (!$categoryInfo) {
                 return response()->json([
                     'statusCode' => 404,
                     'message' => 'Not found!',
@@ -85,6 +85,8 @@ class CategoryController extends Controller
                 if ($request->file('logo') == null) {
                     $validatorUpdate = Validator::make($request->all(), [
                         'name' => 'string|min:2|max:255',
+                        'total_provider' => 'numeric',
+                        'view_priority' => 'numeric',
                     ]);
                     if ($validatorUpdate->fails()) {
                         return response()->json([
@@ -107,6 +109,8 @@ class CategoryController extends Controller
                     $validatorUpdate = Validator::make($request->all(), [
                         'name' => 'string|min:2|max:255',
                         'logo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                        'total_provider' => 'numeric',
+                        'view_priority' => 'numeric',
                     ]);
                     if ($validatorUpdate->fails()) {
                         return response()->json([

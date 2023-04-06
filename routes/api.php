@@ -24,10 +24,10 @@ Route::delete('/providers/{id}', [UserController::class, 'hardDeleteProvider']);
 
 // Category's routes
 Route::get('/categories', [CategoryController::class, 'getAllCategories']);
-Route::get('/categories/{id}', [CategoryController::class, 'getCategoriesById']);
-Route::post('/categories', [CategoryController::class, 'createNewCategories']);
-Route::post('/categories/{id}', [CategoryController::class, 'updateCategories']);
-Route::delete('/categories/{id}', [CategoryController::class, 'hardDeleteCategories']);
+Route::get('/categories/{id}', [CategoryController::class, 'getCategoryById']);
+Route::post('/categories', [CategoryController::class, 'createNewCategory']);
+Route::post('/categories/{id}', [CategoryController::class, 'updateCategory']);
+Route::delete('/categories/{id}', [CategoryController::class, 'hardDeleteCategory']);
 
 // Post's routes
 Route::get('/posts', [PostController::class, 'getAllPosts']);
