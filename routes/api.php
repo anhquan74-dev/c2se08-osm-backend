@@ -4,6 +4,7 @@ use App\Http\Controllers\api\UserController;
 use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\BannerController;
 use App\Http\Controllers\api\CategoryController;
+use App\Http\Controllers\api\FeedbackController;
 use App\Http\Controllers\api\PackageController;
 use App\Http\Controllers\api\PostController;
 use App\Http\Controllers\api\ServiceController;
@@ -65,7 +66,13 @@ Route::post('/packages', [PackageController::class, 'createNewPackage']);
 Route::post('/packages/{id}', [PackageController::class, 'updatePackage']);
 Route::delete('/packages/{id}', [PackageController::class, 'hardDeletePackage']);
 
-
+// Feedback's routes
+Route::get('/feedbacks', [FeedbackController::class, 'getAllFeedbacks']);
+Route::get('/feedbacks/{id}', [FeedbackController::class, 'getFeedbackById']);
+Route::get('/feedbacks-by-appointment/{appointment_id}', [FeedbackController::class, 'getAllFeedbacksByAppointmentId']);
+Route::post('/feedbacks', [FeedbackController::class, 'createNewFeedback']);
+Route::post('/feedbacks/{id}', [FeedbackController::class, 'updateFeedback']);
+Route::delete('/feedbacks/{id}', [FeedbackController::class, 'hardDeleteFeedback']);
 // Banner's routes
 Route::post('/banners', [BannerController::class, 'createMultipleBanners']);
 
