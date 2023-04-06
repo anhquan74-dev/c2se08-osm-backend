@@ -1,86 +1,153 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\api;
 
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Validator;
 use App\Models\Feedback;
-use App\Http\Requests\StoreFeedbackRequest;
-use App\Http\Requests\UpdateFeedbackRequest;
 
 class FeedbackController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    // Get all feedbacks
+    public function getAllFeedbacks()
     {
-        //
+        $feedbacks = Feedback::all();
+        return response()->json([
+            'data' => $feedbacks,
+            'statusCode' => 200,
+            'message' => 'Get all feedbacks successful!',
+        ]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    // Get feedback by Id
+    public function getFeedbackById(Request $request)
     {
-        //
+        if ($request->id) {
+            $feedbackInfo = Feedback::find($request->id);
+            if ($feedbackInfo->isEmpty()) {
+                return response()->json([
+                    'statusCode' => 404,
+                    'message' => 'Not found!',
+                ]);
+            }
+            return response()->json([
+                'data' => $feedbackInfo,
+                'statusCode' => 200,
+                'message' => 'Get feedback info successfully!',
+            ]);
+        }
+        return response()->json([
+            'statusCode' => 400,
+            'message' => 'Missing feedback id parameter!',
+        ]);
     }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreFeedbackRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreFeedbackRequest $request)
+    // Get all feedbacks by appointment_id
+    public function getAllFeedbacksByAppointmentId(Request $request)
     {
-        //
+        if (!$request->appointment_id) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Missing appointment_id parameter!',
+            ]);
+        }
+        $feedbacks = Feedback::where('appointment_id', '=', $request->appointment_id)->get();
+        return response()->json([
+            'data' => $feedbacks,
+            'statusCode' => 200,
+            'message' => 'Get all feedbacks successful!',
+        ]);
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Feedback  $feedback
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Feedback $feedback)
+    // Create a new feedback
+    public function createNewFeedback(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'appointment_id' => 'required|numeric',
+            'comment' => 'string|min:2|max:255',
+            'reply' => 'string|min:2|max:255',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors());
+        }
+        $checkExistAppointment = Appointment::find($request->appointment_id);
+        if (!$checkExistAppointment) {
+            return response()->json([
+                'statusCode' => 404,
+                'message' => 'Can not find the corresponding appointment!',
+            ]);
+        }
+        $feedback = Feedback::create([
+            'appointment_id' => $request->appointment_id,
+            'comment' => $request->comment,
+            'reply' => $request->reply,
+            'star' => 0,
+        ]);
+        return response()->json([
+            'data' => $feedback,
+            'statusCode' => 201,
+            'message' => 'Successful created!',
+        ]);
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Feedback  $feedback
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Feedback $feedback)
+    // Update feedback
+    public function updateFeedback(Request $request)
     {
-        //
+        if ($request->id) {
+            $feedbackUpdate = Feedback::find($request->id);
+            if ($feedbackUpdate) {
+                $validator = Validator::make($request->all(), [
+                    'comment' => 'string|min:2|max:255',
+                    'reply' => 'string|min:2|max:255',
+                    'star' => 'numeric',
+                ]);
+                if ($validator->fails()) {
+                    return response()->json([
+                        "statusCode" => 400,
+                        "message" => "Validation error!",
+                        "errors" => $validator->errors()
+                    ]);
+                }
+                Feedback::where('id', $request->id)->update([
+                    'comment' => $request->comment,
+                    'reply' => $request->reply,
+                    'star' => $request->star,
+                    'reply_at' => $request->reply_at,
+                ]);
+                return response()->json([
+                    'statusCode' => 200,
+                    'message' => 'Feedback updated successfully!',
+                ]);
+            } else {
+                return response()->json([
+                    "statusCode" => 404,
+                    "message" => "Can't find the feedback you want to update!"
+                ]);
+            }
+        }
+        return response()->json([
+            'statusCode' => 400,
+            'message' => 'Missing feedback id parameter!',
+        ]);
     }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateFeedbackRequest  $request
-     * @param  \App\Models\Feedback  $feedback
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateFeedbackRequest $request, Feedback $feedback)
+    // Hard delete feedback
+    public function hardDeleteFeedback(Request $request)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Feedback  $feedback
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Feedback $feedback)
-    {
-        //
+        if ($request->id) {
+            $checkFeedback = Feedback::where('id', $request->id)->first();
+            if ($checkFeedback) {
+                Feedback::where('id', $request->id)->delete();
+                return response()->json([
+                    'statusCode' => 200,
+                    'message' => 'Deleted feedback successfully!',
+                ]);
+            } else {
+                return response()->json([
+                    "statusCode" => 404,
+                    "message" => "Can't find the feedback you want to delete!"
+                ]);
+            }
+        }
+        return response()->json([
+            'statusCode' => 400,
+            'message' => 'Missing feedback id parameter!',
+        ]);
     }
 }
