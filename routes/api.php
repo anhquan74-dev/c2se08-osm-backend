@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\api\AppointmentController;
 use App\Http\Controllers\api\UserController;
 use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\BannerController;
@@ -73,6 +74,21 @@ Route::get('/feedbacks-by-appointment/{appointment_id}', [FeedbackController::cl
 Route::post('/feedbacks', [FeedbackController::class, 'createNewFeedback']);
 Route::post('/feedbacks/{id}', [FeedbackController::class, 'updateFeedback']);
 Route::delete('/feedbacks/{id}', [FeedbackController::class, 'hardDeleteFeedback']);
+
+// Appointment's routes
+Route::get('/appointments', [AppointmentController::class, 'getAllAppointments']);
+Route::get('/appointments/{id}', [AppointmentController::class, 'getAppointmentById']);
+Route::get('/appointments-by-package/{package_id}', [AppointmentController::class, 'getAllAppointmentsByPackageId']);
+Route::get('/appointments-by-customer/{customer_id}', [AppointmentController::class, 'getAllAppointmentsByCustomerId']);
+Route::post('/appointments', [AppointmentController::class, 'createNewAppointment']);
+Route::post('/appointments/{id}', [AppointmentController::class, 'updateAppointment']);
+Route::delete('/appointments/{id}', [AppointmentController::class, 'hardDeleteAppointment']);
+
+
+
+
+
+
 // Banner's routes
 Route::post('/banners', [BannerController::class, 'createMultipleBanners']);
 

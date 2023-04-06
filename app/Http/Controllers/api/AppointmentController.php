@@ -1,86 +1,231 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\api;
 
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\File;
+use Illuminate\Http\Request;
+use Validator;
 use App\Models\Appointment;
-use App\Http\Requests\StoreAppointmentRequest;
-use App\Http\Requests\UpdateAppointmentRequest;
+use App\Models\AttachPhoto;
+use App\Models\Package;
+use App\Models\User;
 
 class AppointmentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    // Get all appointments
+    public function getAllAppointments()
     {
-        //
+        $appointments = Appointment::all();
+        return response()->json([
+            'data' => $appointments,
+            'statusCode' => 200,
+            'message' => 'Get all appointments successful!',
+        ]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    // Get appointment by Id
+    public function getAppointmentById(Request $request)
     {
-        //
+        if ($request->id) {
+            $appointmentInfo = Appointment::find($request->id);
+            if ($appointmentInfo->isEmpty()) {
+                return response()->json([
+                    'statusCode' => 404,
+                    'message' => 'Not found!',
+                ]);
+            }
+            return response()->json([
+                'data' => $appointmentInfo,
+                'statusCode' => 200,
+                'message' => 'Get appointment info successfully!',
+            ]);
+        }
+        return response()->json([
+            'statusCode' => 400,
+            'message' => 'Missing appointment id parameter!',
+        ]);
     }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreAppointmentRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreAppointmentRequest $request)
+    // Get all appointments by customer_id
+    public function getAllAppointmentsByCustomerId(Request $request)
     {
-        //
+        if (!$request->customer_id) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Missing customer_id parameter!',
+            ]);
+        }
+        $appointments = Appointment::where('customer_id', '=', $request->customer_id)->get();
+        return response()->json([
+            'data' => $appointments,
+            'statusCode' => 200,
+            'message' => 'Get all appointments successful!',
+        ]);
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Appointment  $appointment
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Appointment $appointment)
+    // Get all appointments by package_id
+    public function getAllAppointmentsByPackageId(Request $request)
     {
-        //
+        if (!$request->package_id) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Missing package_id parameter!',
+            ]);
+        }
+        $appointments = Appointment::where('package_id', '=', $request->package_id)->get();
+        return response()->json([
+            'data' => $appointments,
+            'statusCode' => 200,
+            'message' => 'Get all appointments successful!',
+        ]);
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Appointment  $appointment
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Appointment $appointment)
+    // Create a new appointment
+    public function createNewAppointment(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'package_id' => 'required|numeric',
+            'customer_id' => 'required|numeric',
+            'note_for_provider' => 'string|min:2|max:255',
+            'location' => 'string|min:2|max:255',
+            'price' => 'required|numeric',
+            'price_unit' => 'string|min:2|max:255',
+            'status' => 'string|min:2|max:255',
+            'offer_date' => 'required',
+            'attach_photos' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors());
+        }
+        if ($request->file('attach_photos') == null) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Missing attach photos!',
+            ]);
+        }
+        $checkExistPackage = Package::find($request->package_id);
+        if (!$checkExistPackage) {
+            return response()->json([
+                'statusCode' => 404,
+                'message' => 'Can not find the corresponding package!',
+            ]);
+        }
+        $checkExistCustomer = User::find($request->customer_id);
+        if (!$checkExistCustomer) {
+            return response()->json([
+                'statusCode' => 404,
+                'message' => 'Can not find the corresponding customer!',
+            ]);
+        }
+        // create appointment
+        $appointment = Appointment::create([
+            'package_id' => $request->package_id,
+            'customer_id' => $request->customer_id,
+            'note_for_provider' => $request->note_for_provider,
+            'location' => $request->location,
+            'date' => $request->date,
+            'price' => $request->price,
+            'price_unit' => $request->price_unit,
+            'status' => $request->status,
+            'offer_date' => $request->offer_date,
+        ]);
+        // create attach_photos
+        if ($request->has('attach_photos')) {
+            foreach ($request->file('attach_photos') as $attach_photo) {
+                $attachPhotoName = 'Appointment-attach-photos-' . time() . rand(1, 1000) . '.' . $attach_photo->extension();
+                $attach_photo->move('uploads/appointment-attach-photo/', $attachPhotoName);
+                AttachPhoto::create([
+                    'appointment_id' => $appointment->id,
+                    'image' => $attachPhotoName
+                ]);
+            }
+        }
+        // data join 2 table
+        $data = Appointment::join('attach_photos', 'appointment.id', '=', 'attach_photos.appointment_id')
+            ->where('appointment.id', '=', $appointment->id)
+            ->get();
+        return response()->json([
+            'data' => $data,
+            'statusCode' => 201,
+            'message' => 'Successful created!',
+        ]);
     }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateAppointmentRequest  $request
-     * @param  \App\Models\Appointment  $appointment
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateAppointmentRequest $request, Appointment $appointment)
+    // Update appointment
+    public function updateAppointment(Request $request)
     {
-        //
+        if ($request->id) {
+            $appointmentUpdate = Appointment::find($request->id);
+            if ($appointmentUpdate) {
+                $validator = Validator::make($request->all(), [
+                    'note_for_provider' => 'string|min:2|max:255',
+                    'location' => 'string|min:2|max:255',
+                    'price' => 'numeric',
+                    'price_unit' => 'string|min:2|max:255',
+                    'status' => 'string|min:2|max:255',
+                ]);
+                if ($validator->fails()) {
+                    return response()->json([
+                        "statusCode" => 400,
+                        "message" => "Validation error!",
+                        "errors" => $validator->errors()
+                    ]);
+                }
+                Appointment::where('id', $request->id)->update([
+                    'note_for_provider' => $request->note_for_provider,
+                    'location' => $request->location,
+                    'date' => $request->date,
+                    'price' => $request->price,
+                    'price_unit' => $request->price_unit,
+                    'status' => $request->status,
+                    'offer_date' => $request->offer_date,
+                    'complete_date' => $request->complete_date,
+                    'cancel_date' => $request->cancel_date,
+                ]);
+                return response()->json([
+                    'statusCode' => 200,
+                    'message' => 'Appointment updated successfully!',
+                ]);
+            } else {
+                return response()->json([
+                    "statusCode" => 404,
+                    "message" => "Can't find the appointment you want to update!"
+                ]);
+            }
+        }
+        return response()->json([
+            'statusCode' => 400,
+            'message' => 'Missing appointment id parameter!',
+        ]);
     }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Appointment  $appointment
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Appointment $appointment)
+    // Hard delete appointment
+    public function hardDeleteAppointment(Request $request)
     {
-        //
+        if ($request->id) {
+            $checkAppointment = Appointment::where('id', $request->id)->first();
+            if ($checkAppointment) {
+                // Delete appointment
+                Appointment::where('id', $request->id)->delete();
+                // Delete file in server
+                $attachPhotos = AttachPhoto::where('appointment_id', '=', $checkAppointment->id);
+                foreach ($attachPhotos as $attachPhoto) {
+                    $destination = 'uploads/appointment-attach-photo/' . $attachPhoto->image;
+                    if (File::exists($destination)) {
+                        File::delete($destination);
+                    }
+                }
+                // Delete attach_photo of appointment
+                AttachPhoto::where('appointment_id', $request->appointment_id)->delete();
+                return response()->json([
+                    'statusCode' => 200,
+                    'message' => 'Deleted appointment successfully!',
+                ]);
+            } else {
+                return response()->json([
+                    "statusCode" => 404,
+                    "message" => "Can't find the appointment you want to delete!"
+                ]);
+            }
+        }
+        return response()->json([
+            'statusCode' => 400,
+            'message' => 'Missing appointment id parameter!',
+        ]);
     }
 }
