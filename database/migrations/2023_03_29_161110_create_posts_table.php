@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('author_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
             $table->string('title')->nullable();
             $table->text('content')->nullable();
-            $table->string('description')->nullable();
+            $table->string('image')->nullable();
             $table->timestamp('date')->nullable();
             $table->string('tags')->nullable();
             $table->boolean('is_valid_flag')->nullable();

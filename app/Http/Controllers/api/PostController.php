@@ -6,7 +6,9 @@ use App\Models\Post;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Validator;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
@@ -63,10 +65,15 @@ class PostController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|min:2|max:255',
-            'author_id' => 'required|numeric'
+            'author_id' => 'required|numeric',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json([
+                "statusCode" => 400,
+                "message" => "Validation error",
+                "errors" => $validator->errors()
+            ]);
         }
         $checkExistAuthor = User::find($request->author_id);
         if (!$checkExistAuthor) {
@@ -75,19 +82,28 @@ class PostController extends Controller
                 'message' => 'Can not find the corresponding author!',
             ]);
         }
-        $post = Post::create([
-            'title' => $request->title,
-            'content' => $request->content,
-            'description' => $request->description,
-            'author_id' => $request->author_id,
-            'date' => $request->date,
-            'tags' => $request->tags,
-            'is_valid_flag' => false,
-        ]);
+        if ($request->has('image')) {
+            $image = $request->file('image');
+            $fileName = Str::random(5) . date('YmdHis') . '.' . $image->getClientOriginalExtension();
+            $image->move('uploads/post-image/', $fileName);
+            $post = Post::create([
+                'title' => $request->title,
+                'content' => $request->content,
+                'image' => $fileName,
+                'author_id' => $request->author_id,
+                'date' => $request->date,
+                'tags' => $request->tags,
+                'is_valid_flag' => false,
+            ]);
+            return response()->json([
+                'data' => $post,
+                'statusCode' => 201,
+                'message' => 'Successful created!',
+            ]);
+        }
         return response()->json([
-            'data' => $post,
-            'statusCode' => 201,
-            'message' => 'Successful created!',
+            "statusCode" => 400,
+            "message" => "Missing image for post",
         ]);
     }
     // Update post
@@ -96,28 +112,60 @@ class PostController extends Controller
         if ($request->id) {
             $postUpdate = Post::find($request->id);
             if ($postUpdate) {
-                $validator = Validator::make($request->all(), [
-                    'title' => 'string|min:2|max:255',
-                ]);
-                if ($validator->fails()) {
+
+                if ($request->file('image') == null) {
+                    $validatorUpdate = Validator::make($request->all(), [
+                        'title' => 'string|min:2|max:255',
+                    ]);
+                    if ($validatorUpdate->fails()) {
+                        return response()->json([
+                            "statusCode" => 400,
+                            "message" => "Validation update error",
+                            "errors" => $validatorUpdate->errors()
+                        ]);
+                    }
+                    $postUpdate->title = $request->title;
+                    $postUpdate->content = $request->content;
+                    $postUpdate->date = $request->date;
+                    $postUpdate->tags = $request->tags;
+                    $postUpdate->is_valid_flag = $request->is_valid_flag;
+                    $postUpdate->save();
                     return response()->json([
-                        "statusCode" => 400,
-                        "message" => "Validation error!",
-                        "errors" => $validator->errors()
+                        'statusCode' => 200,
+                        'message' => 'Post updated successfully!',
                     ]);
                 }
-                Post::where('id', $request->id)->update([
-                    'title' => $request->title,
-                    'content' => $request->content,
-                    'description' => $request->description,
-                    'date' => $request->date,
-                    'tags' => $request->tags,
-                    'is_valid_flag' => $request->is_valid_flag,
-                ]);
-                return response()->json([
-                    'statusCode' => 200,
-                    'message' => 'Post updated successfully!',
-                ]);
+                if ($request->hasFile('image')) {
+                    $validatorUpdate = Validator::make($request->all(), [
+                        'title' => 'string|min:2|max:255',
+                        'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                    ]);
+                    if ($validatorUpdate->fails()) {
+                        return response()->json([
+                            "statusCode" => 400,
+                            "message" => "Validation update error",
+                            "errors" => $validatorUpdate->errors()
+                        ]);
+                    }
+                    $destination = 'uploads/post-image/' . $postUpdate->image;
+                    if (File::exists($destination)) {
+                        File::delete($destination);
+                    }
+                    $image = $request->file('image');
+                    $fileName = Str::random(5) . date('YmdHis') . '.' . $image->getClientOriginalExtension();
+                    $image->move('uploads/post-image/', $fileName);
+                    $postUpdate->title = $request->title;
+                    $postUpdate->content = $request->content;
+                    $postUpdate->date = $request->date;
+                    $postUpdate->tags = $request->tags;
+                    $postUpdate->image = $fileName;
+                    $postUpdate->is_valid_flag = $request->is_valid_flag;
+                    $postUpdate->save();
+                    return response()->json([
+                        'statusCode' => 200,
+                        'message' => 'Post updated successfully!',
+                    ]);
+                }
             } else {
                 return response()->json([
                     "statusCode" => 404,
@@ -134,8 +182,12 @@ class PostController extends Controller
     public function hardDeletePost(Request $request)
     {
         if ($request->id) {
-            $checkPost = Post::where('id', $request->id)->first();
+            $checkPost = Post::find($request->id);
             if ($checkPost) {
+                $destination = 'uploads/post-image/' . $checkPost->image;
+                if (File::exists($destination)) {
+                    File::delete($destination);
+                }
                 Post::where('id', $request->id)->delete();
                 return response()->json([
                     'statusCode' => 200,

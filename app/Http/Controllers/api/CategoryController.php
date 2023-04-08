@@ -74,7 +74,10 @@ class CategoryController extends Controller
                 'message' => 'Category created successfully!',
             ]);
         }
-        return response()->json('Please try again');
+        return response()->json([
+            "statusCode" => 400,
+            "message" => "Missing logo for category",
+        ]);
     }
     // Update category
     public function updateCategory(Request $request)
