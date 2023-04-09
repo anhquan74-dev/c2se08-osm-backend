@@ -49,7 +49,6 @@ Route::get('/locations-by-user/{user_id}', [LocationController::class, 'getAllLo
 Route::post('/locations', [LocationController::class, 'createNewLocation']);
 Route::post('/locations/{id}', [LocationController::class, 'updateLocation']);
 Route::delete('/locations/{id}', [LocationController::class, 'hardDeleteLocation']);
-// need test
 
 // Service's routes
 Route::get('/services', [ServiceController::class, 'getAllServices']);
@@ -60,6 +59,7 @@ Route::post('/services', [ServiceController::class, 'createNewService']);
 Route::post('/services/{id}', [ServiceController::class, 'updateService']);
 Route::delete('/services/{id}', [ServiceController::class, 'hardDeleteService']);
 
+// need test
 // Package's routes
 Route::get('/packages', [PackageController::class, 'getAllPackages']);
 Route::get('/packages/{id}', [PackageController::class, 'getPackageById']);

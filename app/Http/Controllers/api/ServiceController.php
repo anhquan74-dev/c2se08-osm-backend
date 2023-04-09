@@ -26,7 +26,7 @@ class ServiceController extends Controller
     {
         if ($request->id) {
             $serviceInfo = Service::find($request->id);
-            if ($serviceInfo->isEmpty()) {
+            if (!$serviceInfo) {
                 return response()->json([
                     'statusCode' => 404,
                     'message' => 'Not found!',
@@ -102,7 +102,7 @@ class ServiceController extends Controller
                 'message' => 'Can not find the corresponding category!',
             ]);
         }
-        $service = Category::create([
+        $service = Service::create([
             'category_id' => $request->category_id,
             'provider_id' => $request->provider_id,
             'avg_price' => 0,
