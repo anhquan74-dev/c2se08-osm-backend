@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('status')->nullable();
             $table->timestamp('complete_date')->nullable();
             $table->timestamp('cancel_date')->nullable();
+            $table->timestamp('offer_date')->nullable();
             $table->bigInteger('feedback_id')->nullable();
             $table->timestamps();
         });

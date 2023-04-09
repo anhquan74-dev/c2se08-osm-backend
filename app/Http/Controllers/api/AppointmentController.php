@@ -16,7 +16,8 @@ class AppointmentController extends Controller
     // Get all appointments
     public function getAllAppointments()
     {
-        $appointments = Appointment::all();
+        $appointments = Appointment::with('attachPhoto')->get();
+
         return response()->json([
             'data' => $appointments,
             'statusCode' => 200,
@@ -28,7 +29,8 @@ class AppointmentController extends Controller
     {
         if ($request->id) {
             $appointmentInfo = Appointment::find($request->id);
-            if ($appointmentInfo->isEmpty()) {
+            $appointmentInfo->attachPhoto;
+            if (!$appointmentInfo) {
                 return response()->json([
                     'statusCode' => 404,
                     'message' => 'Not found!',
@@ -54,7 +56,7 @@ class AppointmentController extends Controller
                 'message' => 'Missing customer_id parameter!',
             ]);
         }
-        $appointments = Appointment::where('customer_id', '=', $request->customer_id)->get();
+        $appointments = Appointment::where('customer_id', '=', $request->customer_id)->with('attachPhoto')->get();
         return response()->json([
             'data' => $appointments,
             'statusCode' => 200,
@@ -70,7 +72,7 @@ class AppointmentController extends Controller
                 'message' => 'Missing package_id parameter!',
             ]);
         }
-        $appointments = Appointment::where('package_id', '=', $request->package_id)->get();
+        $appointments = Appointment::where('package_id', '=', $request->package_id)->with('attachPhoto')->get();
         return response()->json([
             'data' => $appointments,
             'statusCode' => 200,
@@ -80,6 +82,7 @@ class AppointmentController extends Controller
     // Create a new appointment
     public function createNewAppointment(Request $request)
     {
+        $input_data = $request->all();
         $validator = Validator::make($request->all(), [
             'package_id' => 'required|numeric',
             'customer_id' => 'required|numeric',
@@ -88,8 +91,13 @@ class AppointmentController extends Controller
             'price' => 'required|numeric',
             'price_unit' => 'string|min:2|max:255',
             'status' => 'string|min:2|max:255',
-            'offer_date' => 'required',
-            'attach_photos' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            $input_data, [
+                'attach_photos.*' => 'required|mimes:jpg,jpeg,png,bmp,gif,svg|max:2048'
+            ], [
+                'attach_photos.*.required' => 'Please upload an image',
+                'attach_photos.*.mimes' => 'Only jpeg,png,jpg,gif and svg images are allowed',
+                'attach_photos.*.max' => 'Sorry! Maximum allowed size for an image is 2MB',
+            ]
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors());
@@ -129,7 +137,7 @@ class AppointmentController extends Controller
         // create attach_photos
         if ($request->has('attach_photos')) {
             foreach ($request->file('attach_photos') as $attach_photo) {
-                $attachPhotoName = 'Appointment-attach-photos-' . time() . rand(1, 1000) . '.' . $attach_photo->extension();
+                $attachPhotoName = 'appointment-attach-photos-' . time() . rand(1, 1000) . '.' . $attach_photo->extension();
                 $attach_photo->move('uploads/appointment-attach-photo/', $attachPhotoName);
                 AttachPhoto::create([
                     'appointment_id' => $appointment->id,
@@ -137,12 +145,10 @@ class AppointmentController extends Controller
                 ]);
             }
         }
-        // data join 2 table
-        $data = Appointment::join('attach_photos', 'appointment.id', '=', 'attach_photos.appointment_id')
-            ->where('appointment.id', '=', $appointment->id)
-            ->get();
+        $appointmentCurrent = Appointment::find($appointment->id);
+        $appointmentCurrent->attachPhoto;
         return response()->json([
-            'data' => $data,
+            'data' => $appointmentCurrent,
             'statusCode' => 201,
             'message' => 'Successful created!',
         ]);
@@ -200,16 +206,17 @@ class AppointmentController extends Controller
         if ($request->id) {
             $checkAppointment = Appointment::where('id', $request->id)->first();
             if ($checkAppointment) {
-                // Delete appointment
-                Appointment::where('id', $request->id)->delete();
                 // Delete file in server
-                $attachPhotos = AttachPhoto::where('appointment_id', '=', $checkAppointment->id);
+                $attachPhotos = AttachPhoto::where('appointment_id', '=', $request->id)->get();
+                // dd($attachPhotos);
                 foreach ($attachPhotos as $attachPhoto) {
                     $destination = 'uploads/appointment-attach-photo/' . $attachPhoto->image;
                     if (File::exists($destination)) {
                         File::delete($destination);
                     }
                 }
+                // Delete appointment
+                Appointment::where('id', $request->id)->delete();
                 // Delete attach_photo of appointment
                 AttachPhoto::where('appointment_id', $request->appointment_id)->delete();
                 return response()->json([

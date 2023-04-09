@@ -67,7 +67,16 @@ Route::post('/packages', [PackageController::class, 'createNewPackage']);
 Route::post('/packages/{id}', [PackageController::class, 'updatePackage']);
 Route::delete('/packages/{id}', [PackageController::class, 'hardDeletePackage']);
 
+// Appointment's routes
+Route::get('/appointments', [AppointmentController::class, 'getAllAppointments']);
+Route::get('/appointments/{id}', [AppointmentController::class, 'getAppointmentById']);
+Route::get('/appointments-by-customer/{customer_id}', [AppointmentController::class, 'getAllAppointmentsByCustomerId']);
+Route::get('/appointments-by-package/{package_id}', [AppointmentController::class, 'getAllAppointmentsByPackageId']);
+Route::post('/appointments', [AppointmentController::class, 'createNewAppointment']);
+Route::post('/appointments/{id}', [AppointmentController::class, 'hardDeleteAppointment']);
 // need test
+Route::post('/appointments/{id}', [AppointmentController::class, 'updateAppointment']);
+
 // Feedback's routes
 Route::get('/feedbacks', [FeedbackController::class, 'getAllFeedbacks']);
 Route::get('/feedbacks/{id}', [FeedbackController::class, 'getFeedbackById']);
@@ -76,37 +85,17 @@ Route::post('/feedbacks', [FeedbackController::class, 'createNewFeedback']);
 Route::post('/feedbacks/{id}', [FeedbackController::class, 'updateFeedback']);
 Route::delete('/feedbacks/{id}', [FeedbackController::class, 'hardDeleteFeedback']);
 
-// Appointment's routes
-Route::get('/appointments', [AppointmentController::class, 'getAllAppointments']);
-Route::get('/appointments/{id}', [AppointmentController::class, 'getAppointmentById']);
-Route::get('/appointments-by-package/{package_id}', [AppointmentController::class, 'getAllAppointmentsByPackageId']);
-Route::get('/appointments-by-customer/{customer_id}', [AppointmentController::class, 'getAllAppointmentsByCustomerId']);
-Route::post('/appointments', [AppointmentController::class, 'createNewAppointment']);
-Route::post('/appointments/{id}', [AppointmentController::class, 'updateAppointment']);
-Route::delete('/appointments/{id}', [AppointmentController::class, 'hardDeleteAppointment']);
-
-
-
-
-
-
 // Banner's routes
 Route::post('/banners', [BannerController::class, 'createMultipleBanners']);
 
-
-
-// Route::post('/register', [UserController::class, 'register']);
-
 // Auth routes
+// Route::post('/register', [UserController::class, 'register']);
 Route::group([
-
 	'middleware' => 'api',
 	'prefix'     => 'auth',
-
 ], function ($router) {
-
 	Route::post('login', [AuthController::class, 'login']);
-	// Route::post('logout', 'AuthController@logout');
-	// Route::post('refresh', 'AuthController@refresh');
-	// Route::post('me', 'AuthController@me');
+	Route::post('logout', [AuthController::class, 'logout']);
+	Route::post('refresh', [AuthController::class, 'refresh']);
+	Route::post('me', [AuthController::class, 'me']);
 });
