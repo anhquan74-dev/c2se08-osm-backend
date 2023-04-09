@@ -59,15 +59,15 @@ Route::post('/services', [ServiceController::class, 'createNewService']);
 Route::post('/services/{id}', [ServiceController::class, 'updateService']);
 Route::delete('/services/{id}', [ServiceController::class, 'hardDeleteService']);
 
-// need test
 // Package's routes
 Route::get('/packages', [PackageController::class, 'getAllPackages']);
 Route::get('/packages/{id}', [PackageController::class, 'getPackageById']);
-Route::get('/packages-by-service/{provider_id}', [PackageController::class, 'getAllPackagesByServiceId']);
+Route::get('/packages-by-service/{service_id}', [PackageController::class, 'getAllPackagesByServiceId']);
 Route::post('/packages', [PackageController::class, 'createNewPackage']);
 Route::post('/packages/{id}', [PackageController::class, 'updatePackage']);
 Route::delete('/packages/{id}', [PackageController::class, 'hardDeletePackage']);
 
+// need test
 // Feedback's routes
 Route::get('/feedbacks', [FeedbackController::class, 'getAllFeedbacks']);
 Route::get('/feedbacks/{id}', [FeedbackController::class, 'getFeedbackById']);

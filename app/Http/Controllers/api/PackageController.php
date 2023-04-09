@@ -5,9 +5,9 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
 use Validator;
 use App\Models\Package;
+use App\Models\Service;
 
 class PackageController extends Controller
 {
@@ -26,7 +26,7 @@ class PackageController extends Controller
     {
         if ($request->id) {
             $packageInfo = Package::find($request->id);
-            if ($packageInfo->isEmpty()) {
+            if (!$packageInfo) {
                 return response()->json([
                     'statusCode' => 404,
                     'message' => 'Not found!',
