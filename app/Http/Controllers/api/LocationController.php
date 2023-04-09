@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Location;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Validator;
 
@@ -24,7 +25,7 @@ class LocationController extends Controller
     {
         if ($request->id) {
             $locationInfo = Location::find($request->id);
-            if ($locationInfo->isEmpty()) {
+            if (!$locationInfo) {
                 return response()->json([
                     'statusCode' => 404,
                     'message' => 'Not found!',

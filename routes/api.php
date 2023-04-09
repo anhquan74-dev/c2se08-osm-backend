@@ -6,6 +6,7 @@ use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\BannerController;
 use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\api\FeedbackController;
+use App\Http\Controllers\api\LocationController;
 use App\Http\Controllers\api\PackageController;
 use App\Http\Controllers\api\PostController;
 use App\Http\Controllers\api\ServiceController;
@@ -41,7 +42,6 @@ Route::post('/posts', [PostController::class, 'createNewPost']);
 Route::post('/posts/{id}', [PostController::class, 'updatePost']);
 Route::delete('/posts/{id}', [PostController::class, 'hardDeletePost']);
 
-// need test
 // Location's routes
 Route::get('/locations', [LocationController::class, 'getAllLocations']);
 Route::get('/locations/{id}', [LocationController::class, 'getLocationById']);
@@ -49,6 +49,7 @@ Route::get('/locations-by-user/{user_id}', [LocationController::class, 'getAllLo
 Route::post('/locations', [LocationController::class, 'createNewLocation']);
 Route::post('/locations/{id}', [LocationController::class, 'updateLocation']);
 Route::delete('/locations/{id}', [LocationController::class, 'hardDeleteLocation']);
+// need test
 
 // Service's routes
 Route::get('/services', [ServiceController::class, 'getAllServices']);
