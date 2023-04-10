@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Appointment;
 use Illuminate\Http\Request;
 use Validator;
 use App\Models\Feedback;
@@ -24,7 +25,7 @@ class FeedbackController extends Controller
     {
         if ($request->id) {
             $feedbackInfo = Feedback::find($request->id);
-            if ($feedbackInfo->isEmpty()) {
+            if (!$feedbackInfo) {
                 return response()->json([
                     'statusCode' => 404,
                     'message' => 'Not found!',
@@ -62,7 +63,7 @@ class FeedbackController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'appointment_id' => 'required|numeric',
-            'comment' => 'string|min:2|max:255',
+            'comment' => 'required|string|min:2|max:255',
             'reply' => 'string|min:2|max:255',
         ]);
         if ($validator->fails()) {
