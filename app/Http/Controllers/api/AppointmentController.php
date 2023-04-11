@@ -166,8 +166,8 @@ class AppointmentController extends Controller
                     'note_for_provider' => 'string|min:2|max:255',
                     'location' => 'string|min:2|max:255',
                     'price' => 'numeric',
-                    'price_unit' => 'string|min:2|max:255',
-                    'status' => 'string|min:2|max:255',
+                    'price_unit' => 'string|max:255',
+                    'status' => 'string|max:255',
                 ]);
                 if ($validator->fails()) {
                     return response()->json([

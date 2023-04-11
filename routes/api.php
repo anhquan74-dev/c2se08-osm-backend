@@ -10,6 +10,7 @@ use App\Http\Controllers\api\LocationController;
 use App\Http\Controllers\api\PackageController;
 use App\Http\Controllers\api\PostController;
 use App\Http\Controllers\api\ServiceController;
+use App\Http\Controllers\api\AttachPhotoController;
 use Illuminate\Support\Facades\Route;
 
 // Customer's routes
@@ -17,7 +18,7 @@ Route::get('/customers', [UserController::class, 'getAllCustomers']);
 Route::get('/customers/{id}', [UserController::class, 'getCustomerById']);
 Route::post('/customers', [UserController::class, 'createNewCustomer']);
 Route::post('/customers/{id}', [UserController::class, 'updateCustomer']);
-Route::delete('/customers/{id}', [UserController::class, 'hardDeleteCustomer']);
+Route::post('/hard-delete-customer/{id}', [UserController::class, 'hardDeleteCustomer']);
 Route::get('/customers-search', [UserController::class, 'searchPaginationCustomers']);
 
 // Provider's routes
@@ -25,7 +26,7 @@ Route::get('/providers', [UserController::class, 'getAllProviders']);
 Route::get('/providers/{id}', [UserController::class, 'getProviderById']);
 Route::post('/providers', [UserController::class, 'createNewProvider']);
 Route::post('/providers/{id}', [UserController::class, 'updateProvider']);
-Route::delete('/providers/{id}', [UserController::class, 'hardDeleteProvider']);
+Route::post('/hard-delete-provider/{id}', [UserController::class, 'hardDeleteProvider']);
 
 // Category's routes
 Route::get('/categories', [CategoryController::class, 'getAllCategories']);
@@ -40,7 +41,7 @@ Route::get('/posts/{id}', [PostController::class, 'getPostById']);
 Route::get('/posts-by-author/{author_id}', [PostController::class, 'getAllPostsByAuthorId']);
 Route::post('/posts', [PostController::class, 'createNewPost']);
 Route::post('/posts/{id}', [PostController::class, 'updatePost']);
-Route::delete('/posts/{id}', [PostController::class, 'hardDeletePost']);
+Route::post('/hard-delete-post/{id}', [PostController::class, 'hardDeletePost']);
 
 // Location's routes
 Route::get('/locations', [LocationController::class, 'getAllLocations']);
@@ -48,7 +49,7 @@ Route::get('/locations/{id}', [LocationController::class, 'getLocationById']);
 Route::get('/locations-by-user/{user_id}', [LocationController::class, 'getAllLocationsByUserId']);
 Route::post('/locations', [LocationController::class, 'createNewLocation']);
 Route::post('/locations/{id}', [LocationController::class, 'updateLocation']);
-Route::delete('/locations/{id}', [LocationController::class, 'hardDeleteLocation']);
+Route::post('/hard-delete-location/{id}', [LocationController::class, 'hardDeleteLocation']);
 
 // Service's routes
 Route::get('/services', [ServiceController::class, 'getAllServices']);
@@ -57,7 +58,7 @@ Route::get('/services-by-provider/{provider_id}', [ServiceController::class, 'ge
 Route::get('/services-by-category/{category_id}', [ServiceController::class, 'getAllServicesByCategoryId']);
 Route::post('/services', [ServiceController::class, 'createNewService']);
 Route::post('/services/{id}', [ServiceController::class, 'updateService']);
-Route::delete('/services/{id}', [ServiceController::class, 'hardDeleteService']);
+Route::post('/hard-delete-service/{id}', [ServiceController::class, 'hardDeleteService']);
 
 // Package's routes
 Route::get('/packages', [PackageController::class, 'getAllPackages']);
@@ -65,7 +66,7 @@ Route::get('/packages/{id}', [PackageController::class, 'getPackageById']);
 Route::get('/packages-by-service/{service_id}', [PackageController::class, 'getAllPackagesByServiceId']);
 Route::post('/packages', [PackageController::class, 'createNewPackage']);
 Route::post('/packages/{id}', [PackageController::class, 'updatePackage']);
-Route::delete('/packages/{id}', [PackageController::class, 'hardDeletePackage']);
+Route::post('/hard-delete-package/{id}', [PackageController::class, 'hardDeletePackage']);
 
 // Appointment's routes
 Route::get('/appointments', [AppointmentController::class, 'getAllAppointments']);
@@ -73,9 +74,8 @@ Route::get('/appointments/{id}', [AppointmentController::class, 'getAppointmentB
 Route::get('/appointments-by-customer/{customer_id}', [AppointmentController::class, 'getAllAppointmentsByCustomerId']);
 Route::get('/appointments-by-package/{package_id}', [AppointmentController::class, 'getAllAppointmentsByPackageId']);
 Route::post('/appointments', [AppointmentController::class, 'createNewAppointment']);
-Route::post('/appointments/{id}', [AppointmentController::class, 'hardDeleteAppointment']);
-// need test
 Route::post('/appointments/{id}', [AppointmentController::class, 'updateAppointment']);
+Route::post('/hard-delete-appointment/{id}', [AppointmentController::class, 'hardDeleteAppointment']);
 
 // Feedback's routes
 Route::get('/feedbacks', [FeedbackController::class, 'getAllFeedbacks']);
@@ -83,10 +83,17 @@ Route::get('/feedbacks/{id}', [FeedbackController::class, 'getFeedbackById']);
 Route::get('/feedbacks-by-appointment/{appointment_id}', [FeedbackController::class, 'getAllFeedbacksByAppointmentId']);
 Route::post('/feedbacks', [FeedbackController::class, 'createNewFeedback']);
 Route::post('/feedbacks/{id}', [FeedbackController::class, 'updateFeedback']);
-Route::delete('/feedbacks/{id}', [FeedbackController::class, 'hardDeleteFeedback']);
+Route::post('/hard-delete-feedback/{id}', [FeedbackController::class, 'hardDeleteFeedback']);
+
+// Attach photo's routes
+Route::post('/attach-photos', [AttachPhotoController::class, 'createAttachPhoto']);
+Route::post('/hard-delete-attach-photo/{id}', [AttachPhotoController::class, 'hardDeleteAttachPhoto']);
+
+// need test
 
 // Banner's routes
-Route::post('/banners', [BannerController::class, 'createMultipleBanners']);
+Route::post('/banners', [BannerController::class, 'createBanner']);
+Route::post('/hard-delete-banner', [BannerController::class, 'hardDeleteBanner']);
 
 // Auth routes
 // Route::post('/register', [UserController::class, 'register']);
