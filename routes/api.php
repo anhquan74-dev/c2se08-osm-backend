@@ -89,12 +89,11 @@ Route::post('/hard-delete-feedback/{id}', [FeedbackController::class, 'hardDelet
 Route::post('/attach-photos', [AttachPhotoController::class, 'createAttachPhoto']);
 Route::post('/hard-delete-attach-photo/{id}', [AttachPhotoController::class, 'hardDeleteAttachPhoto']);
 
-// need test
-
 // Banner's routes
 Route::post('/banners', [BannerController::class, 'createBanner']);
-Route::post('/hard-delete-banner', [BannerController::class, 'hardDeleteBanner']);
+Route::post('/hard-delete-banner/{id}', [BannerController::class, 'hardDeleteBanner']);
 
+// need test
 // Auth routes
 // Route::post('/register', [UserController::class, 'register']);
 Route::group([

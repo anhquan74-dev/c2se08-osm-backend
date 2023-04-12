@@ -154,11 +154,8 @@ class AppointmentController extends Controller
         ]);
     }
     // Update appointment
-    // handle co  1 file
-    // xoa 1 image - api xoa image trong  attach photo table, xoa image trong serve 
     public function updateAppointment(Request $request)
     {
-        // handle ko file
         if ($request->id) {
             $appointmentUpdate = Appointment::find($request->id);
             if ($appointmentUpdate) {
