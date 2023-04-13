@@ -26,7 +26,7 @@ return new class extends Migration
             $table->bigInteger('clicks')->nullable();
             $table->bigInteger('views')->nullable();
             $table->float('click_rate')->nullable();
-            $table->boolean('is_valid_flag')->nullable();
+            $table->boolean('is_valid')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();

@@ -31,6 +31,6 @@ class Service extends Model
         'total_star',
         'avg_star',
         'number_of_packages',
-        'is_valid_flag',
+        'is_valid',
     ];
 }

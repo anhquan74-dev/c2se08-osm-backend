@@ -87,7 +87,7 @@ class PackageController extends Controller
             'avg_star' => 0,
             'is_negotiable' => false,
             'view_priority' => 0,
-            'is_valid_flag' => false,
+            'is_valid' => false,
         ]);
         return response()->json([
             'data' => $package,
@@ -125,7 +125,7 @@ class PackageController extends Controller
                     'avg_star' => $request->avg_star,
                     'is_negotiable' => $request->is_negotiable,
                     'view_priority' => $request->view_priority,
-                    'is_valid_flag' => $request->is_valid_flag,
+                    'is_valid' => $request->is_valid,
                 ]);
                 return response()->json([
                     'statusCode' => 200,

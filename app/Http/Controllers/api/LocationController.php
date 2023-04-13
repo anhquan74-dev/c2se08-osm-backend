@@ -94,7 +94,7 @@ class LocationController extends Controller
             'ward_name' => $request->ward_name,
             'coords_latitude' => $request->coords_latitude,
             'coords_longitude' => $request->coords_longitude,
-            'is_primary_flag' => false,
+            'is_primary' => false,
         ]);
         return response()->json([
             'data' => $location,
@@ -136,7 +136,7 @@ class LocationController extends Controller
                     'ward_name' => $request->ward_name,
                     'coords_latitude' => $request->coords_latitude,
                     'coords_longitude' => $request->coords_longitude,
-                    'is_primary_flag' => $request->is_primary_flag,
+                    'is_primary' => $request->is_primary,
                 ]);
                 return response()->json([
                     'statusCode' => 200,

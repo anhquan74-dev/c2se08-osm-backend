@@ -13,7 +13,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('customer_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('provider_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->text(' content')->nullable();
+            $table->text('content')->nullable();
             $table->timestamps();
         });
     }

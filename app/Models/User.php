@@ -91,7 +91,7 @@ class User extends Authenticatable implements JWTSubject
         'clicks',
         'views',
         'click_rate',
-        'is_valid_flag',
+        'is_valid',
     ];
 
     protected $hidden = [

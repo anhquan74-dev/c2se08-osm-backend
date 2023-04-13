@@ -12,6 +12,7 @@ use App\Http\Controllers\api\PostController;
 use App\Http\Controllers\api\ServiceController;
 use App\Http\Controllers\api\AttachPhotoController;
 use App\Http\Controllers\api\FavoriteController;
+use App\Http\Controllers\api\MessageController;
 use App\Http\Controllers\api\NotifyController;
 use Illuminate\Support\Facades\Route;
 
@@ -106,6 +107,11 @@ Route::get('/notifies-by-customer/{customer_id}', [NotifyController::class, 'get
 Route::get('/notifies-by-provider/{provider_id}', [NotifyController::class, 'getNotifiesByProviderId']);
 Route::post('/delete-notify-by-customer/{id}', [NotifyController::class, 'deleteNotifyByCustomer']);
 Route::post('/delete-notify-by-provider/{id}', [NotifyController::class, 'deleteNotifyByProvider']);
+
+// Message's routes
+Route::post('/messages', [MessageController::class, 'createMessage']);
+Route::get('/messages-by-customer-provider', [MessageController::class, 'getMessages']);
+Route::post('/hard-delete-message/{id}', [MessageController::class, 'hardDeleteMessage']);
 
 // need test
 // Auth routes
