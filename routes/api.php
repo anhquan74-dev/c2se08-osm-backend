@@ -11,6 +11,7 @@ use App\Http\Controllers\api\PackageController;
 use App\Http\Controllers\api\PostController;
 use App\Http\Controllers\api\ServiceController;
 use App\Http\Controllers\api\AttachPhotoController;
+use App\Http\Controllers\api\FavoriteController;
 use Illuminate\Support\Facades\Route;
 
 // Customer's routes
@@ -92,6 +93,11 @@ Route::post('/hard-delete-attach-photo/{id}', [AttachPhotoController::class, 'ha
 // Banner's routes
 Route::post('/banners', [BannerController::class, 'createBanner']);
 Route::post('/hard-delete-banner/{id}', [BannerController::class, 'hardDeleteBanner']);
+
+// Favorite's routes
+Route::post('/favorites', [FavoriteController::class, 'createFavorite']);
+Route::get('/favorites-by-customer/{customer_id}', [FavoriteController::class, 'getFavoritesByCustomerId']);
+Route::post('/favorites/{id}', [FavoriteController::class, 'hardDeleteFavorite']);
 
 // need test
 // Auth routes
