@@ -22,6 +22,7 @@ class Notify extends Model
     protected $fillable = [
         'customer_id',
         'provider_id',
+        'content',
         'is_cus_deleted',
         'is_prov_deleted',
     ];

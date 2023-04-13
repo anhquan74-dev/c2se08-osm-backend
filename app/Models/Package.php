@@ -31,6 +31,6 @@ class Package extends Model
         'avg_star',
         'is_negotiable',
         'view_priority',
-        'is_valid_flag',
+        'is_valid',
     ];
 }

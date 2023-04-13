@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('logo')->nullable();
             $table->integer('total_provider')->nullable();
             $table->bigInteger('view_priority')->nullable();
-            $table->boolean('is_valid_flag')->nullable();
+            $table->boolean('is_valid')->nullable();
             $table->timestamps();
         });
     }

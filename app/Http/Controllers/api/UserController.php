@@ -96,7 +96,7 @@ class UserController extends Controller
             'birthday' => $request->birthday,
             'gender' => $request->gender,
             'phone_number' => $request->phone_number,
-            'is_valid_flag' => false,
+            'is_valid' => false,
         ]);
         RoleDetailUser::create([
             'user_id' => $customer->id,
@@ -129,7 +129,7 @@ class UserController extends Controller
                     $customerUpdate->birthday = $request->birthday;
                     $customerUpdate->gender = $request->gender;
                     $customerUpdate->phone_number = $request->phone_number;
-                    $customerUpdate->is_valid_flag = $request->is_valid_flag;
+                    $customerUpdate->is_valid = $request->is_valid;
                     $customerUpdate->save();
                     return response()->json([
                         'statusCode' => 200,
@@ -160,7 +160,7 @@ class UserController extends Controller
                     $customerUpdate->gender = $request->gender;
                     $customerUpdate->phone_number = $request->phone_number;
                     $customerUpdate->avatar = $fileName;
-                    $customerUpdate->is_valid_flag = $request->is_valid_flag;
+                    $customerUpdate->is_valid = $request->is_valid;
                     $customerUpdate->save();
                     return response()->json([
                         'statusCode' => 200,
@@ -281,7 +281,7 @@ class UserController extends Controller
             'clicks' => 0,
             'views' => 0,
             'click_rate' => 0,
-            'is_valid_flag' => false,
+            'is_valid' => false,
         ]);
         RoleDetailUser::create([
             'user_id' => $provider->id,
@@ -323,7 +323,7 @@ class UserController extends Controller
                     $providerUpdate->clicks = $request->clicks;
                     $providerUpdate->views = $request->views;
                     $providerUpdate->click_rate = $request->click_rate;
-                    $providerUpdate->is_valid_flag = $request->is_valid_flag;
+                    $providerUpdate->is_valid = $request->is_valid;
                     $providerUpdate->save();
                     return response()->json([
                         'statusCode' => 200,
@@ -362,7 +362,7 @@ class UserController extends Controller
                     $providerUpdate->clicks = $request->clicks;
                     $providerUpdate->views = $request->views;
                     $providerUpdate->click_rate = $request->click_rate;
-                    $providerUpdate->is_valid_flag = $request->is_valid_flag;
+                    $providerUpdate->is_valid = $request->is_valid;
                     $providerUpdate->avatar = $fileName;
                     $providerUpdate->save();
                     return response()->json([

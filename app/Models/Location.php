@@ -26,6 +26,6 @@ class Location extends Model
         'ward_name',
         'coords_latitude',
         'coords_longitude',
-        'is_primary_flag',
+        'is_primary',
     ];
 }

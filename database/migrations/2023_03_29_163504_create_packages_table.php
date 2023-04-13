@@ -19,7 +19,7 @@ return new class extends Migration
             $table->float('avg_star')->nullable();
             $table->boolean('is_negotiable')->nullable();
             $table->bigInteger('view_priority')->nullable();
-            $table->boolean('is_valid_flag')->nullable();
+            $table->boolean('is_valid')->nullable();
             $table->timestamps();
         });
     }

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('ward_name')->nullable();
             $table->decimal('coords_latitude')->nullable();
             $table->decimal('coords_longitude')->nullable();
-            $table->boolean('is_primary_flag')->nullable();
+            $table->boolean('is_primary')->nullable();
             $table->timestamps();
         });
     }

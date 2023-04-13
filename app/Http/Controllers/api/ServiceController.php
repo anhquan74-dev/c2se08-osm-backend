@@ -113,7 +113,7 @@ class ServiceController extends Controller
             'total_star' => 0,
             'avg_star' => 0,
             'number_of_packages' => 0,
-            'is_valid_flag' => false,
+            'is_valid' => false,
         ]);
         return response()->json([
             'data' => $service,
@@ -152,7 +152,7 @@ class ServiceController extends Controller
                     'avg_star' => $request->avg_star,
                     'number_of_packages' => $request->number_of_packages,
                     'is_negotiable' => $request->is_negotiable,
-                    'is_valid_flag' => $request->is_valid_flag,
+                    'is_valid' => $request->is_valid,
                 ]);
                 return response()->json([
                     'statusCode' => 200,

@@ -22,6 +22,6 @@ class Post extends Model
         'author_id',
         'date',
         'tags',
-        'is_valid_flag',
+        'is_valid',
     ];
 }

@@ -93,7 +93,7 @@ class PostController extends Controller
                 'author_id' => $request->author_id,
                 'date' => $request->date,
                 'tags' => $request->tags,
-                'is_valid_flag' => false,
+                'is_valid' => false,
             ]);
             return response()->json([
                 'data' => $post,
@@ -128,7 +128,7 @@ class PostController extends Controller
                     $postUpdate->content = $request->content;
                     $postUpdate->date = $request->date;
                     $postUpdate->tags = $request->tags;
-                    $postUpdate->is_valid_flag = $request->is_valid_flag;
+                    $postUpdate->is_valid = $request->is_valid;
                     $postUpdate->save();
                     return response()->json([
                         'statusCode' => 200,
@@ -159,7 +159,7 @@ class PostController extends Controller
                     $postUpdate->date = $request->date;
                     $postUpdate->tags = $request->tags;
                     $postUpdate->image = $fileName;
-                    $postUpdate->is_valid_flag = $request->is_valid_flag;
+                    $postUpdate->is_valid = $request->is_valid;
                     $postUpdate->save();
                     return response()->json([
                         'statusCode' => 200,

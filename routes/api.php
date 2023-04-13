@@ -11,6 +11,9 @@ use App\Http\Controllers\api\PackageController;
 use App\Http\Controllers\api\PostController;
 use App\Http\Controllers\api\ServiceController;
 use App\Http\Controllers\api\AttachPhotoController;
+use App\Http\Controllers\api\FavoriteController;
+use App\Http\Controllers\api\MessageController;
+use App\Http\Controllers\api\NotifyController;
 use Illuminate\Support\Facades\Route;
 
 // Customer's routes
@@ -92,6 +95,23 @@ Route::post('/hard-delete-attach-photo/{id}', [AttachPhotoController::class, 'ha
 // Banner's routes
 Route::post('/banners', [BannerController::class, 'createBanner']);
 Route::post('/hard-delete-banner/{id}', [BannerController::class, 'hardDeleteBanner']);
+
+// Favorite's routes
+Route::post('/favorites', [FavoriteController::class, 'createFavorite']);
+Route::get('/favorites-by-customer/{customer_id}', [FavoriteController::class, 'getFavoritesByCustomerId']);
+Route::post('/favorites/{id}', [FavoriteController::class, 'hardDeleteFavorite']);
+
+// Notify's routes
+Route::post('/notifies', [NotifyController::class, 'createNotify']);
+Route::get('/notifies-by-customer/{customer_id}', [NotifyController::class, 'getNotifiesByCustomerId']);
+Route::get('/notifies-by-provider/{provider_id}', [NotifyController::class, 'getNotifiesByProviderId']);
+Route::post('/delete-notify-by-customer/{id}', [NotifyController::class, 'deleteNotifyByCustomer']);
+Route::post('/delete-notify-by-provider/{id}', [NotifyController::class, 'deleteNotifyByProvider']);
+
+// Message's routes
+Route::post('/messages', [MessageController::class, 'createMessage']);
+Route::get('/messages-by-customer-provider', [MessageController::class, 'getMessages']);
+Route::post('/hard-delete-message/{id}', [MessageController::class, 'hardDeleteMessage']);
 
 // need test
 // Auth routes

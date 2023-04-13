@@ -25,7 +25,7 @@ return new class extends Migration
             $table->bigInteger('total_star')->nullable();
             $table->float('avg_star')->nullable();
             $table->bigInteger('number_of_packages')->nullable();
-            $table->boolean('is_valid_flag')->nullable();
+            $table->boolean('is_valid')->nullable();
             $table->timestamps();
         });
     }

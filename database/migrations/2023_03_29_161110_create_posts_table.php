@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->timestamp('date')->nullable();
             $table->string('tags')->nullable();
-            $table->boolean('is_valid_flag')->nullable();
+            $table->boolean('is_valid')->nullable();
             $table->timestamps();
         });
     }

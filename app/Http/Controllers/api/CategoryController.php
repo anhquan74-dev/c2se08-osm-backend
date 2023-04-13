@@ -66,7 +66,7 @@ class CategoryController extends Controller
                 'logo' => $fileName,
                 'total_provider' => 0,
                 'view_priority' => 0,
-                'is_valid_flag' => false,
+                'is_valid' => false,
             ]);
             return response()->json([
                 'data' => $category,
@@ -99,7 +99,7 @@ class CategoryController extends Controller
                     $categoryUpdate->name = $request->name;
                     $categoryUpdate->total_provider = $request->total_provider;
                     $categoryUpdate->view_priority = $request->view_priority;
-                    $categoryUpdate->is_valid_flag = $request->is_valid_flag;
+                    $categoryUpdate->is_valid = $request->is_valid;
                     $categoryUpdate->save();
                     return response()->json([
                         'statusCode' => 200,
@@ -129,7 +129,7 @@ class CategoryController extends Controller
                     $categoryUpdate->logo = $fileName;
                     $categoryUpdate->total_provider = $request->total_provider;
                     $categoryUpdate->view_priority = $request->view_priority;
-                    $categoryUpdate->is_valid_flag = $request->is_valid_flag;
+                    $categoryUpdate->is_valid = $request->is_valid;
                     $categoryUpdate->save();
                     return response()->json([
                         'statusCode' => 200,
