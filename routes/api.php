@@ -12,6 +12,7 @@ use App\Http\Controllers\api\PostController;
 use App\Http\Controllers\api\ServiceController;
 use App\Http\Controllers\api\AttachPhotoController;
 use App\Http\Controllers\api\FavoriteController;
+use App\Http\Controllers\api\NotifyController;
 use Illuminate\Support\Facades\Route;
 
 // Customer's routes
@@ -98,6 +99,13 @@ Route::post('/hard-delete-banner/{id}', [BannerController::class, 'hardDeleteBan
 Route::post('/favorites', [FavoriteController::class, 'createFavorite']);
 Route::get('/favorites-by-customer/{customer_id}', [FavoriteController::class, 'getFavoritesByCustomerId']);
 Route::post('/favorites/{id}', [FavoriteController::class, 'hardDeleteFavorite']);
+
+// Notify's routes
+Route::post('/notifies', [NotifyController::class, 'createNotify']);
+Route::get('/notifies-by-customer/{customer_id}', [NotifyController::class, 'getNotifiesByCustomerId']);
+Route::get('/notifies-by-provider/{provider_id}', [NotifyController::class, 'getNotifiesByProviderId']);
+Route::post('/delete-notify-by-customer/{id}', [NotifyController::class, 'deleteNotifyByCustomer']);
+Route::post('/delete-notify-by-provider/{id}', [NotifyController::class, 'deleteNotifyByProvider']);
 
 // need test
 // Auth routes

@@ -17,8 +17,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('customer_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('provider_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->boolean('is_cus_deleted');
-            $table->boolean('is_prov_deleted');
+            $table->string('content')->nullable();
+            $table->boolean('is_cus_deleted')->nullable();
+            $table->boolean('is_prov_deleted')->nullable();
             $table->timestamps();
         });
     }
