@@ -35,7 +35,6 @@ class Appointment extends Model
     protected $fillable = [
         'package_id',
         'customer_id',
-        'attach_photos',
         'note_for_provider',
         'location',
         'date',
@@ -45,6 +44,5 @@ class Appointment extends Model
         'offer_date',
         'complete_date',
         'cancel_date',
-        'feedback_id',
     ];
 }
