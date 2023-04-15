@@ -17,7 +17,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('package_id')->nullable()->constrained('packages')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('customer_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->string('attach_photos')->nullable();
             $table->string('note_for_provider')->nullable();
             $table->string('location')->nullable();
             $table->timestamp('date')->nullable();
@@ -27,7 +26,6 @@ return new class extends Migration
             $table->timestamp('complete_date')->nullable();
             $table->timestamp('cancel_date')->nullable();
             $table->timestamp('offer_date')->nullable();
-            $table->bigInteger('feedback_id')->nullable();
             $table->timestamps();
         });
     }
