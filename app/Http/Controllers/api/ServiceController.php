@@ -79,11 +79,12 @@ class ServiceController extends Controller
     public function createNewService(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'category_id' => 'required|numeric',
-            'provider_id' => 'required|numeric',
-            'avg_price' => 'required|numeric',
-            'max_price' => 'required|numeric',
-            'min_price' => 'required|numeric',
+            'category_id' => 'required|numeric|integer',
+            'provider_id' => 'required|numeric|integer',
+            'avg_price' => 'numeric|integer',
+            'max_price' => 'numeric|integer',
+            'min_price' => 'numeric|integer',
+            'is_negotiable' => 'integer|between:0,1',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors());
@@ -128,13 +129,15 @@ class ServiceController extends Controller
             $serviceUpdate = Service::find($request->id);
             if ($serviceUpdate) {
                 $validator = Validator::make($request->all(), [
-                    'avg_price' => 'required|numeric',
-                    'max_price' => 'required|numeric',
-                    'min_price' => 'required|numeric',
-                    'total_rate' => 'required|numeric',
-                    'total_star' => 'required|numeric',
-                    'avg_star' => 'required|numeric',
-                    'number_of_packages' => 'required|numeric',
+                    'avg_price' => 'numeric|integer',
+                    'max_price' => 'numeric|integer',
+                    'min_price' => 'numeric|integer',
+                    'is_negotiable' => 'integer|between:0,1',
+                    'total_rate' => 'numeric|integer',
+                    'total_star' => 'numeric|integer',
+                    'avg_star' => 'numeric',
+                    'number_of_packages' => 'numeric|integer',
+                    'is_valid' => 'integer|between:0,1'
                 ]);
                 if ($validator->fails()) {
                     return response()->json([

@@ -90,6 +90,7 @@ class AppointmentController extends Controller
             'location' => 'string|min:2|max:255',
             'price' => 'required|numeric',
             'price_unit' => 'string|min:2|max:255',
+            'date' => 'date_format:Y-m-d H:i:s',
             'status' => 'string|min:2|max:255',
             $input_data, [
                 'attach_photos.*' => 'required|mimes:jpg,jpeg,png,bmp,gif,svg|max:2048'

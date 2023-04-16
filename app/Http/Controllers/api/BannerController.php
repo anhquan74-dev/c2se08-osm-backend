@@ -15,7 +15,7 @@ class BannerController extends Controller
     public function createBanner(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'provider_id' => 'required|numeric',
+            'provider_id' => 'required|numeric|integer',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
         if ($validator->fails()) {

@@ -62,7 +62,7 @@ class FeedbackController extends Controller
     public function createNewFeedback(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'appointment_id' => 'required|numeric',
+            'appointment_id' => 'required|numeric|integer',
             'comment' => 'required|string|min:2|max:255',
             'reply' => 'string|min:2|max:255',
         ]);
@@ -97,7 +97,8 @@ class FeedbackController extends Controller
                 $validator = Validator::make($request->all(), [
                     'comment' => 'string|min:2|max:255',
                     'reply' => 'string|min:2|max:255',
-                    'star' => 'numeric',
+                    'star' => 'numeric|integer',
+                    'reply_at' => 'date'
                 ]);
                 if ($validator->fails()) {
                     return response()->json([

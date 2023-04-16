@@ -63,9 +63,11 @@ class PackageController extends Controller
     public function createNewPackage(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'service_id' => 'required|numeric',
+            'service_id' => 'required|numeric|integer',
             'name' => 'required|string|min:2|max:255',
-            'price' => 'required|numeric',
+            'description' => 'string|max:500',
+            'price' => 'required|numeric|integer',
+            'is_negotiable' => 'integer|between:0,1',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors());
@@ -102,12 +104,16 @@ class PackageController extends Controller
             $packageUpdate = Package::find($request->id);
             if ($packageUpdate) {
                 $validator = Validator::make($request->all(), [
-                    'name' => 'required|string|min:2|max:255',
-                    'price' => 'required|numeric',
-                    'total_rate' => 'required|numeric',
-                    'total_star' => 'required|numeric',
-                    'avg_star' => 'required|numeric',
-                    'view_priority' => 'required|numeric',
+                    'name' => 'string|min:2|max:255',
+                    'description' => 'string|max:500',
+                    'price' => 'numeric|integer',
+                    'is_negotiable' => 'integer|between:0,1',
+                    'total_rate' => 'numeric|integer',
+                    'total_star' => 'numeric|integer',
+                    'avg_star' => 'numeric',
+                    'is_negotiable' => 'integer|between:0,1',
+                    'view_priority' => 'numeric',
+                    'is_valid' => 'integer|between:0,1',
                 ]);
                 if ($validator->fails()) {
                     return response()->json([

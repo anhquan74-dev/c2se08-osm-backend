@@ -85,6 +85,7 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
             'full_name' => 'required|string|min:2|max:255',
+            'birthday' => 'date_format:Y-m-d H:i:s',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors());
@@ -117,6 +118,7 @@ class UserController extends Controller
                 if ($request->file('avatar') == null) {
                     $validatorUpdate = Validator::make($request->all(), [
                         'full_name' => 'string|min:2|max:255',
+                        'birthday' => 'date_format:Y-m-d H:i:s',
                     ]);
                     if ($validatorUpdate->fails()) {
                         return response()->json([
@@ -139,6 +141,7 @@ class UserController extends Controller
                 if ($request->hasFile('avatar')) {
                     $validatorUpdate = Validator::make($request->all(), [
                         'full_name' => 'string|min:2|max:255',
+                        'birthday' => 'date_format:Y-m-d H:i:s',
                         'avatar' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                     ]);
                     if ($validatorUpdate->fails()) {
@@ -262,6 +265,8 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
             'full_name' => 'required|string|min:2|max:255',
+            'birthday' => 'date_format:Y-m-d H:i:s',
+            'introduction' => 'string|max:500',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors());
@@ -302,6 +307,17 @@ class UserController extends Controller
                 if ($request->file('avatar') == null) {
                     $validatorUpdate = Validator::make($request->all(), [
                         'full_name' => 'string|min:2|max:255',
+                        'birthday' => 'date_format:Y-m-d H:i:s',
+                        'introduction' => 'string|max:500',
+                        'is_favorite' => 'integer|between:0,1',
+                        'is_working' => 'integer|between:0,1',
+                        'total_rate' => 'numeric|integer',
+                        'total_star' => 'numeric|integer',
+                        'avg_star' => 'numeric',
+                        'clicks' => 'numeric|integer',
+                        'views' => 'numeric|integer',
+                        'click_rate' => 'numeric',
+                        'is_valid' => 'integer|between:0,1'
                     ]);
                     if ($validatorUpdate->fails()) {
                         return response()->json([
@@ -334,6 +350,17 @@ class UserController extends Controller
                     $validatorUpdate = Validator::make($request->all(), [
                         'full_name' => 'string|min:2|max:255',
                         'avatar' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                        'birthday' => 'date_format:Y-m-d H:i:s',
+                        'introduction' => 'string|max:500',
+                        'is_favorite' => 'integer|between:0,1',
+                        'is_working' => 'integer|between:0,1',
+                        'total_rate' => 'numeric|integer',
+                        'total_star' => 'numeric|integer',
+                        'avg_star' => 'numeric',
+                        'clicks' => 'numeric|integer',
+                        'views' => 'numeric|integer',
+                        'click_rate' => 'numeric',
+                        'is_valid' => 'integer|between:0,1'
                     ]);
                     if ($validatorUpdate->fails()) {
                         return response()->json([
