@@ -25,6 +25,14 @@ class DatabaseSeeder extends Seeder
             RoleDetailsSeeder::class,
             RoleDetailUserSeeder::class,
             LocationSeeder::class,
+            CategorySeeder::class,
+            ServiceSeeder::class,
+            PackageSeeder::class,
+            AppointmentSeeder::class,
+            FeedbackSeeder::class,
+            FavoriteSeeder::class,
+            NotifySeeder::class,
+            MessageSeeder::class
         ]);
     }
 }
