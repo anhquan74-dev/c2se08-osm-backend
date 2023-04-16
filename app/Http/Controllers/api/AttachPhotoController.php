@@ -16,7 +16,7 @@ class AttachPhotoController extends Controller
     public function createAttachPhoto(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'appointment_id' => 'required|numeric',
+            'appointment_id' => 'required|numeric|integer',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
         if ($validator->fails()) {

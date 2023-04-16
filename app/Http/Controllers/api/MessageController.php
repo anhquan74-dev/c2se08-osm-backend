@@ -15,8 +15,9 @@ class MessageController extends Controller
     public function createMessage(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'provider_id' => 'required|numeric',
-            'customer_id' => 'required|numeric',
+            'provider_id' => 'required|numeric|integer',
+            'customer_id' => 'required|numeric|integer',
+            'content' => 'string|max:500'
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors());
@@ -56,8 +57,8 @@ class MessageController extends Controller
             ]);
         }
         $validator = Validator::make($request->all(), [
-            'provider_id' => 'required|numeric',
-            'customer_id' => 'required|numeric',
+            'provider_id' => 'required|numeric|integer',
+            'customer_id' => 'required|numeric|integer',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors());

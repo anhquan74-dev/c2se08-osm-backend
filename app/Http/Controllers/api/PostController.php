@@ -65,8 +65,10 @@ class PostController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|min:2|max:255',
-            'author_id' => 'required|numeric',
+            'content' => 'string|max:500',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'author_id' => 'required|numeric|integer',
+            'date' => 'date_format:Y-m-d H:i:s',
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -116,6 +118,9 @@ class PostController extends Controller
                 if ($request->file('image') == null) {
                     $validatorUpdate = Validator::make($request->all(), [
                         'title' => 'string|min:2|max:255',
+                        'content' => 'string|max:500',
+                        'date' => 'date_format:Y-m-d H:i:s',
+                        'is_valid' => 'integer|between:0,1'
                     ]);
                     if ($validatorUpdate->fails()) {
                         return response()->json([
@@ -138,6 +143,9 @@ class PostController extends Controller
                 if ($request->hasFile('image')) {
                     $validatorUpdate = Validator::make($request->all(), [
                         'title' => 'string|min:2|max:255',
+                        'content' => 'string|max:500',
+                        'date' => 'date_format:Y-m-d H:i:s',
+                        'is_valid' => 'integer|between:0,1',
                         'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                     ]);
                     if ($validatorUpdate->fails()) {

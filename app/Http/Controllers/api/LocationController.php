@@ -62,16 +62,16 @@ class LocationController extends Controller
     public function createNewLocation(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required|numeric',
-            'address' => 'required|string|min:2|max:255',
-            'province_id' => 'required|numeric',
-            'province_name' => 'required|string|min:2|max:255',
-            'district_id' => 'required|numeric',
-            'district_name' => 'required|string|min:2|max:255',
-            'ward_id' => 'required|numeric',
-            'ward_name' => 'required|string|min:2|max:255',
-            'coords_latitude' => 'required|numeric|between:0,99.99',
-            'coords_longitude' => 'required|numeric|between:0,99.99',
+            'user_id' => 'required|numeric|integer',
+            'address' => 'string|min:2|max:255',
+            'province_id' => 'numeric|integer',
+            'province_name' => 'string|min:2|max:255',
+            'district_id' => 'numeric|integer',
+            'district_name' => 'string|min:2|max:255',
+            'ward_id' => 'numeric|integer',
+            'ward_name' => 'string|min:2|max:255',
+            'coords_latitude' => 'numeric|between:0,99.99',
+            'coords_longitude' => 'numeric|between:0,99.99',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors());
@@ -109,15 +109,16 @@ class LocationController extends Controller
             $locationUpdate = Location::find($request->id);
             if ($locationUpdate) {
                 $validator = Validator::make($request->all(), [
-                    'address' => 'required|string|min:2|max:255',
-                    'province_id' => 'required|numeric',
-                    'province_name' => 'required|string|min:2|max:255',
-                    'district_id' => 'required|numeric',
-                    'district_name' => 'required|string|min:2|max:255',
-                    'ward_id' => 'required|numeric',
-                    'ward_name' => 'required|string|min:2|max:255',
-                    'coords_latitude' => 'required|numeric|between:0,99.99',
-                    'coords_longitude' => 'required|numeric|between:0,99.99',
+                    'address' => 'string|min:2|max:255',
+                    'province_id' => 'numeric|integer',
+                    'province_name' => 'string|min:2|max:255',
+                    'district_id' => 'numeric|integer',
+                    'district_name' => 'string|min:2|max:255',
+                    'ward_id' => 'numeric|integer',
+                    'ward_name' => 'string|min:2|max:255',
+                    'coords_latitude' => 'numeric|between:0,99.99',
+                    'coords_longitude' => 'numeric|between:0,99.99',
+                    'is_primary' => 'integer|between:0,1',
                 ]);
                 if ($validator->fails()) {
                     return response()->json([

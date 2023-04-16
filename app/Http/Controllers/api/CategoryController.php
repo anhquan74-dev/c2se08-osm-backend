@@ -88,6 +88,9 @@ class CategoryController extends Controller
                 if ($request->file('logo') == null) {
                     $validatorUpdate = Validator::make($request->all(), [
                         'name' => 'string|min:2|max:255',
+                        'total_provider' => 'numeric|integer',
+                        'view_priority' => 'numeric|integer',
+                        'is_valid' => 'integer|between:0,1'
                     ]);
                     if ($validatorUpdate->fails()) {
                         return response()->json([
@@ -110,6 +113,9 @@ class CategoryController extends Controller
                     $validatorUpdate = Validator::make($request->all(), [
                         'name' => 'string|min:2|max:255',
                         'logo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                        'total_provider' => 'numeric|integer',
+                        'view_priority' => 'numeric|integer',
+                        'is_valid' => 'integer|between:0,1'
                     ]);
                     if ($validatorUpdate->fails()) {
                         return response()->json([

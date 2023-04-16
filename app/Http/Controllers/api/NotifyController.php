@@ -13,8 +13,8 @@ class NotifyController extends Controller
     public function createNotify(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'provider_id' => 'required|numeric',
-            'customer_id' => 'required|numeric',
+            'provider_id' => 'required|numeric|integer',
+            'customer_id' => 'required|numeric|integer',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors());
