@@ -1,15 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\api;
 
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Validator;
 
-class AuthController extends Controller
+class AuthController extends BaseController
 {
 	public function __construct()
 	{
@@ -26,6 +24,7 @@ class AuthController extends Controller
 		if ($validator->fails()) {
 			return response()->json($validator->errors());
 		}
+		$ttl = config('jwt.ttl');
 		if (!$token = auth()->attempt($validator->validated())) {
 			return response()->json([
 				'statusCode' => 404,
@@ -33,11 +32,10 @@ class AuthController extends Controller
 			]);
 		} else {
 			$userProfile = User::where('id', auth()->user()->id)->first();
-			dd($userProfile);
-			return $this->respondWithToken($token);
+			$refreshToken = auth()->setTTL(config('jwt.refresh_ttl'))->claims([ 'type' => 'refresh'])->attempt($validator->validated());
+			return $this->responseWithToken($token, ($ttl * 60),$refreshToken,$userProfile);
 		}
 	}
-
 
 	public function me()
 	{
@@ -56,14 +54,5 @@ class AuthController extends Controller
 	public function refresh()
 	{
 		return $this->respondWithToken(auth()->refresh());
-	}
-
-	protected function respondWithToken($token)
-	{
-		return response()->json([
-			'access_token' => $token,
-			'token_type' => 'bearer',
-			'expires_in' => auth()->factory()->getTTL() * 60000
-		]);
 	}
 }
