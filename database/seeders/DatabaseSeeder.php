@@ -32,7 +32,9 @@ class DatabaseSeeder extends Seeder
             FeedbackSeeder::class,
             FavoriteSeeder::class,
             NotifySeeder::class,
-            MessageSeeder::class
+            MessageSeeder::class,
+	        RoleSeeder::class,
+	        UserSyncRoleSeeder::class
         ]);
     }
 }
