@@ -116,12 +116,22 @@ Route::post('/hard-delete-message/{id}', [MessageController::class, 'hardDeleteM
 // need test
 // Auth routes
 // Route::post('/register', [UserController::class, 'register']);
-Route::group([
-	'middleware' => 'api',
-	'prefix'     => 'auth',
-], function ($router) {
-	Route::post('login', [AuthController::class, 'login']);
-	Route::post('logout', [AuthController::class, 'logout']);
-	Route::post('refresh', [AuthController::class, 'refresh']);
-	Route::post('me', [AuthController::class, 'me']);
-});
+Route::post( '/login', [ AuthController::class, 'login' ] );
+Route::post( '/logout', [ AuthController::class, 'logout' ] );
+
+Route::middleware( [
+	'admin.auth',
+] )->group( function () {
+	Route::post('/messages', [MessageController::class, 'createMessage']);
+
+} );
+
+Route::middleware( [
+	'provider.auth',
+] )->group( function () {
+} );
+
+Route::middleware( [
+	'customer.auth',
+] )->group( function () {
+} );
