@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\api\AppointmentController;
+use App\Http\Controllers\api\ImageController;
 use App\Http\Controllers\api\UserController;
 use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\BannerController;
@@ -116,12 +117,19 @@ Route::post('/hard-delete-message/{id}', [MessageController::class, 'hardDeleteM
 // need test
 // Auth routes
 // Route::post('/register', [UserController::class, 'register']);
-Route::group([
-	'middleware' => 'api',
-	'prefix'     => 'auth',
-], function ($router) {
-	Route::post('login', [AuthController::class, 'login']);
-	Route::post('logout', [AuthController::class, 'logout']);
-	Route::post('refresh', [AuthController::class, 'refresh']);
-	Route::post('me', [AuthController::class, 'me']);
-});
+//Route::group([
+//	'middleware' => 'api',
+//	'prefix'     => 'auth',
+//], function ($router) {
+//	Route::post('login', [AuthController::class, 'login']);
+//	Route::post('logout', [AuthController::class, 'logout']);
+//	Route::post('refresh', [AuthController::class, 'refresh']);
+//	Route::post('me', [AuthController::class, 'me']);
+//});
+
+
+//demo images
+Route::post('upload', [ImageController::class, 'uploadImage']);
+Route::post('{id}/get', [ImageController::class, 'getImageUrl']);
+Route::post('{id}/update', [ImageController::class, 'updateImage']);
+Route::post('{id}/delete', [ImageController::class, 'delete']);

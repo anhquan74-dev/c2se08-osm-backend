@@ -196,6 +196,7 @@ return [
         App\Providers\RouteServiceProvider::class,
 	    Spatie\Permission\PermissionServiceProvider::class,
 	    Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
+	    CloudinaryLabs\CloudinaryLaravel\CloudinaryServiceProvider::class,
     ],
 
     /*
@@ -211,6 +212,7 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         // 'ExampleClass' => App\Example\ExampleClass::class,
+	    'Cloudinary' => CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::class,
     ])->toArray(),
 
 ];
