@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\api\AppointmentController;
+use App\Http\Controllers\api\ImageController;
 use App\Http\Controllers\api\UserController;
 use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\BannerController;
@@ -135,3 +136,10 @@ Route::middleware( [
 	'customer.auth',
 ] )->group( function () {
 } );
+
+
+//demo images
+Route::post('upload', [ImageController::class, 'uploadImage']);
+Route::post('{id}/get', [ImageController::class, 'getImageUrl']);
+Route::post('{id}/update', [ImageController::class, 'updateImage']);
+Route::post('{id}/delete', [ImageController::class, 'delete']);
