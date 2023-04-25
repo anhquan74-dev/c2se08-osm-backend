@@ -44,16 +44,16 @@ class PostController extends Controller
             'message' => 'Missing post id parameter!',
         ]);
     }
-    // Get all posts by author_id
-    public function getAllPostsByAuthorId(Request $request)
+    // Get all posts by category_id
+    public function getAllPostsByCategoryId(Request $request)
     {
-        if (!$request->author_id) {
+        if (!$request->category_id) {
             return response()->json([
                 'statusCode' => 400,
-                'message' => 'Missing author_id parameter!',
+                'message' => 'Missing category_id parameter!',
             ]);
         }
-        $posts = Post::where('author_id', '=', $request->author_id)->get();
+        $posts = Post::where('category_id', '=', $request->category_id)->get();
         return response()->json([
             'data' => $posts,
             'statusCode' => 200,

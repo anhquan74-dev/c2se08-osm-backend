@@ -79,6 +79,22 @@ class AppointmentController extends Controller
             'message' => 'Get all appointments successful!',
         ]);
     }
+    // Get all appointments by status
+    public function getAllAppointmentsByStatus(Request $request)
+    {
+        if (!$request->status) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Missing status parameter!',
+            ]);
+        }
+        $appointments = Appointment::where('status', '=', $request->status)->with('attachPhoto')->get();
+        return response()->json([
+            'data' => $appointments,
+            'statusCode' => 200,
+            'message' => 'Get all appointments successful!',
+        ]);
+    }
     // Create a new appointment
     public function createNewAppointment(Request $request)
     {

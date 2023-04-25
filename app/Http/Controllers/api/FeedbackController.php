@@ -58,6 +58,54 @@ class FeedbackController extends Controller
             'message' => 'Get all feedbacks successful!',
         ]);
     }
+    // Get all feedbacks by service_id
+    public function getAllFeedbacksByServiceId(Request $request)
+    {
+        if ($request->service_id) {
+            $feedbacks = Feedback::join('appointments', 'appointments.id', '=', 'feedback.appointment_id')
+                ->join('packages', 'packages.id', '=', 'appointments.package_id')
+                ->join('services', 'services.id', '=', 'packages.service_id')
+                ->where('services.id', '=', $request->service_id)
+                ->select('feedback.*')
+                ->get();
+            if ($feedbacks->isEmpty()) {
+                return response()->json([
+                    'statusCode' => 404,
+                    'message' => 'Not found!',
+                ]);
+            }
+            return response()->json([
+                'data' => $feedbacks,
+                'statusCode' => 200,
+                'message' => 'Get all feedbacks info by service_id successfully!',
+            ]);
+        }
+        return response()->json([
+            'statusCode' => 400,
+            'message' => 'Missing service id parameter!',
+        ]);
+    }
+    // Get total feedbacks by provider_id
+    public function getTotalFeedbackByProviderId(Request $request)
+    {
+        if ($request->provider_id) {
+            $feedbacksCount = Feedback::join('appointments', 'appointments.id', '=', 'feedback.appointment_id')
+                ->join('packages', 'packages.id', '=', 'appointments.package_id')
+                ->join('services', 'services.id', '=', 'packages.service_id')
+                ->join('users', 'services.provider_id', '=', 'users.id')
+                ->where('services.provider_id', '=', $request->provider_id)
+                ->count();
+            return response()->json([
+                'data' => $feedbacksCount,
+                'statusCode' => 200,
+                'message' => 'Count all feedbacks by provider_id successfully!',
+            ]);
+        }
+        return response()->json([
+            'statusCode' => 400,
+            'message' => 'Missing provider id parameter!',
+        ]);
+    }
     // Create a new feedback
     public function createNewFeedback(Request $request)
     {

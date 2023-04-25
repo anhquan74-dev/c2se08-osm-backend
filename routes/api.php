@@ -42,7 +42,7 @@ Route::post('/hard-delete-category/{id}', [CategoryController::class, 'hardDelet
 // Post's routes
 Route::get('/posts', [PostController::class, 'getAllPosts']);
 Route::get('/posts/{id}', [PostController::class, 'getPostById']);
-Route::get('/posts-by-author/{author_id}', [PostController::class, 'getAllPostsByAuthorId']);
+Route::get('/posts-by-category/{category_id}', [PostController::class, 'getAllPostsByCategoryId']);
 Route::post('/posts', [PostController::class, 'createNewPost']);
 Route::post('/posts/{id}', [PostController::class, 'updatePost']);
 Route::post('/hard-delete-post/{id}', [PostController::class, 'hardDeletePost']);
@@ -74,6 +74,7 @@ Route::post('/hard-delete-package/{id}', [PackageController::class, 'hardDeleteP
 
 // Appointment's routes
 Route::get('/appointments', [AppointmentController::class, 'getAllAppointments']);
+Route::get('/appointments-by-status/{status}', [AppointmentController::class, 'getAllAppointmentsByStatus']);
 Route::get('/appointments/{id}', [AppointmentController::class, 'getAppointmentById']);
 Route::get('/appointments-by-customer/{customer_id}', [AppointmentController::class, 'getAllAppointmentsByCustomerId']);
 Route::get('/appointments-by-package/{package_id}', [AppointmentController::class, 'getAllAppointmentsByPackageId']);
@@ -84,10 +85,13 @@ Route::post('/hard-delete-appointment/{id}', [AppointmentController::class, 'har
 // Feedback's routes
 Route::get('/feedbacks', [FeedbackController::class, 'getAllFeedbacks']);
 Route::get('/feedbacks/{id}', [FeedbackController::class, 'getFeedbackById']);
+Route::get('/feedbacks-provider-count/{provider_id}', [FeedbackController::class, 'getTotalFeedbackByProviderId']);
+Route::get('/feedbacks-by-service/{service_id}', [FeedbackController::class, 'getAllFeedbacksByServiceId']);
 Route::get('/feedbacks-by-appointment/{appointment_id}', [FeedbackController::class, 'getAllFeedbacksByAppointmentId']);
 Route::post('/feedbacks', [FeedbackController::class, 'createNewFeedback']);
 Route::post('/feedbacks/{id}', [FeedbackController::class, 'updateFeedback']);
 Route::post('/hard-delete-feedback/{id}', [FeedbackController::class, 'hardDeleteFeedback']);
+
 
 // Attach photo's routes
 Route::post('/attach-photos', [AttachPhotoController::class, 'createAttachPhoto']);
@@ -117,25 +121,24 @@ Route::post('/hard-delete-message/{id}', [MessageController::class, 'hardDeleteM
 // need test
 // Auth routes
 // Route::post('/register', [UserController::class, 'register']);
-Route::post( '/login', [ AuthController::class, 'login' ] );
-Route::post( '/logout', [ AuthController::class, 'logout' ] );
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout']);
 
-Route::middleware( [
+Route::middleware([
 	'admin.auth',
-] )->group( function () {
+])->group(function () {
 	Route::post('/messages', [MessageController::class, 'createMessage']);
+});
 
-} );
-
-Route::middleware( [
+Route::middleware([
 	'provider.auth',
-] )->group( function () {
-} );
+])->group(function () {
+});
 
-Route::middleware( [
+Route::middleware([
 	'customer.auth',
-] )->group( function () {
-} );
+])->group(function () {
+});
 
 
 //demo images

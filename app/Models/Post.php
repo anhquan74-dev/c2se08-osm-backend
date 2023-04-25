@@ -10,16 +10,16 @@ class Post extends Model
 {
     use HasFactory;
     // Relationship
-    // Belong to User Table
-    public function user(): BelongsTo
+    // Belong to Category Table
+    public function category(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'author_id');
+        return $this->belongsTo(Category::class, 'category_id');
     }
     protected $fillable = [
         'title',
         'content',
         'image',
-        'author_id',
+        'category_id',
         'date',
         'tags',
         'is_valid',

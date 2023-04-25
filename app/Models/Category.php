@@ -15,6 +15,11 @@ class Category extends Model
     {
         return $this->hasMany(Service::class, 'category_id');
     }
+    // 1 - n with post
+    public function post(): HasMany
+    {
+        return $this->hasMany(Post::class, 'category_id');
+    }
     protected $fillable = [
         'name',
         'logo',
