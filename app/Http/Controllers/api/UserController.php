@@ -230,25 +230,18 @@ class UserController extends Controller
     public function getProviderById(Request $request)
     {
         if ($request->id) {
-            $providerInfo = DB::table('users')
-                ->join('role_detail_users', 'users.id', '=', 'role_detail_users.user_id')
+            $providerWithServiceBanner = User::join('role_detail_users', 'users.id', '=', 'role_detail_users.user_id')
                 ->join('role_details', 'role_details.id', '=', 'role_detail_users.role_details_id')
-                ->where('users.id', $request->id)
-                ->where('role_detail_users.role_details_id', 2)
-                ->get()->map(function ($providerInfo) {
-                    unset($providerInfo->email_verified_at);
-                    unset($providerInfo->remember_token);
-                    unset($providerInfo->password);
-                    return $providerInfo;
-                });
-            if ($providerInfo->isEmpty()) {
+                ->where('role_detail_users.role_details_id', '=', 2)
+                ->where('users.id', '=', $request->id)->with('service')->with('banner')->get();
+            if ($providerWithServiceBanner->isEmpty()) {
                 return response()->json([
                     'statusCode' => 404,
                     'message' => 'Not found!',
                 ]);
             }
             return response()->json([
-                'data' => $providerInfo[0],
+                'data' => $providerWithServiceBanner,
                 'statusCode' => 200,
                 'message' => 'Get provider info successfully!',
             ]);
