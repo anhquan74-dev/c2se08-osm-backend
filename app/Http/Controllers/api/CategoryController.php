@@ -184,6 +184,29 @@ class CategoryController extends Controller
     // Searching, paginating and sorting categories
     public function searchPaginationCategories(Request $request)
     {
-        dd(request('q'));
+	    $sort   = $request->sort;
+	    $filter = $request->filter;
+	    $limit  = $request->limit ?? 10;
+	    $page   = $request->page ?? 1;
+	    $categories = Category::all();
+	    if ( $filter ) {
+		    $this->_filterCategories( $categories, $filter );
+	    }
+	    if ( $sort ) {
+		    foreach ( $sort as $sortArray ) {
+			    $categories->orderBy( $sortArray['sort_by'], $sortArray['sort_dir'] );
+		    }
+	    }
+	    return $categories->paginate( $limit, [ '*' ], 'page', $page );
     }
+
+	private function _filterCategories( &$categories, $filter){
+		if ( isset( $filter['name'] ) ) {
+			$categories->where( 'name', 'LIKE', '%' . $filter['name'] . '%' );
+		}
+
+		if ( isset( $filter['is_valid'] ) ) {
+			$categories->where( 'is_valid', $filter['is_valid'] );
+		}
+	}
 }
