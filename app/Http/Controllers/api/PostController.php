@@ -222,7 +222,7 @@ class PostController extends Controller
 	    $page   = $request->page ?? 1;
 	    $posts = Post::all();
 	    if ( $filter ) {
-		    $this->_filterPost( $posts, $filter );
+		    $posts = $this->_filterPost( $posts, $filter );
 	    }
 	    if ( $sort ) {
 		    foreach ( $sort as $sortArray ) {
@@ -244,5 +244,6 @@ class PostController extends Controller
 		if ( isset( $filter['is_valid'] ) ) {
 			$posts->where( 'is_valid', $filter['is_valid'] );
 		}
+		return $posts;
 	}
 }

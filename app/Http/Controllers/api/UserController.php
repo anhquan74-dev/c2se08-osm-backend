@@ -215,11 +215,11 @@ class UserController extends Controller
 		$filter = $request->filter;
 		$limit  = $request->limit ?? 10;
 		$page   = $request->page ?? 1;
-		$user   = User::with(['roleDetails','locations'])->whereHas('roleDetails', function ($query) {
+		$user   = User::with(['roleDetails','location'])->whereHas('roleDetails', function ($query) {
 			return $query->where('role_details_id', '=', 3);
 		});
 		if ( $filter ) {
-			$this->_filterCustomer( $user, $filter );
+			$user = $this->_filterCustomer( $user, $filter );
 		}
 		if ( $sort ) {
 			foreach ( $sort as $sortArray ) {
@@ -241,6 +241,7 @@ class UserController extends Controller
 		if ( isset( $filter['is_valid'] ) ) {
 			$users->where( 'is_valid', $filter['is_valid'] );
 		}
+		return $users;
 	}
     // Get all provider
     public function getAllProviders()
@@ -465,11 +466,11 @@ class UserController extends Controller
 	    $filter = $request->filter;
 	    $limit  = $request->limit ?? 10;
 	    $page   = $request->page ?? 1;
-	    $providers = User::with(['roleDetails','locations'])->whereHas('roleDetails', function ($query) {
+	    $providers = User::with(['roleDetails','location'])->whereHas('roleDetails', function ($query) {
 		    return $query->where('role_details_id', '=', 2);
 	    });
 	    if ( $filter ) {
-		    $this->_filterProvider( $providers, $filter );
+		    $providers = $this->_filterProvider( $providers, $filter );
 	    }
 	    if ( $sort ) {
 		    foreach ( $sort as $sortArray ) {
@@ -510,6 +511,7 @@ class UserController extends Controller
 		if ( isset( $filter['is_valid'] ) ) {
 			$providers->where( 'is_valid', $filter['is_valid'] );
 		}
+		return $providers;
 	}
 
 }

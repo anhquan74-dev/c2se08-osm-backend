@@ -190,7 +190,7 @@ class CategoryController extends Controller
 	    $page   = $request->page ?? 1;
 	    $categories = Category::all();
 	    if ( $filter ) {
-		    $this->_filterCategories( $categories, $filter );
+		   $categories =  $this->_filterCategories( $categories, $filter );
 	    }
 	    if ( $sort ) {
 		    foreach ( $sort as $sortArray ) {
@@ -208,5 +208,6 @@ class CategoryController extends Controller
 		if ( isset( $filter['is_valid'] ) ) {
 			$categories->where( 'is_valid', $filter['is_valid'] );
 		}
+		return $categories;
 	}
 }
