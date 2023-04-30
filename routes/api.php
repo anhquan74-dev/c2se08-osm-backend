@@ -21,14 +21,15 @@ use Illuminate\Support\Facades\Route;
 Route::get('/customers', [UserController::class, 'getAllCustomers']);
 Route::get('/customers/{id}', [UserController::class, 'getCustomerById']);
 Route::post('/customers', [UserController::class, 'createNewCustomer']);
+Route::post('/customers/search', [UserController::class, 'searchPaginationCustomers']);
 Route::post('/customers/{id}', [UserController::class, 'updateCustomer']);
 Route::post('/hard-delete-customer/{id}', [UserController::class, 'hardDeleteCustomer']);
-Route::get('/customers-search', [UserController::class, 'searchPaginationCustomers']);
 
 // Provider's routes
 Route::get('/providers', [UserController::class, 'getAllProviders']);
 Route::get('/providers/{id}', [UserController::class, 'getProviderById']);
 Route::post('/providers', [UserController::class, 'createNewProvider']);
+Route::post('/provider/search', [UserController::class, 'searchPaginationProviders']);
 Route::post('/providers/{id}', [UserController::class, 'updateProvider']);
 Route::post('/hard-delete-provider/{id}', [UserController::class, 'hardDeleteProvider']);
 
@@ -41,6 +42,7 @@ Route::post('/hard-delete-category/{id}', [CategoryController::class, 'hardDelet
 
 // Post's routes
 Route::get('/posts', [PostController::class, 'getAllPosts']);
+Route::post('/posts/search', [PostController::class, 'searchPaginationPosts']);
 Route::get('/posts/{id}', [PostController::class, 'getPostById']);
 Route::get('/posts-by-category/{category_id}', [PostController::class, 'getAllPostsByCategoryId']);
 Route::post('/posts', [PostController::class, 'createNewPost']);
