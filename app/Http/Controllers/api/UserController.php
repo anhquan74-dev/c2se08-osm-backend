@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Location;
 use App\Models\RoleDetailUser;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -41,21 +42,21 @@ class UserController extends Controller
     public function getCustomerById(Request $request)
     {
         if ($request->id) {
-            $customerInfo = User::with(['location'])->where('id',$request->id)->get()->map(function ($customerInfo) {
-                    unset($customerInfo->email_verified_at);
-                    unset($customerInfo->remember_token);
-                    unset($customerInfo->is_favorite);
-                    unset($customerInfo->is_working);
-                    unset($customerInfo->total_rate);
-                    unset($customerInfo->total_star);
-                    unset($customerInfo->avg_star);
-                    unset($customerInfo->clicks);
-                    unset($customerInfo->views);
-                    unset($customerInfo->click_rate);
-                    unset($customerInfo->introduction);
-                    unset($customerInfo->password);
-                    return $customerInfo;
-                });
+            $customerInfo = User::with(['location'])->where('id', $request->id)->get()->map(function ($customerInfo) {
+                unset($customerInfo->email_verified_at);
+                unset($customerInfo->remember_token);
+                unset($customerInfo->is_favorite);
+                unset($customerInfo->is_working);
+                unset($customerInfo->total_rate);
+                unset($customerInfo->total_star);
+                unset($customerInfo->avg_star);
+                unset($customerInfo->clicks);
+                unset($customerInfo->views);
+                unset($customerInfo->click_rate);
+                unset($customerInfo->introduction);
+                unset($customerInfo->password);
+                return $customerInfo;
+            });
             if ($customerInfo->isEmpty()) {
                 return response()->json([
                     'statusCode' => 404,
@@ -205,39 +206,41 @@ class UserController extends Controller
         ]);
     }
     // Searching, paginating and sorting customers
-	public function searchPaginationCustomers( Request $request ) {
-		$sort   = $request->sort;
-		$filter = $request->filter;
-		$limit  = $request->limit ?? 10;
-		$page   = $request->page ?? 1;
-		$user   = User::with(['roleDetails','location'])->whereHas('roleDetails', function ($query) {
-			return $query->where('role_details_id', '=', 3);
-		});
-		if ( $filter ) {
-			$user = $this->_filterCustomer( $user, $filter );
-		}
-		if ( $sort ) {
-			foreach ( $sort as $sortArray ) {
-				$user->orderBy( $sortArray['sort_by'], $sortArray['sort_dir'] );
-			}
-		}
-		return $user->paginate( $limit, [ '*' ], 'page', $page );
-	}
+    public function searchPaginationCustomers(Request $request)
+    {
+        $sort   = $request->sort;
+        $filter = $request->filter;
+        $limit  = $request->limit ?? 10;
+        $page   = $request->page ?? 1;
+        $user   = User::with(['roleDetails', 'location'])->whereHas('roleDetails', function ($query) {
+            return $query->where('role_details_id', '=', 3);
+        });
+        if ($filter) {
+            $user = $this->_filterCustomer($user, $filter);
+        }
+        if ($sort) {
+            foreach ($sort as $sortArray) {
+                $user->orderBy($sortArray['sort_by'], $sortArray['sort_dir']);
+            }
+        }
+        return $user->paginate($limit, ['*'], 'page', $page);
+    }
 
-	public function _filterCustomer( &$users, $filter ) {
-		if ( isset( $filter['full_name'] ) ) {
-			$users->where( 'full_name', 'LIKE', '%' . $filter['full_name'] . '%' );
-		}
-		if ( isset( $filter['province_name'] ) ) {
-			$users->whereHas( 'location', function ( $query ) use ( $filter ) {
-				$query->where( 'province_name', '=', $filter['province_name'] );
-			} );
-		}
-		if ( isset( $filter['is_valid'] ) ) {
-			$users->where( 'is_valid', $filter['is_valid'] );
-		}
-		return $users;
-	}
+    public function _filterCustomer(&$users, $filter)
+    {
+        if (isset($filter['full_name'])) {
+            $users->where('full_name', 'LIKE', '%' . $filter['full_name'] . '%');
+        }
+        if (isset($filter['province_name'])) {
+            $users->whereHas('location', function ($query) use ($filter) {
+                $query->where('province_name', '=', $filter['province_name']);
+            });
+        }
+        if (isset($filter['is_valid'])) {
+            $users->where('is_valid', $filter['is_valid']);
+        }
+        return $users;
+    }
     // Get all provider
     public function getAllProviders()
     {
@@ -254,7 +257,7 @@ class UserController extends Controller
     public function getProviderById(Request $request)
     {
         if ($request->id) {
-            $providerWithServiceBannerLocation = User::with(['service','banner', 'location'])->where('id',$request->id)->get();
+            $providerWithServiceBannerLocation = User::with(['service', 'banner', 'location'])->where('id', $request->id)->get();
             if ($providerWithServiceBannerLocation->isEmpty()) {
                 return response()->json([
                     'statusCode' => 404,
@@ -272,7 +275,7 @@ class UserController extends Controller
             'message' => 'Missing provider id parameter!',
         ]);
     }
-    // Create a new provider - location??? - location
+    // Create a new provider 
     public function createNewProvider(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -281,6 +284,9 @@ class UserController extends Controller
             'full_name' => 'required|string|min:2|max:255',
             'birthday' => 'date_format:Y-m-d H:i:s',
             // 'introduction' => 'string|max:500',
+            'address' => 'string|min:2|max:255',
+            'province_name' => 'string|min:2|max:255',
+            'district_name' => 'string|min:2|max:255',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors());
@@ -306,8 +312,22 @@ class UserController extends Controller
             'user_id' => $provider->id,
             'role_details_id' => 2
         ]);
+        Location::create([
+            'user_id' => $provider->id,
+            'address' => $request->address,
+            'province_id' => $request->province_id,
+            'province_name' => $request->province_name,
+            'district_id' => $request->district_id,
+            'district_name' => $request->district_name,
+            'ward_id' => $request->ward_id,
+            'ward_name' => $request->ward_name,
+            'coords_latitude' => $request->coords_latitude,
+            'coords_longitude' => $request->coords_longitude,
+            'is_primary' => false,
+        ]);
+        $dataReturn = User::with(['roleDetails', 'location'])->where('id', '=', $provider->id)->get();
         return response()->json([
-            'data' => $provider,
+            'data' => $dataReturn,
             'statusCode' => 201,
             'message' => 'Successful created!',
         ]);
@@ -454,56 +474,56 @@ class UserController extends Controller
     // Searching, paginating and sorting providers
     public function searchPaginationProviders(Request $request)
     {
-	    $sort   = $request->sort;
-	    $filter = $request->filter;
-	    $limit  = $request->limit ?? 10;
-	    $page   = $request->page ?? 1;
-	    $providers = User::with(['roleDetails','location', 'service'])->whereHas('roleDetails', function ($query) {
-		    return $query->where('role_details_id', '=', 2);
-	    });
-	    if ( $filter ) {
-		    $providers = $this->_filterProvider( $providers, $filter );
-	    }
-	    if ( $sort ) {
-		    foreach ( $sort as $sortArray ) {
-			    $providers->orderBy( $sortArray['sort_by'], $sortArray['sort_dir'] );
-		    }
-	    }
-	    return $providers->paginate( $limit, [ '*' ], 'page', $page );
+        $sort   = $request->sort;
+        $filter = $request->filter;
+        $limit  = $request->limit ?? 10;
+        $page   = $request->page ?? 1;
+        $providers = User::with(['roleDetails', 'location', 'service'])->whereHas('roleDetails', function ($query) {
+            return $query->where('role_details_id', '=', 2);
+        });
+        if ($filter) {
+            $providers = $this->_filterProvider($providers, $filter);
+        }
+        if ($sort) {
+            foreach ($sort as $sortArray) {
+                $providers->orderBy($sortArray['sort_by'], $sortArray['sort_dir']);
+            }
+        }
+        return $providers->paginate($limit, ['*'], 'page', $page);
     }
 
-	private function _filterProvider(&$providers, $filter){
-		if ( isset( $filter['category_id'] ) ) {
-			$providers->with('service')->whereHas( 'service.', function($query) use ($filter){
-				$query->where('category_id', '=', $filter['category_id']);
-			});
-		}
-		if ( isset( $filter['province_name'] ) ) {
-			$providers->whereHas( 'location', function ( $query ) use ( $filter ) {
-				$query->where( 'province_name', '=', $filter['province_name'] );
-			} );
-		}
-		if ( isset( $filter['avg_star'])){
-			$providers->where('avg_star','=', $filter['avg_star']);
-		}
-		if(isset($filter['price_min'])){
-			$providers->with('service')->whereHas( 'service.', function($query) use ($filter){
-				$query->where('price_min', '<=', $filter['price_min']);
-			});
-		}
-		if(isset($filter['price_max'])){
-			$providers->with('service')->whereHas( 'service.', function($query) use ($filter){
-				$query->where('price_max', '>=', $filter['price_min']);
-			});
-		}
-		if ( isset( $filter['full_name'] ) ) {
-			$providers->where( 'full_name', 'LIKE', '%' . $filter['full_name'] . '%' );
-		}
+    private function _filterProvider(&$providers, $filter)
+    {
+        if (isset($filter['category_id'])) {
+            $providers->with('service')->whereHas('service.', function ($query) use ($filter) {
+                $query->where('category_id', '=', $filter['category_id']);
+            });
+        }
+        if (isset($filter['province_name'])) {
+            $providers->whereHas('location', function ($query) use ($filter) {
+                $query->where('province_name', '=', $filter['province_name']);
+            });
+        }
+        if (isset($filter['avg_star'])) {
+            $providers->where('avg_star', '=', $filter['avg_star']);
+        }
+        if (isset($filter['price_min'])) {
+            $providers->with('service')->whereHas('service.', function ($query) use ($filter) {
+                $query->where('price_min', '<=', $filter['price_min']);
+            });
+        }
+        if (isset($filter['price_max'])) {
+            $providers->with('service')->whereHas('service.', function ($query) use ($filter) {
+                $query->where('price_max', '>=', $filter['price_min']);
+            });
+        }
+        if (isset($filter['full_name'])) {
+            $providers->where('full_name', 'LIKE', '%' . $filter['full_name'] . '%');
+        }
 
-		if ( isset( $filter['is_valid'] ) ) {
-			$providers->where( 'is_valid', $filter['is_valid'] );
-		}
-		return $providers;
-	}
-
+        if (isset($filter['is_valid'])) {
+            $providers->where('is_valid', $filter['is_valid']);
+        }
+        return $providers;
+    }
 }

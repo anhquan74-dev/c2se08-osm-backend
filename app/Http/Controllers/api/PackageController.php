@@ -14,7 +14,29 @@ class PackageController extends Controller
     // Get all packages
     public function getAllPackages()
     {
-        $packages = Package::all();
+        $packages = Package::join('services', 'services.id', '=', 'packages.service_id')
+            ->join('users', 'users.id', '=', 'services.provider_id')
+            ->select(
+                'packages.*',
+                'users.id as provider_id',
+                'users.email',
+                'users.full_name',
+                'users.birthday',
+                'users.gender',
+                'users.phone_number',
+                'users.avatar',
+                'users.introduction',
+                'users.is_favorite',
+                'users.is_working',
+                'users.total_rate',
+                'users.total_star',
+                'users.avg_star',
+                'users.clicks',
+                'users.views',
+                'users.click_rate',
+                'users.is_valid as is_valid_provider',
+            )
+            ->get();
         return response()->json([
             'data' => $packages,
             'statusCode' => 200,
@@ -25,7 +47,30 @@ class PackageController extends Controller
     public function getPackageById(Request $request)
     {
         if ($request->id) {
-            $packageInfo = Package::find($request->id);
+            $packageInfo = Package::join('services', 'services.id', '=', 'packages.service_id')
+                ->join('users', 'users.id', '=', 'services.provider_id')
+                ->where('packages.id', '=', $request->id)
+                ->select(
+                    'packages.*',
+                    'users.id as provider_id',
+                    'users.email',
+                    'users.full_name',
+                    'users.birthday',
+                    'users.gender',
+                    'users.phone_number',
+                    'users.avatar',
+                    'users.introduction',
+                    'users.is_favorite',
+                    'users.is_working',
+                    'users.total_rate',
+                    'users.total_star',
+                    'users.avg_star',
+                    'users.clicks',
+                    'users.views',
+                    'users.click_rate',
+                    'users.is_valid as is_valid_provider',
+                )
+                ->get();
             if (!$packageInfo) {
                 return response()->json([
                     'statusCode' => 404,
@@ -52,7 +97,30 @@ class PackageController extends Controller
                 'message' => 'Missing service_id parameter!',
             ]);
         }
-        $packages = Package::where('service_id', '=', $request->service_id)->get();
+        $packages = Package::join('services', 'services.id', '=', 'packages.service_id')
+            ->join('users', 'users.id', '=', 'services.provider_id')
+            ->where('services.id', '=', $request->service_id)
+            ->select(
+                'packages.*',
+                'users.id as provider_id',
+                'users.email',
+                'users.full_name',
+                'users.birthday',
+                'users.gender',
+                'users.phone_number',
+                'users.avatar',
+                'users.introduction',
+                'users.is_favorite',
+                'users.is_working',
+                'users.total_rate',
+                'users.total_star',
+                'users.avg_star',
+                'users.clicks',
+                'users.views',
+                'users.click_rate',
+                'users.is_valid as is_valid_provider',
+            )
+            ->get();
         return response()->json([
             'data' => $packages,
             'statusCode' => 200,
@@ -149,7 +217,7 @@ class PackageController extends Controller
             'message' => 'Missing package id parameter!',
         ]);
     }
-    // Hard delete service
+    // Hard delete package
     public function hardDeletePackage(Request $request)
     {
         if ($request->id) {
