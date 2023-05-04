@@ -64,14 +64,10 @@ class LocationController extends Controller
         $validator = Validator::make($request->all(), [
             'user_id' => 'required|numeric|integer',
             'address' => 'string|min:2|max:255',
-            'province_id' => 'numeric|integer',
             'province_name' => 'string|min:2|max:255',
-            'district_id' => 'numeric|integer',
             'district_name' => 'string|min:2|max:255',
-            'ward_id' => 'numeric|integer',
-            'ward_name' => 'string|min:2|max:255',
-            'coords_latitude' => 'numeric|between:0,99.99',
-            'coords_longitude' => 'numeric|between:0,99.99',
+            // 'coords_latitude' => 'numeric|between:0,99.99',
+            // 'coords_longitude' => 'numeric|between:0,99.99',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors());
@@ -110,14 +106,10 @@ class LocationController extends Controller
             if ($locationUpdate) {
                 $validator = Validator::make($request->all(), [
                     'address' => 'string|min:2|max:255',
-                    'province_id' => 'numeric|integer',
                     'province_name' => 'string|min:2|max:255',
-                    'district_id' => 'numeric|integer',
                     'district_name' => 'string|min:2|max:255',
-                    'ward_id' => 'numeric|integer',
-                    'ward_name' => 'string|min:2|max:255',
-                    'coords_latitude' => 'numeric|between:0,99.99',
-                    'coords_longitude' => 'numeric|between:0,99.99',
+                    // 'coords_latitude' => 'numeric|between:0,99.99',
+                    // 'coords_longitude' => 'numeric|between:0,99.99',
                     'is_primary' => 'integer|between:0,1',
                 ]);
                 if ($validator->fails()) {

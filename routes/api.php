@@ -29,7 +29,7 @@ Route::post('/hard-delete-customer/{id}', [UserController::class, 'hardDeleteCus
 Route::get('/providers', [UserController::class, 'getAllProviders']);
 Route::get('/providers/{id}', [UserController::class, 'getProviderById']);
 Route::post('/providers', [UserController::class, 'createNewProvider']);
-Route::post('/provider/search', [UserController::class, 'searchPaginationProviders']);
+Route::post('/providers/search', [UserController::class, 'searchPaginationProviders']);
 Route::post('/providers/{id}', [UserController::class, 'updateProvider']);
 Route::post('/hard-delete-provider/{id}', [UserController::class, 'hardDeleteProvider']);
 
@@ -37,6 +37,7 @@ Route::post('/hard-delete-provider/{id}', [UserController::class, 'hardDeletePro
 Route::get('/categories', [CategoryController::class, 'getAllCategories']);
 Route::get('/categories/{id}', [CategoryController::class, 'getCategoryById']);
 Route::post('/categories', [CategoryController::class, 'createNewCategory']);
+Route::post('/categories/search', [CategoryController::class, 'searchPaginationCategories']);
 Route::post('/categories/{id}', [CategoryController::class, 'updateCategory']);
 Route::post('/hard-delete-category/{id}', [CategoryController::class, 'hardDeleteCategory']);
 

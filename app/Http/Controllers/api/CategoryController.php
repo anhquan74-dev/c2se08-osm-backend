@@ -188,7 +188,7 @@ class CategoryController extends Controller
 	    $filter = $request->filter;
 	    $limit  = $request->limit ?? 10;
 	    $page   = $request->page ?? 1;
-	    $categories = Category::all();
+	    $categories = Category::all()->toQuery();
 	    if ( $filter ) {
 		   $categories =  $this->_filterCategories( $categories, $filter );
 	    }

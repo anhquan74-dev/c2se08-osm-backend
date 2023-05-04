@@ -220,7 +220,7 @@ class PostController extends Controller
 	    $filter = $request->filter;
 	    $limit  = $request->limit ?? 10;
 	    $page   = $request->page ?? 1;
-	    $posts = Post::all();
+	    $posts = Post::all()->toQuery();
 	    if ( $filter ) {
 		    $posts = $this->_filterPost( $posts, $filter );
 	    }

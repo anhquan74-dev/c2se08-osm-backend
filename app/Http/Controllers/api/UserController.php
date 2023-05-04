@@ -41,12 +41,7 @@ class UserController extends Controller
     public function getCustomerById(Request $request)
     {
         if ($request->id) {
-            $customerInfo = DB::table('users')
-                ->join('role_detail_users', 'users.id', '=', 'role_detail_users.user_id')
-                ->join('role_details', 'role_details.id', '=', 'role_detail_users.role_details_id')
-                ->where('users.id', $request->id)
-                ->where('role_detail_users.role_details_id', 3)
-                ->get()->map(function ($customerInfo) {
+            $customerInfo = User::with(['location'])->where('id',$request->id)->get()->map(function ($customerInfo) {
                     unset($customerInfo->email_verified_at);
                     unset($customerInfo->remember_token);
                     unset($customerInfo->is_favorite);
@@ -83,7 +78,7 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
+            // 'password' => 'required|string|min:6|confirmed',
             'full_name' => 'required|string|min:2|max:255',
             'birthday' => 'date_format:Y-m-d H:i:s',
         ]);
@@ -259,18 +254,15 @@ class UserController extends Controller
     public function getProviderById(Request $request)
     {
         if ($request->id) {
-            $providerWithServiceBanner = User::join('role_detail_users', 'users.id', '=', 'role_detail_users.user_id')
-                ->join('role_details', 'role_details.id', '=', 'role_detail_users.role_details_id')
-                ->where('role_detail_users.role_details_id', '=', 2)
-                ->where('users.id', '=', $request->id)->with('service')->with('banner')->get();
-            if ($providerWithServiceBanner->isEmpty()) {
+            $providerWithServiceBannerLocation = User::with(['service','banner', 'location'])->where('id',$request->id)->get();
+            if ($providerWithServiceBannerLocation->isEmpty()) {
                 return response()->json([
                     'statusCode' => 404,
                     'message' => 'Not found!',
                 ]);
             }
             return response()->json([
-                'data' => $providerWithServiceBanner,
+                'data' => $providerWithServiceBannerLocation,
                 'statusCode' => 200,
                 'message' => 'Get provider info successfully!',
             ]);
@@ -280,15 +272,15 @@ class UserController extends Controller
             'message' => 'Missing provider id parameter!',
         ]);
     }
-    // Create a new provider
+    // Create a new provider - location??? - location
     public function createNewProvider(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
+            // 'password' => 'required|string|min:6|confirmed',
             'full_name' => 'required|string|min:2|max:255',
             'birthday' => 'date_format:Y-m-d H:i:s',
-            'introduction' => 'string|max:500',
+            // 'introduction' => 'string|max:500',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors());
@@ -330,7 +322,7 @@ class UserController extends Controller
                     $validatorUpdate = Validator::make($request->all(), [
                         'full_name' => 'string|min:2|max:255',
                         'birthday' => 'date_format:Y-m-d H:i:s',
-                        'introduction' => 'string|max:500',
+                        // 'introduction' => 'string|max:500',
                         'is_favorite' => 'integer|between:0,1',
                         'is_working' => 'integer|between:0,1',
                         'total_rate' => 'numeric|integer',
@@ -466,7 +458,7 @@ class UserController extends Controller
 	    $filter = $request->filter;
 	    $limit  = $request->limit ?? 10;
 	    $page   = $request->page ?? 1;
-	    $providers = User::with(['roleDetails','location'])->whereHas('roleDetails', function ($query) {
+	    $providers = User::with(['roleDetails','location', 'service'])->whereHas('roleDetails', function ($query) {
 		    return $query->where('role_details_id', '=', 2);
 	    });
 	    if ( $filter ) {
