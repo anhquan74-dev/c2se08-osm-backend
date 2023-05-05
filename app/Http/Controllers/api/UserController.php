@@ -275,7 +275,7 @@ class UserController extends Controller
             'message' => 'Missing provider id parameter!',
         ]);
     }
-    // Create a new provider 
+    // Create a new provider
     public function createNewProvider(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -315,12 +315,8 @@ class UserController extends Controller
         Location::create([
             'user_id' => $provider->id,
             'address' => $request->address,
-            'province_id' => $request->province_id,
             'province_name' => $request->province_name,
-            'district_id' => $request->district_id,
             'district_name' => $request->district_name,
-            'ward_id' => $request->ward_id,
-            'ward_name' => $request->ward_name,
             'coords_latitude' => $request->coords_latitude,
             'coords_longitude' => $request->coords_longitude,
             'is_primary' => false,

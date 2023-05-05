@@ -16,7 +16,7 @@ class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
-    // Relationship 
+    // Relationship
     // n - n with RoleDetails Table
     public function roleDetails(): BelongsToMany
     {

@@ -14,29 +14,7 @@ class PackageController extends Controller
     // Get all packages
     public function getAllPackages()
     {
-        $packages = Package::join('services', 'services.id', '=', 'packages.service_id')
-            ->join('users', 'users.id', '=', 'services.provider_id')
-            ->select(
-                'packages.*',
-                'users.id as provider_id',
-                'users.email',
-                'users.full_name',
-                'users.birthday',
-                'users.gender',
-                'users.phone_number',
-                'users.avatar',
-                'users.introduction',
-                'users.is_favorite',
-                'users.is_working',
-                'users.total_rate',
-                'users.total_star',
-                'users.avg_star',
-                'users.clicks',
-                'users.views',
-                'users.click_rate',
-                'users.is_valid as is_valid_provider',
-            )
-            ->get();
+            $packages = Package::with(['service','provider'])->get();
         return response()->json([
             'data' => $packages,
             'statusCode' => 200,
@@ -240,4 +218,54 @@ class PackageController extends Controller
             'message' => 'Missing package id parameter!',
         ]);
     }
+
+    // Searching, paginating and sorting packages
+    // public function searchPaginationPackages(Request $request)
+    // {
+    //     $sort   = $request->sort;
+    //     $filter = $request->filter;
+    //     $limit  = $request->limit ?? 10;
+    //     $page   = $request->page ?? 1;
+    //  // $packages = Package::with(['service, provider']);
+    //     if ($filter) {
+    //         $packages = $this->_filterPackage($packages, $filter);
+    //     }
+    //     if ($sort) {
+    //         foreach ($sort as $sortArray) {
+    //             $packages->orderBy($sortArray['sort_by'], $sortArray['sort_dir']);
+    //         }
+    //     }
+    //     return $packages->paginate($limit, ['*'], 'page', $page);
+    // }
+
+    // private function _filterPackage(&$packages, $filter)
+    // {
+    //     if (isset($filter['category_id'])) {
+    //         $packages->with('service')->whereHas('service.', function ($query) use ($filter) {
+    //             $query->where('category_id', '=', $filter['category_id']);
+    //         });
+    //     }
+    //     // join('users', 'users.id', '=', 'services.provider_id')
+    //     // if (isset($filter['province_name'])) {
+    //     //     $packages->with('provider')->join('locations', 'locations.user_id', 'users.id')->whereHas('location', function ($query) use ($filter) {
+    //     //         $query->where('province_name', '=', $filter['province_name']);
+    //     //     });
+    //     // }
+    //     if (isset($filter['avg_star'])) {
+    //         $packages->where('avg_star', '=', $filter['avg_star']);
+    //     }
+    //     if (isset($filter['price_min'])) {
+    //         $packages->where('price_min', '=', $filter['price_min']);
+    //     }
+    //     if (isset($filter['price_max'])) {
+    //         $packages->where('price_max', '=', $filter['price_max']);
+    //     }
+    //     if (isset($filter['name'])) {
+    //         $packages->where('name', 'LIKE', '%' . $filter['name'] . '%');
+    //     }
+    //     if (isset($filter['is_valid'])) {
+    //         $packages->where('is_valid', $filter['is_valid']);
+    //     }
+    //     return $packages;
+    // }
 }

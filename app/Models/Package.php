@@ -21,6 +21,20 @@ class Package extends Model
     {
         return $this->belongsTo(Service::class, 'service_id');
     }
+
+    //
+    public function provider()
+    {
+        return $this->hasOneThrough(
+            User::class,
+            Service::class,
+            'id', # foreign key on intermediary -- services
+            'id', # foreign key on target -- users
+            'service_id', # local key on this -- packages (package - service_id)
+            'provider_id' # local key on intermediary -- services (service - provider_id)
+        );
+    }
+
     protected $fillable = [
         'service_id',
         'name',
