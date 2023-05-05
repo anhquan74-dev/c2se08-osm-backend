@@ -474,7 +474,7 @@ class UserController extends Controller
         $filter = $request->filter;
         $limit  = $request->limit ?? 10;
         $page   = $request->page ?? 1;
-        $providers = User::with(['roleDetails', 'location', 'service'])->whereHas('roleDetails', function ($query) {
+        $providers = User::with(['roleDetails', 'location','service'])->whereHas('roleDetails', function ($query) {
             return $query->where('role_details_id', '=', 2);
         });
         if ($filter) {
@@ -491,7 +491,7 @@ class UserController extends Controller
     private function _filterProvider(&$providers, $filter)
     {
         if (isset($filter['category_id'])) {
-            $providers->with('service')->whereHas('service.', function ($query) use ($filter) {
+            $providers->whereHas('service', function ($query) use ($filter) {
                 $query->where('category_id', '=', $filter['category_id']);
             });
         }
@@ -504,12 +504,12 @@ class UserController extends Controller
             $providers->where('avg_star', '=', $filter['avg_star']);
         }
         if (isset($filter['price_min'])) {
-            $providers->with('service')->whereHas('service.', function ($query) use ($filter) {
+            $providers->whereHas('service', function ($query) use ($filter) {
                 $query->where('price_min', '<=', $filter['price_min']);
             });
         }
         if (isset($filter['price_max'])) {
-            $providers->with('service')->whereHas('service.', function ($query) use ($filter) {
+            $providers->whereHas('service', function ($query) use ($filter) {
                 $query->where('price_max', '>=', $filter['price_min']);
             });
         }
