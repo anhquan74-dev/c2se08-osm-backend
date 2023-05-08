@@ -14,7 +14,7 @@ class AuthController extends BaseController
 		$this->middleware('auth:api', ['except' => ['login']]);
 	}
 
-	// Login 
+	// Login
 	public function login(Request $request)
 	{
 		$validator = Validator::make($request->all(), [
@@ -41,6 +41,8 @@ class AuthController extends BaseController
 	{
 		return response()->json(auth()->user());
 	}
+
+
 
 
 	public function logout()
