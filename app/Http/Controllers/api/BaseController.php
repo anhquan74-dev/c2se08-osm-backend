@@ -17,13 +17,10 @@ class BaseController extends Controller
 		$this->_messages = config('validate.messages');
 	}
 
-	protected function responseWithToken($token, $expires, $refreshToken, $user = null)
+	protected function responseWithToken($token)
 	{
 		$result = [
 			'access_token' => $token,
-			'token_type' => 'bearer',
-			'expires_in' => $expires,
-			'role' => $user->getRoleNames(),
 		];
 		return response()->json([
 			'status' => 'OK',

@@ -135,6 +135,7 @@ Route::post('/hard-delete-message/{id}', [MessageController::class, 'hardDeleteM
 // Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
+Route::post('/refresh', [AuthController::class, 'refresh']);
 
 Route::middleware([
 	'admin.auth',

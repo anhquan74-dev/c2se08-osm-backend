@@ -18,8 +18,8 @@ class UserController extends Controller
     // Get count customers
     public function getTotalCustomer()
     {
-        $customersCount = User::with('roleDetails')->whereHas('roleDetails', function ($query) {
-            return $query->where('role_details_id', '=', 3);
+        $customersCount = User::with('roles')->whereHas('roles', function ($query) {
+            $query->where('name', 'customer');
         })->count();
         return response()->json([
             'data' => $customersCount,
@@ -30,8 +30,8 @@ class UserController extends Controller
     // Get all customer
     public function getAllCustomers()
     {
-        $customers = User::with('roleDetails')->whereHas('roleDetails', function ($query) {
-            return $query->where('role_details_id', '=', 3);
+        $customers = User::with('roles')->whereHas('roles', function ($query) {
+            return $query->where('name', '=', 'customer');
         })->get()->map(function ($customers) {
             unset($customers->introduction);
             unset($customers->is_favorite);
@@ -224,8 +224,8 @@ class UserController extends Controller
         $filter = $request->filter;
         $limit  = $request->limit ?? 10;
         $page   = $request->page ?? 1;
-        $user   = User::with(['roleDetails', 'location'])->whereHas('roleDetails', function ($query) {
-            return $query->where('role_details_id', '=', 3);
+        $user   = User::with(['roles', 'location'])->whereHas('roles', function ($query) {
+            return $query->where('name', '=', 'customer');
         });
         if ($filter) {
             $user = $this->_filterCustomer($user, $filter);
@@ -256,8 +256,8 @@ class UserController extends Controller
     // Get count providers
     public function getTotalProvider()
     {
-        $providersCount = User::with('roleDetails')->whereHas('roleDetails', function ($query) {
-            return $query->where('role_details_id', '=', 2);
+        $providersCount = User::with('roles')->whereHas('roles', function ($query) {
+            return $query->where('name', '=', 'provider');
         })->count();
         return response()->json([
             'data' => $providersCount,
@@ -268,8 +268,8 @@ class UserController extends Controller
     // Get all provider
     public function getAllProviders()
     {
-        $providers = User::with('roleDetails')->whereHas('roleDetails', function ($query) {
-            return $query->where('role_details_id', '=', 2);
+        $providers = User::with('roles')->whereHas('roles', function ($query) {
+            return $query->where('roles', '=', 'provider');
         })->get();
         return response()->json([
             'data' => $providers,
@@ -345,7 +345,7 @@ class UserController extends Controller
             'coords_longitude' => $request->coords_longitude,
             'is_primary' => false,
         ]);
-        $dataReturn = User::with(['roleDetails', 'location'])->where('id', '=', $provider->id)->get();
+        $dataReturn = User::with(['roles', 'location'])->where('id', '=', $provider->id)->get();
         return response()->json([
             'data' => $dataReturn,
             'statusCode' => 201,
@@ -498,8 +498,8 @@ class UserController extends Controller
         $filter = $request->filter;
         $limit  = $request->limit ?? 10;
         $page   = $request->page ?? 1;
-        $providers = User::with(['roleDetails', 'location', 'service'])->whereHas('roleDetails', function ($query) {
-            return $query->where('role_details_id', '=', 2);
+        $providers = User::with(['roles', 'location', 'service'])->whereHas('roles', function ($query) {
+            return $query->where('role_details_id', '=', 'provider');
         });
         if ($filter) {
             $providers = $this->_filterProvider($providers, $filter);
