@@ -32,8 +32,8 @@ class AuthController extends BaseController
 			]);
 		} else {
 			$userProfile = User::where('id', auth()->user()->id)->first();
-			$refreshToken = auth()->setTTL(config('jwt.refresh_ttl'))->claims([ 'type' => 'refresh'])->attempt($validator->validated());
-			return $this->responseWithToken($token, ($ttl * 60),$refreshToken,$userProfile);
+			$refreshToken = auth()->setTTL(config('jwt.refresh_ttl'))->claims(['type' => 'refresh'])->attempt($validator->validated());
+			return $this->responseWithToken($token, ($ttl * 60), $refreshToken, $userProfile);
 		}
 	}
 
@@ -53,6 +53,6 @@ class AuthController extends BaseController
 
 	public function refresh()
 	{
-		return $this->respondWithToken(auth()->refresh());
+		return $this->responseWithToken(auth()->refresh());
 	}
 }

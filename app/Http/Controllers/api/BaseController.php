@@ -17,7 +17,7 @@ class BaseController extends Controller
 		$this->_messages = config('validate.messages');
 	}
 
-	protected function responseWithToken($token, $expires, $refreshToken, $user = null )
+	protected function responseWithToken($token, $expires, $refreshToken, $user = null)
 	{
 		$result = [
 			'access_token' => $token,
@@ -77,12 +77,12 @@ class BaseController extends Controller
 		]);
 	}
 
-	protected function responseWithSuccess()
-	{
-		return response()->json([
-			'status' => 'OK'
-		]);
-	}
+	// protected function responseWithSuccess()
+	// {
+	// 	return response()->json([
+	// 		'status' => 'OK'
+	// 	]);
+	// }
 
 	protected function responseWithSuccessCode(int $successCode, int $statusCode = 200)
 	{
