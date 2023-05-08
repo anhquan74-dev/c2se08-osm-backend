@@ -12,6 +12,16 @@ use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
+    // Get total post
+    public function getTotalPost()
+    {
+        $postsCount = Post::count();
+        return response()->json([
+            'data' => $postsCount,
+            'statusCode' => 200,
+            'message' => 'Count all posts successfully!',
+        ]);
+    }
     // Get all posts
     public function getAllPosts()
     {
@@ -216,34 +226,35 @@ class PostController extends Controller
     // Searching, paginating and sorting posts
     public function searchPaginationPosts(Request $request)
     {
-	    $sort   = $request->sort;
-	    $filter = $request->filter;
-	    $limit  = $request->limit ?? 10;
-	    $page   = $request->page ?? 1;
-	    $posts = Post::all()->toQuery();
-	    if ( $filter ) {
-		    $posts = $this->_filterPost( $posts, $filter );
-	    }
-	    if ( $sort ) {
-		    foreach ( $sort as $sortArray ) {
-			    $posts->orderBy( $sortArray['sort_by'], $sortArray['sort_dir'] );
-		    }
-	    }
-	    return $posts->paginate( $limit, [ '*' ], 'page', $page );
+        $sort   = $request->sort;
+        $filter = $request->filter;
+        $limit  = $request->limit ?? 10;
+        $page   = $request->page ?? 1;
+        $posts = Post::all()->toQuery();
+        if ($filter) {
+            $posts = $this->_filterPost($posts, $filter);
+        }
+        if ($sort) {
+            foreach ($sort as $sortArray) {
+                $posts->orderBy($sortArray['sort_by'], $sortArray['sort_dir']);
+            }
+        }
+        return $posts->paginate($limit, ['*'], 'page', $page);
     }
 
-	private function _filterPost( &$posts, $filter ) {
-		if ( isset( $filter['title'] ) ) {
-			$posts->where( 'title', 'LIKE', '%' . $filter['title'] . '%' );
-		}
+    private function _filterPost(&$posts, $filter)
+    {
+        if (isset($filter['title'])) {
+            $posts->where('title', 'LIKE', '%' . $filter['title'] . '%');
+        }
 
-		if ( isset( $filter['category_id'] ) ) {
-			$posts->where( 'category_id', $filter['category_id'] );
-		}
+        if (isset($filter['category_id'])) {
+            $posts->where('category_id', $filter['category_id']);
+        }
 
-		if ( isset( $filter['is_valid'] ) ) {
-			$posts->where( 'is_valid', $filter['is_valid'] );
-		}
-		return $posts;
-	}
+        if (isset($filter['is_valid'])) {
+            $posts->where('is_valid', $filter['is_valid']);
+        }
+        return $posts;
+    }
 }

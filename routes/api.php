@@ -24,6 +24,8 @@ Route::post('/customers', [UserController::class, 'createNewCustomer']);
 Route::post('/customers/search', [UserController::class, 'searchPaginationCustomers']);
 Route::post('/customers/{id}', [UserController::class, 'updateCustomer']);
 Route::post('/hard-delete-customer/{id}', [UserController::class, 'hardDeleteCustomer']);
+Route::get('/customer-count', [UserController::class, 'getTotalCustomer']);
+
 
 // Provider's routes
 Route::get('/providers', [UserController::class, 'getAllProviders']);
@@ -32,6 +34,8 @@ Route::post('/providers', [UserController::class, 'createNewProvider']);
 Route::post('/providers/search', [UserController::class, 'searchPaginationProviders']);
 Route::post('/providers/{id}', [UserController::class, 'updateProvider']);
 Route::post('/hard-delete-provider/{id}', [UserController::class, 'hardDeleteProvider']);
+Route::get('/provider-count', [UserController::class, 'getTotalProvider']);
+
 
 // Category's routes
 Route::get('/categories', [CategoryController::class, 'getAllCategories']);
@@ -66,6 +70,8 @@ Route::get('/services-by-category/{category_id}', [ServiceController::class, 'ge
 Route::post('/services', [ServiceController::class, 'createNewService']);
 Route::post('/services/{id}', [ServiceController::class, 'updateService']);
 Route::post('/hard-delete-service/{id}', [ServiceController::class, 'hardDeleteService']);
+Route::get('/service-count', [ServiceController::class, 'getTotalService']);
+
 
 // Package's routes
 Route::get('/packages', [PackageController::class, 'getAllPackages']);
@@ -75,6 +81,8 @@ Route::post('/packages', [PackageController::class, 'createNewPackage']);
 Route::post('/packages/search', [PackageController::class, 'searchPaginationPackages']);
 Route::post('/packages/{id}', [PackageController::class, 'updatePackage']);
 Route::post('/hard-delete-package/{id}', [PackageController::class, 'hardDeletePackage']);
+Route::get('/post-count', [PostController::class, 'getTotalPost']);
+
 
 // Appointment's routes
 Route::get('/appointments', [AppointmentController::class, 'getAllAppointments']);

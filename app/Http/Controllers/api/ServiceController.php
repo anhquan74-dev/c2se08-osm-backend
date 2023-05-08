@@ -11,6 +11,16 @@ use Validator;
 
 class ServiceController extends Controller
 {
+    // Get total services
+    public function getTotalService()
+    {
+        $servicesCount = Service::count();
+        return response()->json([
+            'data' => $servicesCount,
+            'statusCode' => 200,
+            'message' => 'Count all services successfully!',
+        ]);
+    }
     // Get all services
     public function getAllServices()
     {

@@ -15,6 +15,18 @@ use Validator;
 
 class UserController extends Controller
 {
+    // Get count customers
+    public function getTotalCustomer()
+    {
+        $customersCount = User::with('roleDetails')->whereHas('roleDetails', function ($query) {
+            return $query->where('role_details_id', '=', 3);
+        })->count();
+        return response()->json([
+            'data' => $customersCount,
+            'statusCode' => 200,
+            'message' => 'Count all customers successfully!',
+        ]);
+    }
     // Get all customer
     public function getAllCustomers()
     {
@@ -240,6 +252,18 @@ class UserController extends Controller
             $users->where('is_valid', $filter['is_valid']);
         }
         return $users;
+    }
+    // Get count providers
+    public function getTotalProvider()
+    {
+        $providersCount = User::with('roleDetails')->whereHas('roleDetails', function ($query) {
+            return $query->where('role_details_id', '=', 2);
+        })->count();
+        return response()->json([
+            'data' => $providersCount,
+            'statusCode' => 200,
+            'message' => 'Count all providers successfully!',
+        ]);
     }
     // Get all provider
     public function getAllProviders()
@@ -474,7 +498,7 @@ class UserController extends Controller
         $filter = $request->filter;
         $limit  = $request->limit ?? 10;
         $page   = $request->page ?? 1;
-        $providers = User::with(['roleDetails', 'location','service'])->whereHas('roleDetails', function ($query) {
+        $providers = User::with(['roleDetails', 'location', 'service'])->whereHas('roleDetails', function ($query) {
             return $query->where('role_details_id', '=', 2);
         });
         if ($filter) {
