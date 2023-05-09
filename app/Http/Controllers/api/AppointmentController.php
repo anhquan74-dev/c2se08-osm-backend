@@ -13,6 +13,25 @@ use App\Models\User;
 
 class AppointmentController extends Controller
 {
+    // Get total appointment 12 months ago from now
+    public function getTotalAppointmentByMonthsFromNow()
+    {
+        $dataByMonths = [];
+        $currentMonth = date('n');
+        for ($i = $currentMonth; $i <= $currentMonth + 11; $i++) {
+            $monthNumber = $i < 12 ? $i + 1 : $i - 11;
+            $yearNumber = $i < 12 ? date('Y') - 1 : date('Y');
+            $data = Appointment::whereMonth('created_at', $monthNumber)
+                ->whereYear('created_at', $yearNumber)
+                ->count();
+            $object = (object) [
+                'month' => 'Tháng ' . $monthNumber . ' ' . $yearNumber,
+                'total' => $data,
+            ];
+            array_push($dataByMonths, $object);
+        }
+        return response()->json(['data_by_months' => $dataByMonths]);
+    }
     // Get all appointments
     public function getAllAppointments()
     {
