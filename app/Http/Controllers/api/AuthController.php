@@ -5,12 +5,15 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Validator;
+use Tymon\JWTAuth\Facades\JWTFactory;
+use Tymon\JWTAuth\JWTAuth;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends BaseController
 {
 	public function __construct()
 	{
+        parent::__construct();
 		$this->middleware('auth:api', ['except' => ['login']]);
 	}
 
@@ -24,16 +27,15 @@ class AuthController extends BaseController
 		if ($validator->fails()) {
 			return response()->json($validator->errors());
 		}
-		$ttl = config('jwt.ttl');
 		if (!$token = auth()->attempt($validator->validated())) {
 			return response()->json([
 				'statusCode' => 404,
 				'message' => 'Email or password is incorrect!'
 			]);
 		} else {
-			$userProfile = User::where('id', auth()->user()->id)->first();
+            $refresh_ttl = config('jwt.refresh_ttl');
 			$refreshToken = auth()->setTTL(config('jwt.refresh_ttl'))->claims(['type' => 'refresh'])->attempt($validator->validated());
-			return $this->responseWithToken($token, ($ttl * 60), $refreshToken, $userProfile);
+			return $this->responseWithToken($token, $refreshToken, $refresh_ttl);
 		}
 	}
 
@@ -41,9 +43,6 @@ class AuthController extends BaseController
 	{
 		return response()->json(auth()->user());
 	}
-
-
-
 
 	public function logout()
 	{
@@ -55,6 +54,14 @@ class AuthController extends BaseController
 
 	public function refresh()
 	{
-		return $this->responseWithToken(auth()->refresh());
+       try{
+           $accesstoken = auth()->refresh(true, true);
+           $user = auth()->user();
+           $refresh_ttl = config('jwt.refresh_ttl');
+           $refreshToken = auth()->setTTL(config('jwt.refresh_ttl'))->claims(['type' => 'refresh'])->login($user);
+           return $this->responseWithToken($accesstoken, $refreshToken, $refresh_ttl);
+       }catch (\Exception $exception){
+           return $this->responseWithError(1001);
+       }
 	}
 }
