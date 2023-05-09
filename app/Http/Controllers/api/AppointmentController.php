@@ -23,9 +23,10 @@ class AppointmentController extends Controller
             $yearNumber = $i < 12 ? date('Y') - 1 : date('Y');
             $data = Appointment::whereMonth('created_at', $monthNumber)
                 ->whereYear('created_at', $yearNumber)
+                ->where('status', '=', 'done')
                 ->count();
             $object = (object) [
-                'month' => 'Tháng ' . $monthNumber . ' ' . $yearNumber,
+                'month' => $monthNumber . '-' . $yearNumber,
                 'total' => $data,
             ];
             array_push($dataByMonths, $object);
