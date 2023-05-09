@@ -16,12 +16,6 @@ class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
-    // Relationship
-    // n - n with RoleDetails Table
-    public function roleDetails(): BelongsToMany
-    {
-        return $this->belongsToMany(RoleDetails::class, 'role_detail_users');
-    }
     //1 - n with Favorite table
     public function favoriteCustomer(): HasMany
     {
