@@ -4,10 +4,8 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Location;
-use App\Models\RoleDetailUser;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -107,10 +105,8 @@ class UserController extends Controller
             'phone_number' => $request->phone_number,
             'is_valid' => false,
         ]);
-        RoleDetailUser::create([
-            'user_id' => $customer->id,
-            'role_details_id' => 3
-        ]);
+        $customer->assignRole('customer');
+        $customer->save();
         return response()->json([
             'data' => $customer,
             'statusCode' => 201,
@@ -332,10 +328,7 @@ class UserController extends Controller
             'click_rate' => 0,
             'is_valid' => false,
         ]);
-        RoleDetailUser::create([
-            'user_id' => $provider->id,
-            'role_details_id' => 2
-        ]);
+        $provider->assignRole('provider');
         Location::create([
             'user_id' => $provider->id,
             'address' => $request->address,
@@ -499,7 +492,7 @@ class UserController extends Controller
         $limit  = $request->limit ?? 10;
         $page   = $request->page ?? 1;
         $providers = User::with(['roles', 'location', 'service'])->whereHas('roles', function ($query) {
-            return $query->where('role_details_id', '=', 'provider');
+            return $query->where('name', '=', 'provider');
         });
         if ($filter) {
             $providers = $this->_filterProvider($providers, $filter);
