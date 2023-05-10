@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -51,8 +49,13 @@ class User extends Authenticatable implements JWTSubject
     // 1 - n with banner
     public function banner(): HasMany
     {
-        return $this->hasMany(Banner::class, 'provider_id');
+        return $this->hasMany(Image::class, 'parent_id','id') ->where('parent_type', '=', 'provider');
     }
+
+    public function avatar() {
+        return $this->hasOne(Image::class, 'parent_id','id')->where('parent_type','=', 'avatar');
+    }
+
     // 1 - n with service
     public function service(): HasMany
     {

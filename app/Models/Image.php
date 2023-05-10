@@ -21,5 +21,7 @@ class Image extends Model
 		'public_id',
 		'file_name',
 		'mime',
+		'parent_type',
+		'parent_id',
 	];
 }
