@@ -53,7 +53,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function avatar() {
-        return $this->hasOne(Image::class, 'parent_id','id')->where('parent_type','=', 'avatar');
+        return $this->hasMany(Image::class, 'parent_id','id')->where('parent_type','=', 'avatar');
     }
 
     // 1 - n with service
