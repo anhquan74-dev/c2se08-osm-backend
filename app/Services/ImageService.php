@@ -24,7 +24,7 @@ class ImageService {
 		$this->admin_api = new AdminApi();
 	}
 
-	public function uploadImage($imageRequest){
+	public function uploadImage($imageRequest, $parent_id, $parent = 'appointment'){
 		$uploader = $this->cloudinary->uploadApi();
 		$filename = explode('.',$imageRequest->getClientOriginalName())[0];
 
@@ -38,6 +38,8 @@ class ImageService {
 		$image->delivery_type = $uploadResponse['type'];
 		$image->file_name = $imageRequest->getClientOriginalName();
 		$image->mime =  $uploadResponse['format'];
+        $image->parent_type = $parent;
+        $image->parent_id = $parent_id;
 		$image->save();
 		return $image;
 	}

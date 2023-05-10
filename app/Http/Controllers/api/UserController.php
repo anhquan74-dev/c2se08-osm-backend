@@ -5,9 +5,11 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Models\Location;
 use App\Models\User;
+use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Validator;
 
@@ -28,7 +30,7 @@ class UserController extends Controller
     // Get all customer
     public function getAllCustomers()
     {
-        $customers = User::with('roles')->whereHas('roles', function ($query) {
+        $customers = User::with(['roles', 'avatar'])->whereHas('roles', function ($query) {
             return $query->where('name', '=', 'customer');
         })->get()->map(function ($customers) {
             unset($customers->introduction);
@@ -52,7 +54,7 @@ class UserController extends Controller
     public function getCustomerById(Request $request)
     {
         if ($request->id) {
-            $customerInfo = User::with(['location'])->where('id', $request->id)->get()->map(function ($customerInfo) {
+            $customerInfo = User::with(['location','avatar'])->where('id', $request->id)->get()->map(function ($customerInfo) {
                 unset($customerInfo->email_verified_at);
                 unset($customerInfo->remember_token);
                 unset($customerInfo->is_favorite);
@@ -155,13 +157,13 @@ class UserController extends Controller
                             "errors" => $validatorUpdate->errors()
                         ]);
                     }
-                    $destination = 'uploads/avatar/' . $customerUpdate->avatar;
-                    if (File::exists($destination)) {
-                        File::delete($destination);
-                    }
                     $image = $request->file('avatar');
-                    $fileName = Str::random(5) . date('YmdHis') . '.' . $image->getClientOriginalExtension();
-                    $image->move('uploads/avatar/', $fileName);
+                    if ($image) {
+                        $avatar = $customerUpdate->avatar;
+                        if ($avatar) {
+                            $avatar->delete();
+                        }
+                    }
                     $customerUpdate->full_name = $request->full_name;
                     $customerUpdate->birthday = $request->birthday;
                     $customerUpdate->gender = $request->gender;
@@ -169,6 +171,12 @@ class UserController extends Controller
                     $customerUpdate->avatar = $fileName;
                     $customerUpdate->is_valid = $request->is_valid;
                     $customerUpdate->save();
+                    $service = new ImageService();
+                    try {
+                        $service->uploadImage($image, $customerUpdate->id, 'avatar');
+                    } catch (\Exception $e) {
+                        Log::error($e->getMessage());
+                    }
                     return response()->json([
                         'statusCode' => 200,
                         'message' => 'Customer updated successfully!',
@@ -192,9 +200,9 @@ class UserController extends Controller
         if ($request->id) {
             $checkCustomer = User::find($request->id);
             if ($checkCustomer) {
-                $destination = 'uploads/avatar/' . $checkCustomer->avatar;
-                if (File::exists($destination)) {
-                    File::delete($destination);
+                $image = $checkCustomer->avatar;
+                if ($image) {
+                    (new ImageService())->deleteImage($image->id);
                 }
                 User::where('id', $request->id)->delete();
                 return response()->json([
@@ -252,7 +260,7 @@ class UserController extends Controller
     // Get count providers
     public function getTotalProvider()
     {
-        $providersCount = User::with('roles')->whereHas('roles', function ($query) {
+        $providersCount = User::with(['roles','avatar'])->whereHas('roles', function ($query) {
             return $query->where('name', '=', 'provider');
         })->count();
         return response()->json([
@@ -264,7 +272,7 @@ class UserController extends Controller
     // Get all provider
     public function getAllProviders()
     {
-        $providers = User::with('roles')->whereHas('roles', function ($query) {
+        $providers = User::with(['roles','avatar'])->whereHas('roles', function ($query) {
             return $query->where('roles', '=', 'provider');
         })->get();
         return response()->json([
@@ -277,7 +285,7 @@ class UserController extends Controller
     public function getProviderById(Request $request)
     {
         if ($request->id) {
-            $providerWithServiceBannerLocation = User::with(['service', 'banner', 'location'])->where('id', $request->id)->get();
+            $providerWithServiceBannerLocation = User::with(['avatar','service', 'banner', 'location'])->where('id', $request->id)->get();
             if ($providerWithServiceBannerLocation->isEmpty()) {
                 return response()->json([
                     'statusCode' => 404,
@@ -338,7 +346,7 @@ class UserController extends Controller
             'coords_longitude' => $request->coords_longitude,
             'is_primary' => false,
         ]);
-        $dataReturn = User::with(['roles', 'location'])->where('id', '=', $provider->id)->get();
+        $dataReturn = User::with(['avatar','roles', 'location'])->where('id', '=', $provider->id)->get();
         return response()->json([
             'data' => $dataReturn,
             'statusCode' => 201,
@@ -416,13 +424,9 @@ class UserController extends Controller
                             "errors" => $validatorUpdate->errors()
                         ]);
                     }
-                    $destination = 'uploads/avatar/' . $providerUpdate->avatar;
-                    if (File::exists($destination)) {
-                        File::delete($destination);
-                    }
                     $image = $request->file('avatar');
                     $fileName = Str::random(5) . date('YmdHis') . '.' . $image->getClientOriginalExtension();
-                    $image->move('uploads/avatar/', $fileName);
+                    $image = (new ImageService())->uploadImage($image,$providerUpdate->id,'avatar');
                     $providerUpdate->full_name = $request->full_name;
                     $providerUpdate->birthday = $request->birthday;
                     $providerUpdate->gender = $request->gender;
@@ -463,9 +467,9 @@ class UserController extends Controller
             $checkProvider =
                 User::find($request->id);
             if ($checkProvider) {
-                $destination = 'uploads/avatar/' . $checkProvider->avatar;
-                if (File::exists($destination)) {
-                    File::delete($destination);
+                $avatar = $checkProvider->avatar;
+                if ($avatar) {
+                    (new ImageService())->deleteImage($avatar->id);
                 }
                 User::where('id', $request->id)->delete();
                 return response()->json([
@@ -491,7 +495,7 @@ class UserController extends Controller
         $filter = $request->filter;
         $limit  = $request->limit ?? 10;
         $page   = $request->page ?? 1;
-        $providers = User::with(['roles', 'location', 'service'])->whereHas('roles', function ($query) {
+        $providers = User::with(['avatar','roles', 'location', 'service'])->whereHas('roles', function ($query) {
             return $query->where('name', '=', 'provider');
         });
         if ($filter) {

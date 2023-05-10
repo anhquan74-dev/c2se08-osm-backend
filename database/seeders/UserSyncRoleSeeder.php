@@ -21,5 +21,7 @@ class UserSyncRoleSeeder extends Seeder
 	    $provider->assignRole( 'provider' );
 		$customer = User::find(3);
 	    $customer->assignRole( 'customer' );
+        $customer = User::find(4);
+        $customer->assignRole( 'customer' );
     }
 }

@@ -4,14 +4,12 @@ use App\Http\Controllers\api\AppointmentController;
 use App\Http\Controllers\api\ImageController;
 use App\Http\Controllers\api\UserController;
 use App\Http\Controllers\api\AuthController;
-use App\Http\Controllers\api\BannerController;
 use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\api\FeedbackController;
 use App\Http\Controllers\api\LocationController;
 use App\Http\Controllers\api\PackageController;
 use App\Http\Controllers\api\PostController;
 use App\Http\Controllers\api\ServiceController;
-use App\Http\Controllers\api\AttachPhotoController;
 use App\Http\Controllers\api\FavoriteController;
 use App\Http\Controllers\api\MessageController;
 use App\Http\Controllers\api\NotifyController;
@@ -109,15 +107,6 @@ Route::get('/feedbacks-by-appointment/{appointment_id}', [FeedbackController::cl
 Route::post('/feedbacks', [FeedbackController::class, 'createNewFeedback']);
 Route::post('/feedbacks/{id}', [FeedbackController::class, 'updateFeedback']);
 Route::post('/hard-delete-feedback/{id}', [FeedbackController::class, 'hardDeleteFeedback']);
-
-
-// Attach photo's routes
-Route::post('/attach-photos', [AttachPhotoController::class, 'createAttachPhoto']);
-Route::post('/hard-delete-attach-photo/{id}', [AttachPhotoController::class, 'hardDeleteAttachPhoto']);
-
-// Banner's routes
-Route::post('/banners', [BannerController::class, 'createBanner']);
-Route::post('/hard-delete-banner/{id}', [BannerController::class, 'hardDeleteBanner']);
 
 // Favorite's routes
 Route::post('/favorites', [FavoriteController::class, 'createFavorite']);

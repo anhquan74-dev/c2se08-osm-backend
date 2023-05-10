@@ -20,7 +20,7 @@ class Appointment extends Model
     // 1 - n with AttachPhoto Table
     public function attachPhoto(): HasMany
     {
-        return $this->hasMany(AttachPhoto::class, 'appointment_id');
+        return $this->hasMany(Image::class, 'parent_id')->where('parent_type', '=', 'appointment');
     }
     // Belong to Package Table
     public function package(): BelongsTo
@@ -31,6 +31,11 @@ class Appointment extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'customer_id');
+    }
+
+    public function images(): HasMany
+    {
+        return $this->hasMany(Image::class, 'appointment_id');
     }
     protected $fillable = [
         'package_id',
