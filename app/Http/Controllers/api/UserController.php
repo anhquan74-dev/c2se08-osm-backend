@@ -120,7 +120,7 @@ class UserController extends Controller
         $customer->assignRole('customer');
         $customer->save();
         Location::create([
-            'user_id' => $provider->id,
+            'user_id' => $customer->id,
             'address' => $request->address,
             'province_name' => $request->province_name,
             'district_name' => $request->district_name,

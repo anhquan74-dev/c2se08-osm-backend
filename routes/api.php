@@ -146,7 +146,9 @@ Route::middleware([
 
 
 //demo images
-Route::post('upload', [ImageController::class, 'uploadImage']);
-Route::post('{id}/get', [ImageController::class, 'getImageUrl']);
-Route::post('{id}/update', [ImageController::class, 'updateImage']);
-Route::post('{id}/delete', [ImageController::class, 'delete']);
+Route::group(['prefix'=>'images'], function(){
+    Route::post('upload', [ImageController::class, 'uploadImage']);
+    Route::post('{id}/get', [ImageController::class, 'getImageUrl']);
+    Route::post('{id}/update', [ImageController::class, 'updateImage']);
+    Route::post('{id}/delete', [ImageController::class, 'delete']);
+});
