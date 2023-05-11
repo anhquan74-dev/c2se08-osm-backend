@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\ImageService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -31,4 +32,13 @@ class Post extends Model
         'tags',
         'is_valid',
     ];
+    protected $appends = ['image_url'];
+    public function getImageUrlAttribute(){
+        $image = $this->image;
+        if($image){
+            $service = new ImageService();
+            return $service->getImageUrl($image->id);
+        }
+        return null;
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\ImageService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -85,6 +86,7 @@ class User extends Authenticatable implements JWTSubject
         'click_rate',
         'is_valid',
     ];
+    protected $appends = ['avatar _url', 'banner_url'];
 
     protected $hidden = [
         'password',
@@ -103,5 +105,28 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function getBannerUrlAttribute(){
+        $images = $this->banner;
+        if(count($images)){
+            $returnUrls = [];
+            $service = new ImageService();
+            foreach ($images as $image){
+                $returnUrls[] = $service->getImageUrl($image->id);
+            }
+            return $returnUrls;
+        }
+        return [];
+    }
+
+    public function getAvatarUrlAttribute()
+    {
+        $image = $this->avatar;
+        if ($image) {
+            $service = new ImageService();
+            return $service->getImageUrl($image->id);
+        }
+        return null;
     }
 }

@@ -36,7 +36,7 @@ class AppointmentController extends Controller
     // Get all appointments
     public function getAllAppointments()
     {
-        $appointments = Appointment::with('attachPhoto')->get();
+        $appointments = Appointment::all();
 
         return response()->json([
             'data' => $appointments,
@@ -48,7 +48,7 @@ class AppointmentController extends Controller
     public function getAppointmentById(Request $request)
     {
         if ($request->id) {
-            $appointmentInfo = Appointment::with('attachPhoto')->find($request->id);
+            $appointmentInfo = Appointment::find($request->id);
             if (!$appointmentInfo) {
                 return response()->json([
                     'statusCode' => 404,
@@ -75,7 +75,7 @@ class AppointmentController extends Controller
                 'message' => 'Missing customer_id parameter!',
             ]);
         }
-        $appointments = Appointment::where('customer_id', '=', $request->customer_id)->with('attachPhoto')->get();
+        $appointments = Appointment::where('customer_id', '=', $request->customer_id)->get();
         return response()->json([
             'data' => $appointments,
             'statusCode' => 200,
@@ -91,7 +91,7 @@ class AppointmentController extends Controller
                 'message' => 'Missing package_id parameter!',
             ]);
         }
-        $appointments = Appointment::where('package_id', '=', $request->package_id)->with('attachPhoto')->get();
+        $appointments = Appointment::where('package_id', '=', $request->package_id)->get();
         return response()->json([
             'data' => $appointments,
             'statusCode' => 200,
@@ -107,7 +107,7 @@ class AppointmentController extends Controller
                 'message' => 'Missing status parameter!',
             ]);
         }
-        $appointments = Appointment::where('status', '=', $request->status)->with('attachPhoto')->get();
+        $appointments = Appointment::where('status', '=', $request->status)->get();
         return response()->json([
             'data' => $appointments,
             'statusCode' => 200,
@@ -177,7 +177,7 @@ class AppointmentController extends Controller
                 $imageService->uploadImage($attach_photo, $appointment->id, 'appointment');
             }
         }
-        $appointmentCurrent = Appointment::with('attachPhoto')->find($appointment->id);
+        $appointmentCurrent = Appointment::find($appointment->id);
         return response()->json([
             'data' => $appointmentCurrent,
             'statusCode' => 201,
@@ -242,6 +242,7 @@ class AppointmentController extends Controller
                 $service = new ImageService();
                 foreach ($attachPhotos as $attachPhoto) {
                     $service->deleteImage($attachPhoto->id);
+                    $attachPhoto->delete();
                 }
                 // Delete appointment
                 Appointment::where('id', $request->id)->delete();

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\ImageService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -32,11 +33,6 @@ class Appointment extends Model
     {
         return $this->belongsTo(User::class, 'customer_id');
     }
-
-    public function images(): HasMany
-    {
-        return $this->hasMany(Image::class, 'appointment_id');
-    }
     protected $fillable = [
         'package_id',
         'customer_id',
@@ -50,4 +46,14 @@ class Appointment extends Model
         'complete_date',
         'cancel_date',
     ];
+
+    protected $appends = ['image_url'];
+    public function getImageUrlAttribute(){
+        $image = $this->attachPhoto;
+        if($image){
+            $service = new ImageService();
+            return $service->getImageUrl($image->id);
+        }
+        return null;
+    }
 }
