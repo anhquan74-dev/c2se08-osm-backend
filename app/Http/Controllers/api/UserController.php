@@ -187,7 +187,6 @@ class UserController extends Controller
                     $customerUpdate->birthday = $request->birthday;
                     $customerUpdate->gender = $request->gender;
                     $customerUpdate->phone_number = $request->phone_number;
-                    $customerUpdate->avatar = $fileName;
                     $customerUpdate->is_valid = $request->is_valid;
                     $customerUpdate->save();
                     $service = new ImageService();
@@ -470,7 +469,6 @@ class UserController extends Controller
                     $providerUpdate->views = $request->views;
                     $providerUpdate->click_rate = $request->click_rate;
                     $providerUpdate->is_valid = $request->is_valid;
-                    $providerUpdate->avatar = $fileName;
                     $providerUpdate->save();
                     return response()->json([
                         'statusCode' => 200,
