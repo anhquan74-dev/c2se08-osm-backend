@@ -26,7 +26,7 @@ class PostController extends Controller
     // Get all posts
     public function getAllPosts()
     {
-        $posts = Post::with('image')->all();
+        $posts = Post::all();
         return response()->json([
             'data' => $posts,
             'statusCode' => 200,
@@ -37,7 +37,7 @@ class PostController extends Controller
     public function getPostById(Request $request)
     {
         if ($request->id) {
-            $postInfo = Post::with('image')->find($request->id);
+            $postInfo = Post::find($request->id);
             if (!$postInfo) {
                 return response()->json([
                     'statusCode' => 404,
@@ -64,7 +64,7 @@ class PostController extends Controller
                 'message' => 'Missing category_id parameter!',
             ]);
         }
-        $posts = Post::with('image')->where('category_id', '=', $request->category_id)->get();
+        $posts = Post::where('category_id', '=', $request->category_id)->get();
         return response()->json([
             'data' => $posts,
             'statusCode' => 200,
@@ -175,6 +175,7 @@ class PostController extends Controller
                     $image = $postUpdate->image;
                     $imageService = new ImageService();
                     $imageService->deleteImage($image->id);
+                    $image->delete();
                     $imageService->uploadImage($request->file('image'),$postUpdate->id,'post');
                     return response()->json([
                         'statusCode' => 200,
@@ -201,6 +202,7 @@ class PostController extends Controller
             if ($checkPost) {
                 $image = $checkPost->image;
                 (new ImageService())->deleteImage($image->id);
+                $image->delete();
                 Post::where('id', $request->id)->delete();
                 return response()->json([
                     'statusCode' => 200,
@@ -225,7 +227,7 @@ class PostController extends Controller
         $filter = $request->filter;
         $limit  = $request->limit ?? 10;
         $page   = $request->page ?? 1;
-        $posts = Post::with('image')->all()->toQuery();
+        $posts = Post::all()->toQuery();
         if ($filter) {
             $posts = $this->_filterPost($posts, $filter);
         }

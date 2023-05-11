@@ -30,7 +30,7 @@ class UserController extends Controller
     // Get all customer
     public function getAllCustomers()
     {
-        $customers = User::with(['roles', 'avatar'])->whereHas('roles', function ($query) {
+        $customers = User::with(['roles'])->whereHas('roles', function ($query) {
             return $query->where('name', '=', 'customer');
         })->get()->map(function ($customers) {
             unset($customers->introduction);
@@ -54,7 +54,7 @@ class UserController extends Controller
     public function getCustomerById(Request $request)
     {
         if ($request->id) {
-            $customerInfo = User::with(['location', 'avatar'])->where('id', $request->id)->get()->map(function ($customerInfo) {
+            $customerInfo = User::with(['location'])->where('id', $request->id)->get()->map(function ($customerInfo) {
                 unset($customerInfo->email_verified_at);
                 unset($customerInfo->remember_token);
                 unset($customerInfo->is_favorite);
@@ -178,10 +178,13 @@ class UserController extends Controller
                     }
                     $image = $request->file('avatar');
                     if ($image) {
+                        $service = new ImageService();
                         $avatar = $customerUpdate->avatar;
                         if ($avatar) {
+                            $service->deleteImage($avatar->id);
                             $avatar->delete();
                         }
+                        $service->uploadImage($image, $customerUpdate->id, 'avatar');
                     }
                     $customerUpdate->full_name = $request->full_name;
                     $customerUpdate->birthday = $request->birthday;
@@ -221,6 +224,7 @@ class UserController extends Controller
                 $image = $checkCustomer->avatar;
                 if ($image) {
                     (new ImageService())->deleteImage($image->id);
+                    $image->delete();
                 }
                 User::where('id', $request->id)->delete();
                 return response()->json([
@@ -303,7 +307,7 @@ class UserController extends Controller
     public function getProviderById(Request $request)
     {
         if ($request->id) {
-            $providerWithServiceBannerLocation = User::with(['avatar', 'service', 'banner', 'location'])->where('id', $request->id)->get();
+            $providerWithServiceBannerLocation = User::with(['service','location'])->where('id', $request->id)->get();
             if ($providerWithServiceBannerLocation->isEmpty()) {
                 return response()->json([
                     'statusCode' => 404,
@@ -497,6 +501,7 @@ class UserController extends Controller
                 $avatar = $checkProvider->avatar;
                 if ($avatar) {
                     (new ImageService())->deleteImage($avatar->id);
+                    $avatar->delete();
                 }
                 User::where('id', $request->id)->delete();
                 return response()->json([
@@ -570,4 +575,5 @@ class UserController extends Controller
         }
         return $providers;
     }
+
 }

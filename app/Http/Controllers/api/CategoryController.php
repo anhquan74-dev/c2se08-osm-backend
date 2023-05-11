@@ -15,7 +15,7 @@ class CategoryController extends Controller
     // Get all categories
     public function getAllCategories()
     {
-        $categories = Category::with('image')->all();
+        $categories = Category::all();
         return response()->json([
             'data' => $categories,
             'statusCode' => 200,
@@ -27,7 +27,7 @@ class CategoryController extends Controller
     public function getCategoryById(Request $request)
     {
         if ($request->id) {
-            $categoryInfo = Category::with('image')->find($request->id);
+            $categoryInfo = Category::find($request->id);
             if (!$categoryInfo) {
                 return response()->json([
                     'statusCode' => 404,
@@ -70,6 +70,7 @@ class CategoryController extends Controller
             ]);
             $service = new ImageService();
             $service->uploadImage($image, $category->id, 'category');
+            $category = Category::find($category->id);
             return response()->json([
                 'data' => $category,
                 'statusCode' => 201,
@@ -138,6 +139,7 @@ class CategoryController extends Controller
                     $service = new ImageService();
                     if ($image) {
                         $service->deleteImage($image->id);
+                        $image->delete();
                     }
                     $service->uploadImage($request->file('logo'), $categoryUpdate->id, 'category');
                     return response()->json([
@@ -167,6 +169,7 @@ class CategoryController extends Controller
                 $image = $checkCategory->image;
                 Category::where('id', $request->id)->delete();
                 (new ImageService())->deleteImage($image->id);
+                $image->delete();
                 return response()->json([
                     'statusCode' => 200,
                     'message' => 'Deleted category successfully!',
@@ -191,7 +194,7 @@ class CategoryController extends Controller
         $filter = $request->filter;
         $limit = $request->limit ?? 10;
         $page = $request->page ?? 1;
-        $categories = Category::with('image')->all()->toQuery();
+        $categories = Category::all()->toQuery();
         if ($filter) {
             $categories = $this->_filterCategories($categories, $filter);
         }
