@@ -54,7 +54,7 @@ class UserController extends Controller
     public function getCustomerById(Request $request)
     {
         if ($request->id) {
-            $customerInfo = User::with(['location','avatar'])->where('id', $request->id)->get()->map(function ($customerInfo) {
+            $customerInfo = User::with(['location', 'avatar'])->where('id', $request->id)->get()->map(function ($customerInfo) {
                 unset($customerInfo->email_verified_at);
                 unset($customerInfo->remember_token);
                 unset($customerInfo->is_favorite);
@@ -247,7 +247,7 @@ class UserController extends Controller
         $filter = $request->filter;
         $limit  = $request->limit ?? 10;
         $page   = $request->page ?? 1;
-        $user   = User::with(['roles', 'location'])->whereHas('roles', function ($query) {
+        $user   = User::with(['avatar', 'roles', 'location'])->whereHas('roles', function ($query) {
             return $query->where('name', '=', 'customer');
         });
         if ($filter) {
@@ -279,7 +279,7 @@ class UserController extends Controller
     // Get count providers
     public function getTotalProvider()
     {
-        $providersCount = User::with(['roles','avatar'])->whereHas('roles', function ($query) {
+        $providersCount = User::with(['roles', 'avatar'])->whereHas('roles', function ($query) {
             return $query->where('name', '=', 'provider');
         })->count();
         return response()->json([
@@ -291,7 +291,7 @@ class UserController extends Controller
     // Get all provider
     public function getAllProviders()
     {
-        $providers = User::with(['roles','avatar'])->whereHas('roles', function ($query) {
+        $providers = User::with(['roles', 'avatar'])->whereHas('roles', function ($query) {
             return $query->where('roles', '=', 'provider');
         })->get();
         return response()->json([
@@ -304,7 +304,7 @@ class UserController extends Controller
     public function getProviderById(Request $request)
     {
         if ($request->id) {
-            $providerWithServiceBannerLocation = User::with(['avatar','service', 'banner', 'location'])->where('id', $request->id)->get();
+            $providerWithServiceBannerLocation = User::with(['avatar', 'service', 'banner', 'location'])->where('id', $request->id)->get();
             if ($providerWithServiceBannerLocation->isEmpty()) {
                 return response()->json([
                     'statusCode' => 404,
@@ -375,7 +375,7 @@ class UserController extends Controller
             'coords_longitude' => $request->coords_longitude,
             'is_primary' => false,
         ]);
-        $dataReturn = User::with(['avatar','roles', 'location'])->where('id', '=', $provider->id)->get();
+        $dataReturn = User::with(['avatar', 'roles', 'location'])->where('id', '=', $provider->id)->get();
         return response()->json([
             'data' => $dataReturn,
             'statusCode' => 201,
@@ -455,7 +455,7 @@ class UserController extends Controller
                     }
                     $image = $request->file('avatar');
                     $fileName = Str::random(5) . date('YmdHis') . '.' . $image->getClientOriginalExtension();
-                    $image = (new ImageService())->uploadImage($image,$providerUpdate->id,'avatar');
+                    $image = (new ImageService())->uploadImage($image, $providerUpdate->id, 'avatar');
                     $providerUpdate->full_name = $request->full_name;
                     $providerUpdate->birthday = $request->birthday;
                     $providerUpdate->gender = $request->gender;
@@ -524,7 +524,7 @@ class UserController extends Controller
         $filter = $request->filter;
         $limit  = $request->limit ?? 10;
         $page   = $request->page ?? 1;
-        $providers = User::with(['avatar','roles', 'location', 'service'])->whereHas('roles', function ($query) {
+        $providers = User::with(['avatar', 'roles', 'location', 'service'])->whereHas('roles', function ($query) {
             return $query->where('name', '=', 'provider');
         });
         if ($filter) {

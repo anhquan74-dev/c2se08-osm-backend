@@ -89,6 +89,7 @@ Route::get('/post-count', [PostController::class, 'getTotalPost']);
 
 // Appointment's routes
 Route::get('/appointments', [AppointmentController::class, 'getAllAppointments']);
+Route::get('/appointments-count-by-month', [AppointmentController::class, 'getTotalAppointmentByMonthsFromNow']);
 Route::get('/appointments-by-status/{status}', [AppointmentController::class, 'getAllAppointmentsByStatus']);
 Route::get('/appointments/{id}', [AppointmentController::class, 'getAppointmentById']);
 Route::get('/appointments-by-customer/{customer_id}', [AppointmentController::class, 'getAllAppointmentsByCustomerId']);
