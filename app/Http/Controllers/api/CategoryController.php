@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api;
 
 use App\Models\Category;
 use App\Http\Controllers\Controller;
+use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -14,18 +15,19 @@ class CategoryController extends Controller
     // Get all categories
     public function getAllCategories()
     {
-        $categories = Category::all();
+        $categories = Category::with('image')->all();
         return response()->json([
             'data' => $categories,
             'statusCode' => 200,
             'message' => 'Get all categories successful!',
         ]);
     }
+
     // Get category by Id
     public function getCategoryById(Request $request)
     {
         if ($request->id) {
-            $categoryInfo = Category::find($request->id);
+            $categoryInfo = Category::with('image')->find($request->id);
             if (!$categoryInfo) {
                 return response()->json([
                     'statusCode' => 404,
@@ -43,6 +45,7 @@ class CategoryController extends Controller
             'message' => 'Missing category id parameter!',
         ]);
     }
+
     // Create a new category
     public function createNewCategory(Request $request)
     {
@@ -59,15 +62,14 @@ class CategoryController extends Controller
         }
         if ($request->has('logo')) {
             $image = $request->file('logo');
-            $fileName = Str::random(5) . date('YmdHis') . '.' . $image->getClientOriginalExtension();
-            $image->move('uploads/category-logo/', $fileName);
             $category = Category::create([
                 'name' => $request->name,
-                'logo' => $fileName,
                 'total_provider' => 0,
                 'view_priority' => 0,
                 'is_valid' => true,
             ]);
+            $service = new ImageService();
+            $service->uploadImage($image, $category->id, 'category');
             return response()->json([
                 'data' => $category,
                 'statusCode' => 201,
@@ -79,6 +81,7 @@ class CategoryController extends Controller
             "message" => "Missing logo for category",
         ]);
     }
+
     // Update category
     public function updateCategory(Request $request)
     {
@@ -124,19 +127,19 @@ class CategoryController extends Controller
                             "errors" => $validatorUpdate->errors()
                         ]);
                     }
-                    $destination = 'uploads/category-logo/' . $categoryUpdate->logo;
-                    if (File::exists($destination)) {
-                        File::delete($destination);
-                    }
+
                     $image = $request->file('logo');
-                    $fileName = Str::random(5) . date('YmdHis') . '.' . $image->getClientOriginalExtension();
-                    $image->move('uploads/category-logo/', $fileName);
                     $categoryUpdate->name = $request->name;
-                    $categoryUpdate->logo = $fileName;
                     $categoryUpdate->total_provider = $request->total_provider;
                     $categoryUpdate->view_priority = $request->view_priority;
                     $categoryUpdate->is_valid = $request->is_valid;
                     $categoryUpdate->save();
+                    $image = $categoryUpdate->image;
+                    $service = new ImageService();
+                    if ($image) {
+                        $service->deleteImage($image->id);
+                    }
+                    $service->uploadImage($request->file('logo'), $categoryUpdate->id, 'category');
                     return response()->json([
                         'statusCode' => 200,
                         'message' => 'Category updated successfully!',
@@ -154,17 +157,16 @@ class CategoryController extends Controller
             'message' => 'Missing category id parameter!',
         ]);
     }
+
     // Hard delete category
     public function hardDeleteCategory(Request $request)
     {
         if ($request->id) {
             $checkCategory = Category::find($request->id);
             if ($checkCategory) {
-                $destination = 'uploads/category-logo/' . $checkCategory->logo;
-                if (File::exists($destination)) {
-                    File::delete($destination);
-                }
+                $image = $checkCategory->image;
                 Category::where('id', $request->id)->delete();
+                (new ImageService())->deleteImage($image->id);
                 return response()->json([
                     'statusCode' => 200,
                     'message' => 'Deleted category successfully!',
@@ -181,16 +183,17 @@ class CategoryController extends Controller
             'message' => 'Missing category id parameter!',
         ]);
     }
+
     // Searching, paginating and sorting categories
     public function searchPaginationCategories(Request $request)
     {
-        $sort   = $request->sort;
+        $sort = $request->sort;
         $filter = $request->filter;
-        $limit  = $request->limit ?? 10;
-        $page   = $request->page ?? 1;
-        $categories = Category::all()->toQuery();
+        $limit = $request->limit ?? 10;
+        $page = $request->page ?? 1;
+        $categories = Category::with('image')->all()->toQuery();
         if ($filter) {
-            $categories =  $this->_filterCategories($categories, $filter);
+            $categories = $this->_filterCategories($categories, $filter);
         }
         if ($sort) {
             foreach ($sort as $sortArray) {

@@ -172,7 +172,10 @@ class AppointmentController extends Controller
         $imageService = new ImageService();
         // create attach_photos
         if ($request->has('attach_photos')) {
-            $imageService->uploadImage($attach_photo, $appointment->id, 'appointment');
+            $photos = $request->attach_photos;
+            foreach ($photos as $photo) {
+                $imageService->uploadImage($attach_photo, $appointment->id, 'appointment');
+            }
         }
         $appointmentCurrent = Appointment::with('attachPhoto')->find($appointment->id);
         return response()->json([

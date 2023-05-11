@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Models\Post;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Validator;
@@ -25,7 +26,7 @@ class PostController extends Controller
     // Get all posts
     public function getAllPosts()
     {
-        $posts = Post::all();
+        $posts = Post::with('image')->all();
         return response()->json([
             'data' => $posts,
             'statusCode' => 200,
@@ -36,7 +37,7 @@ class PostController extends Controller
     public function getPostById(Request $request)
     {
         if ($request->id) {
-            $postInfo = Post::find($request->id);
+            $postInfo = Post::with('image')->find($request->id);
             if (!$postInfo) {
                 return response()->json([
                     'statusCode' => 404,
@@ -63,7 +64,7 @@ class PostController extends Controller
                 'message' => 'Missing category_id parameter!',
             ]);
         }
-        $posts = Post::where('category_id', '=', $request->category_id)->get();
+        $posts = Post::with('image')->where('category_id', '=', $request->category_id)->get();
         return response()->json([
             'data' => $posts,
             'statusCode' => 200,
@@ -75,7 +76,7 @@ class PostController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|min:2|max:255',
-            'content' => 'string|max:500',
+            'post_content' => 'string|max:500',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'author_id' => 'required|numeric|integer',
             'date' => 'date_format:Y-m-d H:i:s',
@@ -95,18 +96,18 @@ class PostController extends Controller
             ]);
         }
         if ($request->has('image')) {
-            $image = $request->file('image');
-            $fileName = Str::random(5) . date('YmdHis') . '.' . $image->getClientOriginalExtension();
-            $image->move('uploads/post-image/', $fileName);
+
             $post = Post::create([
                 'title' => $request->title,
-                'content' => $request->content,
-                'image' => $fileName,
+                'content' => $request->post_content,
                 'author_id' => $request->author_id,
                 'date' => $request->date,
                 'tags' => $request->tags,
                 'is_valid' => true,
             ]);
+            $image = $request->file('image');
+            $service = new ImageService();
+            $service->uploadImage($image, $post->id, 'post');
             return response()->json([
                 'data' => $post,
                 'statusCode' => 201,
@@ -128,7 +129,7 @@ class PostController extends Controller
                 if ($request->file('image') == null) {
                     $validatorUpdate = Validator::make($request->all(), [
                         'title' => 'string|min:2|max:255',
-                        'content' => 'string|max:500',
+                        'post_content' => 'string|max:500',
                         'date' => 'date_format:Y-m-d H:i:s',
                         'is_valid' => 'integer|between:0,1'
                     ]);
@@ -140,7 +141,7 @@ class PostController extends Controller
                         ]);
                     }
                     $postUpdate->title = $request->title;
-                    $postUpdate->content = $request->content;
+                    $postUpdate->content = $request->post_content;
                     $postUpdate->date = $request->date;
                     $postUpdate->tags = $request->tags;
                     $postUpdate->is_valid = $request->is_valid;
@@ -165,20 +166,16 @@ class PostController extends Controller
                             "errors" => $validatorUpdate->errors()
                         ]);
                     }
-                    $destination = 'uploads/post-image/' . $postUpdate->image;
-                    if (File::exists($destination)) {
-                        File::delete($destination);
-                    }
-                    $image = $request->file('image');
-                    $fileName = Str::random(5) . date('YmdHis') . '.' . $image->getClientOriginalExtension();
-                    $image->move('uploads/post-image/', $fileName);
                     $postUpdate->title = $request->title;
-                    $postUpdate->content = $request->content;
+                    $postUpdate->content = $request->post_content;
                     $postUpdate->date = $request->date;
                     $postUpdate->tags = $request->tags;
-                    $postUpdate->image = $fileName;
                     $postUpdate->is_valid = $request->is_valid;
                     $postUpdate->save();
+                    $image = $postUpdate->image;
+                    $imageService = new ImageService();
+                    $imageService->deleteImage($image->id);
+                    $imageService->uploadImage($request->file('image'),$postUpdate->id,'post');
                     return response()->json([
                         'statusCode' => 200,
                         'message' => 'Post updated successfully!',
@@ -202,10 +199,8 @@ class PostController extends Controller
         if ($request->id) {
             $checkPost = Post::find($request->id);
             if ($checkPost) {
-                $destination = 'uploads/post-image/' . $checkPost->image;
-                if (File::exists($destination)) {
-                    File::delete($destination);
-                }
+                $image = $checkPost->image;
+                (new ImageService())->deleteImage($image->id);
                 Post::where('id', $request->id)->delete();
                 return response()->json([
                     'statusCode' => 200,
@@ -230,7 +225,7 @@ class PostController extends Controller
         $filter = $request->filter;
         $limit  = $request->limit ?? 10;
         $page   = $request->page ?? 1;
-        $posts = Post::all()->toQuery();
+        $posts = Post::with('image')->all()->toQuery();
         if ($filter) {
             $posts = $this->_filterPost($posts, $filter);
         }
