@@ -7,6 +7,7 @@ use Cloudinary\Cloudinary;
 use Cloudinary\Api\Exception\ApiError;
 use Cloudinary\Api\Admin\AdminApi;
 use Cloudinary\Api\Search\SearchApi;
+use Cloudinary\Configuration\Configuration;
 
 class ImageService {
 	protected Cloudinary $cloudinary;
@@ -21,7 +22,11 @@ class ImageService {
 				],
 			]
 		);
-		$this->admin_api = new AdminApi();
+        $config = Configuration::instance();
+        $config->cloud->cloudName = 'dotkkdeep';
+        $config->cloud->apiKey = '285966162357411';
+        $config->cloud->apiSecret = 'FRgpKogWzlmaCixKj3JFj7lSW0E';
+        $this->admin_api = new AdminApi();
 	}
 
 	public function uploadImage($imageRequest, $parent_id, $parent = 'appointment'){
@@ -47,6 +52,7 @@ class ImageService {
 	public function getImageUrl($id){
 		$image = Image::find($id);
 		$url = null;
+        $url = $this->admin_api->assetsByIds($image->public_id)['resources'][0]['url'];
 		try {
 			$url = $this->admin_api->assetsByIds($image->public_id)['resources'][0]['url'];
 		} catch (\Exception $e){
