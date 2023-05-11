@@ -3,11 +3,11 @@
 namespace App\Services;
 
 use App\Models\Image;
+use Carbon\Carbon;
 use Cloudinary\Cloudinary;
-use Cloudinary\Api\Exception\ApiError;
 use Cloudinary\Api\Admin\AdminApi;
-use Cloudinary\Api\Search\SearchApi;
 use Cloudinary\Configuration\Configuration;
+use Illuminate\Support\Facades\Log;
 
 class ImageService {
 	protected Cloudinary $cloudinary;
@@ -31,7 +31,7 @@ class ImageService {
 
 	public function uploadImage($imageRequest, $parent_id, $parent = 'appointment'){
 		$uploader = $this->cloudinary->uploadApi();
-		$filename = explode('.',$imageRequest->getClientOriginalName())[0];
+		$filename = explode('.',$imageRequest->getClientOriginalName())[0].Carbon::now()->getTimestamp();
 
 		$uploadResponse = $uploader->upload($imageRequest->getPathname(), [
 			"public_id" => $filename,
@@ -52,11 +52,10 @@ class ImageService {
 	public function getImageUrl($id){
 		$image = Image::find($id);
 		$url = null;
-        $url = $this->admin_api->assetsByIds($image->public_id)['resources'][0]['url'];
 		try {
 			$url = $this->admin_api->assetsByIds($image->public_id)['resources'][0]['url'];
 		} catch (\Exception $e){
-
+            Log::error($e->getMessage());
 		}
 		return $url;
 	}

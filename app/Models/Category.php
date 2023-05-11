@@ -36,6 +36,8 @@ class Category extends Model
         'is_valid',
     ];
     protected $appends = ['image_url'];
+
+    protected $hidden = ['image'];
     public function getImageUrlAttribute(){
         $image = $this->image;
         if($image){

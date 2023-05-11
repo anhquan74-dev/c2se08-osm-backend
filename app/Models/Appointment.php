@@ -48,6 +48,7 @@ class Appointment extends Model
     ];
 
     protected $appends = ['image_url'];
+    protected $hidden = ['attachPhoto'];
     public function getImageUrlAttribute(){
         $image = $this->attachPhoto;
         if($image){
