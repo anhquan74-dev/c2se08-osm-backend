@@ -17,6 +17,9 @@ return new class extends Migration
             $table->decimal('coords_latitude', 8 , 8 )->change();
             $table->decimal('coords_longitude', 8 , 8 )->change();
         });
+        Schema::table('categories', function (Blueprint $table){
+            $table->dropColumn('logo');
+        });
     }
 
     /**
@@ -29,6 +32,12 @@ return new class extends Migration
         Schema::table('locations', function(Blueprint $table){
             $table->decimal('coords_latitude')->change();
             $table->decimal('coords_longitude' )->change();
+        });
+        Schema::table('posts', function (Blueprint $table){
+            $table->string('image')->nullable();
+        });
+        Schema::table('categories', function (Blueprint $table){
+            $table->string('logo')->nullable();
         });
     }
 };
