@@ -27,14 +27,21 @@ class AuthController extends BaseController
 		if ($validator->fails()) {
 			return response()->json($validator->errors());
 		}
-		if (!$token = auth()->attempt($validator->validated())) {
+        $user = User::where('email','=', $request->email)->first();
+        if (!$user) {
+            return response()->json([
+                'statusCode' => 404,
+                'message' => 'Email or password is incorrect!'
+            ]);
+        }
+        if (!$token = auth()->claims(['type' => 'access', 'user' => $user->id, 'role' => $user->roles[0]->name])->attempt($validator->validated())) {
 			return response()->json([
 				'statusCode' => 404,
 				'message' => 'Email or password is incorrect!'
 			]);
 		} else {
             $refresh_ttl = config('jwt.refresh_ttl');
-			$refreshToken = auth()->setTTL(config('jwt.refresh_ttl'))->claims(['type' => 'refresh'])->attempt($validator->validated());
+			$refreshToken = auth()->setTTL(config('jwt.refresh_ttl'))->claims(['type' => 'refresh', 'user' => $user->id, 'role' => $user->roles[0]->name])->attempt($validator->validated());
 			return $this->responseWithToken($token, $refreshToken, $refresh_ttl);
 		}
 	}
@@ -55,11 +62,11 @@ class AuthController extends BaseController
 	public function refresh()
 	{
        try{
-           $accesstoken = auth()->refresh(true, true);
+           $accessToken = auth()->refresh(true, true);
            $user = auth()->user();
            $refresh_ttl = config('jwt.refresh_ttl');
            $refreshToken = auth()->setTTL(config('jwt.refresh_ttl'))->claims(['type' => 'refresh'])->login($user);
-           return $this->responseWithToken($accesstoken, $refreshToken, $refresh_ttl);
+           return $this->responseWithToken($accessToken, $refreshToken, $refresh_ttl);
        }catch (\Exception $exception){
            return $this->responseWithError(1001);
        }

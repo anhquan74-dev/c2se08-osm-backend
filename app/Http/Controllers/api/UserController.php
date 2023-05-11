@@ -94,6 +94,7 @@ class UserController extends Controller
             // 'password' => 'required|string|min:6|confirmed',
             'full_name' => 'required|string|min:2|max:255',
             'birthday' => 'date_format:Y-m-d H:i:s',
+            'avatar' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors());
@@ -107,8 +108,26 @@ class UserController extends Controller
             'phone_number' => $request->phone_number,
             'is_valid' => false,
         ]);
+        $service = new ImageService();
+        $image = $request->file('avatar');
+        if ($image) {
+            try {
+                $service->uploadImage($image, $customer->id, 'avatar');
+            } catch (\Exception $e) {
+                Log::error($e->getMessage());
+            }
+        }
         $customer->assignRole('customer');
         $customer->save();
+        Location::create([
+            'user_id' => $provider->id,
+            'address' => $request->address,
+            'province_name' => $request->province_name,
+            'district_name' => $request->district_name,
+            'coords_latitude' => $request->coords_latitude,
+            'coords_longitude' => $request->coords_longitude,
+            'is_primary' => false,
+        ]);
         return response()->json([
             'data' => $customer,
             'statusCode' => 201,
@@ -315,6 +334,7 @@ class UserController extends Controller
             'address' => 'string|min:2|max:255',
             'province_name' => 'string|min:2|max:255',
             'district_name' => 'string|min:2|max:255',
+            'avatar' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors());
@@ -336,6 +356,15 @@ class UserController extends Controller
             'click_rate' => 0,
             'is_valid' => false,
         ]);
+        $service = new ImageService();
+        $image = $request->file('avatar');
+        if ($image) {
+            try {
+                $service->uploadImage($image, $provider->id, 'avatar');
+            } catch (\Exception $e) {
+                Log::error($e->getMessage());
+            }
+        }
         $provider->assignRole('provider');
         Location::create([
             'user_id' => $provider->id,
