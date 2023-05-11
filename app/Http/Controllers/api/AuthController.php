@@ -4,7 +4,11 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Http\Request;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Exceptions\TokenBlacklistedException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Facades\JWTFactory;
 use Tymon\JWTAuth\JWTAuth;
 use Illuminate\Support\Facades\Validator;
@@ -59,16 +63,20 @@ class AuthController extends BaseController
 	}
 
 
-	public function refresh()
-	{
-       try{
-           $accessToken = auth()->refresh(true, true);
-           $user = auth()->user();
-           $refresh_ttl = config('jwt.refresh_ttl');
-           $refreshToken = auth()->setTTL(config('jwt.refresh_ttl'))->claims(['type' => 'refresh'])->login($user);
-           return $this->responseWithToken($accessToken, $refreshToken, $refresh_ttl);
-       }catch (\Exception $exception){
-           return $this->responseWithError(1001);
-       }
-	}
+    public function refresh()
+    {
+        try {
+            $accessToken = auth()->refresh(true, true);
+            $user = auth()->user();
+            $refresh_ttl = config('jwt.refresh_ttl');
+            $refreshToken = auth()->setTTL(config('jwt.refresh_ttl'))->claims(['type' => 'refresh'])->login($user);
+            return $this->responseWithToken($accessToken, $refreshToken, $refresh_ttl);
+        } catch (TokenInvalidException $e) {
+            return $this->respondWithError(1002, 403);
+        } catch (JWTException $e) {
+            return $this->respondWithError(1003, 403);
+        } catch (\Exception $e) {
+            return $this->respondWithError(1001, 401);
+        }
+    }
 }
