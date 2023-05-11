@@ -105,7 +105,7 @@ class PostController extends Controller
                 'author_id' => $request->author_id,
                 'date' => $request->date,
                 'tags' => $request->tags,
-                'is_valid' => false,
+                'is_valid' => true,
             ]);
             return response()->json([
                 'data' => $post,

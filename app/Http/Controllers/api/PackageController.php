@@ -14,7 +14,7 @@ class PackageController extends Controller
     // Get all packages
     public function getAllPackages()
     {
-            $packages = Package::with(['service','provider'])->get();
+        $packages = Package::with(['service', 'provider'])->get();
         return response()->json([
             'data' => $packages,
             'statusCode' => 200,
@@ -135,7 +135,7 @@ class PackageController extends Controller
             'avg_star' => 0,
             'is_negotiable' => false,
             'view_priority' => 0,
-            'is_valid' => false,
+            'is_valid' => true,
         ]);
         return response()->json([
             'data' => $package,

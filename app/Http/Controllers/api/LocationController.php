@@ -90,7 +90,7 @@ class LocationController extends Controller
             'ward_name' => $request->ward_name,
             'coords_latitude' => $request->coords_latitude,
             'coords_longitude' => $request->coords_longitude,
-            'is_primary' => false,
+            'is_primary' => true,
         ]);
         return response()->json([
             'data' => $location,

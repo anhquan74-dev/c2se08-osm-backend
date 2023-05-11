@@ -119,12 +119,12 @@ class ServiceController extends Controller
             'avg_price' => 0,
             'max_price' => 0,
             'min_price' => 0,
-            'is_negotiable' => false,
+            // 'is_negotiable' => false,
             'total_rate' => 0,
             'total_star' => 0,
             'avg_star' => 0,
             'number_of_packages' => 0,
-            'is_valid' => false,
+            'is_valid' => true,
         ]);
         return response()->json([
             'data' => $service,

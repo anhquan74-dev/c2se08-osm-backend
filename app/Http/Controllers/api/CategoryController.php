@@ -66,7 +66,7 @@ class CategoryController extends Controller
                 'logo' => $fileName,
                 'total_provider' => 0,
                 'view_priority' => 0,
-                'is_valid' => false,
+                'is_valid' => true,
             ]);
             return response()->json([
                 'data' => $category,
@@ -184,30 +184,31 @@ class CategoryController extends Controller
     // Searching, paginating and sorting categories
     public function searchPaginationCategories(Request $request)
     {
-	    $sort   = $request->sort;
-	    $filter = $request->filter;
-	    $limit  = $request->limit ?? 10;
-	    $page   = $request->page ?? 1;
-	    $categories = Category::all()->toQuery();
-	    if ( $filter ) {
-		   $categories =  $this->_filterCategories( $categories, $filter );
-	    }
-	    if ( $sort ) {
-		    foreach ( $sort as $sortArray ) {
-			    $categories->orderBy( $sortArray['sort_by'], $sortArray['sort_dir'] );
-		    }
-	    }
-	    return $categories->paginate( $limit, [ '*' ], 'page', $page );
+        $sort   = $request->sort;
+        $filter = $request->filter;
+        $limit  = $request->limit ?? 10;
+        $page   = $request->page ?? 1;
+        $categories = Category::all()->toQuery();
+        if ($filter) {
+            $categories =  $this->_filterCategories($categories, $filter);
+        }
+        if ($sort) {
+            foreach ($sort as $sortArray) {
+                $categories->orderBy($sortArray['sort_by'], $sortArray['sort_dir']);
+            }
+        }
+        return $categories->paginate($limit, ['*'], 'page', $page);
     }
 
-	private function _filterCategories( &$categories, $filter){
-		if ( isset( $filter['name'] ) ) {
-			$categories->where( 'name', 'LIKE', '%' . $filter['name'] . '%' );
-		}
+    private function _filterCategories(&$categories, $filter)
+    {
+        if (isset($filter['name'])) {
+            $categories->where('name', 'LIKE', '%' . $filter['name'] . '%');
+        }
 
-		if ( isset( $filter['is_valid'] ) ) {
-			$categories->where( 'is_valid', $filter['is_valid'] );
-		}
-		return $categories;
-	}
+        if (isset($filter['is_valid'])) {
+            $categories->where('is_valid', $filter['is_valid']);
+        }
+        return $categories;
+    }
 }

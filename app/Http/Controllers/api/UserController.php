@@ -106,7 +106,7 @@ class UserController extends Controller
             'birthday' => $request->birthday,
             'gender' => $request->gender,
             'phone_number' => $request->phone_number,
-            'is_valid' => false,
+            'is_valid' => true,
         ]);
         $service = new ImageService();
         $image = $request->file('avatar');
@@ -126,7 +126,7 @@ class UserController extends Controller
             'district_name' => $request->district_name,
             'coords_latitude' => $request->coords_latitude,
             'coords_longitude' => $request->coords_longitude,
-            'is_primary' => false,
+            'is_primary' => $request->is_primary,
         ]);
         return response()->json([
             'data' => $customer,
@@ -354,7 +354,7 @@ class UserController extends Controller
             'clicks' => 0,
             'views' => 0,
             'click_rate' => 0,
-            'is_valid' => false,
+            'is_valid' => true,
         ]);
         $service = new ImageService();
         $image = $request->file('avatar');
@@ -373,7 +373,7 @@ class UserController extends Controller
             'district_name' => $request->district_name,
             'coords_latitude' => $request->coords_latitude,
             'coords_longitude' => $request->coords_longitude,
-            'is_primary' => false,
+            'is_primary' => $request->is_primary,
         ]);
         $dataReturn = User::with(['avatar', 'roles', 'location'])->where('id', '=', $provider->id)->get();
         return response()->json([
