@@ -239,7 +239,7 @@ Route::middleware([
     Route::post('/delete-notify-by-provider/{id}', [NotifyController::class, 'deleteNotifyByProvider']);
 
     // Message's routes
-    Route::post('/messages', [MessageController::class, 'createMessage']);
+//    Route::post('/messages', [MessageController::class, 'createMessage']);
     Route::get('/messages-by-customer-provider', [MessageController::class, 'getMessages']);
     Route::post('/hard-delete-message/{id}', [MessageController::class, 'hardDeleteMessage']);
 });
@@ -352,7 +352,7 @@ Route::middleware([
     Route::post('/delete-notify-by-provider/{id}', [NotifyController::class, 'deleteNotifyByProvider']);
 
     // Message's routes
-    Route::post('/messages', [MessageController::class, 'createMessage']);
+//    Route::post('/messages', [MessageController::class, 'createMessage']);
     Route::get('/messages-by-customer-provider', [MessageController::class, 'getMessages']);
     Route::post('/hard-delete-message/{id}', [MessageController::class, 'hardDeleteMessage']);
 });
@@ -360,8 +360,6 @@ Route::middleware([
 Route::middleware([
     'customer.auth',
 ])->group(function () {
-    // Route::post('/logout', [AuthController::class, 'logout']);
-
     // Customer's routes
     Route::get('/customers', [UserController::class, 'getAllCustomers']);
     Route::get('/customers/{id}', [UserController::class, 'getCustomerById']);
@@ -461,13 +459,14 @@ Route::middleware([
     Route::post('/delete-notify-by-provider/{id}', [NotifyController::class, 'deleteNotifyByProvider']);
 
     // Message's routes
-    Route::post('/messages', [MessageController::class, 'createMessage']);
+//    Route::post('/messages', [MessageController::class, 'createMessage']);
     Route::get('/messages-by-customer-provider', [MessageController::class, 'getMessages']);
     Route::post('/hard-delete-message/{id}', [MessageController::class, 'hardDeleteMessage']);
 });
 
-// Route::middleware(['or-middleware:admin.auth,customer.auth,provider.auth'])->group(function () {
-// });
+Route::middleware(['or-middleware:customer|provider|admin'])->group(function () {
+    Route::post('/messages', [MessageController::class, 'createMessage']);
+});
 
 
 //demo images
