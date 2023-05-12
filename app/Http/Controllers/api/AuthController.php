@@ -60,10 +60,6 @@ class AuthController extends BaseController
         try{
             $payload = auth()->payload();
             auth()->logout();
-        } catch (TokenInvalidException $e) {
-            return $this->responseWithError(1002, 403);
-        } catch (JWTException $e) {
-            return $this->responseWithError(1003, 403);
         } catch (\Exception $e) {
             return $this->responseWithError(1001, 403);
         }
