@@ -145,6 +145,9 @@ Route::middleware([
 ])->group(function () {
 });
 
+Route::middleware(['or-middleware:customer.auth,provider.auth'])->group(function () {
+});
+
 
 //demo images
 Route::group(['prefix'=>'images'], function(){
