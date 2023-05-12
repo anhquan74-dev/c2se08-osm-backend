@@ -66,5 +66,6 @@ class Kernel extends HttpKernel
         'customer.auth' => \App\Http\Middleware\Auth\CustomerAuthMiddleware::class,
         'provider.auth' => \App\Http\Middleware\Auth\ProviderAuthMiddleware::class,
         'admin.auth' => \App\Http\Middleware\Auth\AdminAuthMiddleware::class,
+        'or-middleware' => \App\Http\Middleware\Auth\OrMiddleware::class,
     ];
 }
