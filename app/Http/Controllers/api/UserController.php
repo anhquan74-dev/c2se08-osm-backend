@@ -350,7 +350,7 @@ class UserController extends Controller
     {
         if ($request->id) {
             $providerWithServiceBannerLocation = User::with(['location', 'avatar', 'banner', 'roles', 'service'])->whereHas('roles', function ($query) {
-                return $query->where('name', '=', 'customer');
+                return $query->where('name', '=', 'provider');
             })->where('id', $request->id)->get();
             if ($providerWithServiceBannerLocation->isEmpty()) {
                 return response()->json([
