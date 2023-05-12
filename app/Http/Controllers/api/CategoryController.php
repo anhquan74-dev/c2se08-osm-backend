@@ -27,7 +27,7 @@ class CategoryController extends Controller
     public function getCategoryById(Request $request)
     {
         if ($request->id) {
-            $categoryInfo = Category::find($request->id);
+            $categoryInfo = Category::with('logo')->find($request->id);
             if (!$categoryInfo) {
                 return response()->json([
                     'statusCode' => 404,
@@ -65,7 +65,7 @@ class CategoryController extends Controller
             $category = Category::create([
                 'name' => $request->name,
                 'total_provider' => 0,
-                'view_priority' => 0,
+                'view_priority' => $request->view_priority,
                 'is_valid' => true,
             ]);
             $service = new ImageService();
@@ -104,7 +104,6 @@ class CategoryController extends Controller
                         ]);
                     }
                     $categoryUpdate->name = $request->name;
-                    $categoryUpdate->total_provider = $request->total_provider;
                     $categoryUpdate->view_priority = $request->view_priority;
                     $categoryUpdate->is_valid = $request->is_valid;
                     $categoryUpdate->save();
@@ -131,7 +130,6 @@ class CategoryController extends Controller
 
                     $image = $request->file('logo');
                     $categoryUpdate->name = $request->name;
-                    $categoryUpdate->total_provider = $request->total_provider;
                     $categoryUpdate->view_priority = $request->view_priority;
                     $categoryUpdate->is_valid = $request->is_valid;
                     $categoryUpdate->save();
@@ -194,7 +192,7 @@ class CategoryController extends Controller
         $filter = $request->filter;
         $limit = $request->limit ?? 10;
         $page = $request->page ?? 1;
-        $categories = Category::all()->toQuery();
+        $categories = Category::with('logo');
         if ($filter) {
             $categories = $this->_filterCategories($categories, $filter);
         }

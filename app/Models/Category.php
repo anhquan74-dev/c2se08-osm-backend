@@ -23,9 +23,9 @@ class Category extends Model
         return $this->hasMany(Post::class, 'category_id');
     }
 
-    public function image():HasOne
+    public function logo(): HasOne
     {
-        return $this->hasOne(Image::class, 'parent_id', 'id')->where('parent_type','=','category');
+        return $this->hasOne(Image::class, 'parent_id', 'id')->where('parent_type', '=', 'category');
     }
 
     protected $fillable = [

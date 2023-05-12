@@ -313,7 +313,7 @@ class UserController extends Controller
         }
         if (isset($filter['province_name'])) {
             $users->whereHas('location', function ($query) use ($filter) {
-                $query->where('province_name', '=', $filter['province_name']);
+                $query->where('province_name', 'LIKE', '%' . $filter['province_name'] . '%');
             });
         }
         if (isset($filter['is_valid'])) {
@@ -444,103 +444,72 @@ class UserController extends Controller
         if ($request->id) {
             $providerUpdate = User::find($request->id);
             if ($providerUpdate) {
-                if ($request->file('avatar') == null) {
-                    $validatorUpdate = Validator::make($request->all(), [
-                        'full_name' => 'string|min:2|max:255',
-                        'birthday' => 'date_format:Y-m-d H:i:s',
-                        // 'introduction' => 'string|max:500',
-                        'is_favorite' => 'integer|between:0,1',
-                        'is_working' => 'integer|between:0,1',
-                        'total_rate' => 'numeric|integer',
-                        'total_star' => 'numeric|integer',
-                        'avg_star' => 'numeric',
-                        'clicks' => 'numeric|integer',
-                        'views' => 'numeric|integer',
-                        'click_rate' => 'numeric',
-                        'is_valid' => 'integer|between:0,1'
-                    ]);
-                    if ($validatorUpdate->fails()) {
-                        return response()->json([
-                            "statusCode" => 400,
-                            "message" => "Validation update error",
-                            "errors" => $validatorUpdate->errors()
-                        ]);
-                    }
-                    $providerUpdate->full_name = $request->full_name;
-                    $providerUpdate->birthday = $request->birthday;
-                    $providerUpdate->gender = $request->gender;
-                    $providerUpdate->phone_number = $request->phone_number;
-                    $providerUpdate->introduction = $request->introduction;
-                    $providerUpdate->is_favorite = $request->is_favorite;
-                    $providerUpdate->is_working = $request->is_working;
-                    $providerUpdate->total_rate = $request->total_rate;
-                    $providerUpdate->total_star = $request->total_star;
-                    $providerUpdate->avg_star = $request->avg_star;
-                    $providerUpdate->clicks = $request->clicks;
-                    $providerUpdate->views = $request->views;
-                    $providerUpdate->click_rate = $request->click_rate;
-                    $providerUpdate->is_valid = $request->is_valid;
-                    $providerUpdate->save();
+                $validatorUpdate = Validator::make($request->all(), [
+                    'full_name' => 'string|min:2|max:255',
+                    'avatar' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                    'birthday' => 'date_format:Y-m-d H:i:s',
+                    'introduction' => 'string|max:500',
+                    'is_favorite' => 'integer|between:0,1',
+                    'is_working' => 'integer|between:0,1',
+                    'total_rate' => 'numeric|integer',
+                    'total_star' => 'numeric|integer',
+                    'avg_star' => 'numeric',
+                    'clicks' => 'numeric|integer',
+                    'views' => 'numeric|integer',
+                    'click_rate' => 'numeric',
+                    'is_valid' => 'integer|between:0,1'
+                ]);
+                if ($validatorUpdate->fails()) {
                     return response()->json([
-                        'statusCode' => 200,
-                        'message' => 'Provider updated successfully!',
+                        "statusCode" => 400,
+                        "message" => "Validation update error",
+                        "errors" => $validatorUpdate->errors()
                     ]);
                 }
                 if ($request->hasFile('avatar')) {
-                    $validatorUpdate = Validator::make($request->all(), [
-                        'full_name' => 'string|min:2|max:255',
-                        'avatar' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                        'birthday' => 'date_format:Y-m-d H:i:s',
-                        'introduction' => 'string|max:500',
-                        'is_favorite' => 'integer|between:0,1',
-                        'is_working' => 'integer|between:0,1',
-                        'total_rate' => 'numeric|integer',
-                        'total_star' => 'numeric|integer',
-                        'avg_star' => 'numeric',
-                        'clicks' => 'numeric|integer',
-                        'views' => 'numeric|integer',
-                        'click_rate' => 'numeric',
-                        'is_valid' => 'integer|between:0,1'
-                    ]);
-                    if ($validatorUpdate->fails()) {
-                        return response()->json([
-                            "statusCode" => 400,
-                            "message" => "Validation update error",
-                            "errors" => $validatorUpdate->errors()
-                        ]);
-                    }
                     $image = $request->file('avatar');
                     $image = (new ImageService())->uploadImage($image, $providerUpdate->id, 'avatar');
+                }
+
+                if ($request->hasFile('banner')) {
                     $imageBanners = $request->file('banner');
                     if (count($imageBanners)) {
                         $imageOld = $providerUpdate->banner;
                         foreach ($imageBanners as $imageBanner)
                             try {
-                                $service->uploadImage($imageBanner, $provider->id, 'provider');
+                                (new ImageService())->uploadImage($imageBanner, $providerUpdate->id, 'provider');
                             } catch (\Exception $e) {
                                 Log::error($e->getMessage());
                             }
                     }
-                    $providerUpdate->full_name = $request->full_name;
-                    $providerUpdate->birthday = $request->birthday;
-                    $providerUpdate->gender = $request->gender;
-                    $providerUpdate->phone_number = $request->phone_number;
-                    $providerUpdate->introduction = $request->introduction;
-                    $providerUpdate->is_favorite = $request->is_favorite;
-                    $providerUpdate->is_working = $request->is_working;
-                    $providerUpdate->total_rate = $request->total_rate;
-                    $providerUpdate->total_star = $request->total_star;
-                    $providerUpdate->avg_star = $request->avg_star;
-                    $providerUpdate->clicks = $request->clicks;
-                    $providerUpdate->views = $request->views;
-                    $providerUpdate->click_rate = $request->click_rate;
-                    $providerUpdate->is_valid = $request->is_valid;
-                    $providerUpdate->save();
-                    return response()->json([
-                        'statusCode' => 200,
-                        'message' => 'Provider updated successfully!',
-                    ]);
                 }
+                Location::where('user_id', $request->id)->update([
+                    'address' => $request->input('location.address'),
+                    'province_name' => $request->input('location.province_name'),
+                    'district_name' => $request->input('location.district_name'),
+                    'coords_latitude' => $request->input('location.coords_latitude'),
+                    'coords_longitude' => $request->input('location.coords_longitude'),
+                    'is_primary' => $request->input('location.is_primary'),
+                ]);
+                $providerUpdate->full_name = $request->full_name;
+                $providerUpdate->birthday = $request->birthday;
+                $providerUpdate->gender = $request->gender;
+                $providerUpdate->phone_number = $request->phone_number;
+                $providerUpdate->introduction = $request->introduction;
+                $providerUpdate->is_favorite = $request->is_favorite;
+                $providerUpdate->is_working = $request->is_working;
+                $providerUpdate->total_rate = $request->total_rate;
+                $providerUpdate->total_star = $request->total_star;
+                $providerUpdate->avg_star = $request->avg_star;
+                $providerUpdate->clicks = $request->clicks;
+                $providerUpdate->views = $request->views;
+                $providerUpdate->click_rate = $request->click_rate;
+                $providerUpdate->is_valid = $request->is_valid;
+                $providerUpdate->save();
+                return response()->json([
+                    'statusCode' => 200,
+                    'message' => 'Provider updated successfully!',
+                ]);
             } else {
                 return response()->json([
                     "statusCode" => 404,
@@ -612,7 +581,8 @@ class UserController extends Controller
         }
         if (isset($filter['province_name'])) {
             $providers->whereHas('location', function ($query) use ($filter) {
-                $query->where('province_name', '=', $filter['province_name']);
+                // $query->where('province_name', '=', $filter['province_name']);
+                $query->where('province_name', 'LIKE', '%' . $filter['province_name'] . '%');
             });
         }
         if (isset($filter['avg_star'])) {
