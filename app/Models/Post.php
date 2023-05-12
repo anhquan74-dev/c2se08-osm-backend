@@ -32,14 +32,4 @@ class Post extends Model
         'tags',
         'is_valid',
     ];
-    protected $appends = ['image_url'];
-    protected $hidden = ['image'];
-    public function getImageUrlAttribute(){
-        $image = $this->image;
-        if($image){
-            $service = new ImageService();
-            return $service->getImageUrl($image->id);
-        }
-        return null;
-    }
 }

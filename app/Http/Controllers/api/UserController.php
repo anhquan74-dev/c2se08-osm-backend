@@ -294,8 +294,8 @@ class UserController extends Controller
     // Get all provider
     public function getAllProviders()
     {
-        $providers = User::with(['roles', 'avatar'])->whereHas('roles', function ($query) {
-            return $query->where('roles', '=', 'provider');
+        $providers = User::with('roles')->whereHas('roles', function ($query) {
+            return $query->where('name', '=', 'provider');
         })->get();
         return response()->json([
             'data' => $providers,
@@ -368,6 +368,15 @@ class UserController extends Controller
                 Log::error($e->getMessage());
             }
         }
+        $imageBanners = $request->file('banner');
+        if (count($imageBanners)) {
+            foreach ($imageBanners as $imageBanner)
+            try {
+                $service->uploadImage($imageBanner, $provider->id, 'provider');
+            } catch (\Exception $e) {
+                Log::error($e->getMessage());
+            }
+        }
         $provider->assignRole('provider');
         Location::create([
             'user_id' => $provider->id,
@@ -378,7 +387,7 @@ class UserController extends Controller
             'coords_longitude' => $request->coords_longitude,
             'is_primary' => $request->is_primary,
         ]);
-        $dataReturn = User::with(['avatar', 'roles', 'location'])->where('id', '=', $provider->id)->get();
+        $dataReturn = User::with(['roles', 'location'])->where('id', '=', $provider->id)->get();
         return response()->json([
             'data' => $dataReturn,
             'statusCode' => 201,
@@ -457,8 +466,17 @@ class UserController extends Controller
                         ]);
                     }
                     $image = $request->file('avatar');
-                    $fileName = Str::random(5) . date('YmdHis') . '.' . $image->getClientOriginalExtension();
                     $image = (new ImageService())->uploadImage($image, $providerUpdate->id, 'avatar');
+                    $imageBanners = $request->file('banner');
+                    if (count($imageBanners)) {
+                        $imageOld = $providerUpdate->banner;
+                        foreach ($imageBanners as $imageBanner)
+                            try {
+                                $service->uploadImage($imageBanner, $provider->id, 'provider');
+                            } catch (\Exception $e) {
+                                Log::error($e->getMessage());
+                            }
+                    }
                     $providerUpdate->full_name = $request->full_name;
                     $providerUpdate->birthday = $request->birthday;
                     $providerUpdate->gender = $request->gender;

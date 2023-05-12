@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\ImageService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,4 +25,12 @@ class Image extends Model
 		'parent_type',
 		'parent_id',
 	];
+    protected $appends = ['url'];
+
+    public function getUrlAttribute()
+    {
+        $service = new ImageService();
+        return $service->getImageUrl($this->id);
+    }
+
 }

@@ -33,11 +33,5 @@ return new class extends Migration
             $table->decimal('coords_latitude')->change();
             $table->decimal('coords_longitude' )->change();
         });
-        Schema::table('posts', function (Blueprint $table){
-            $table->string('image')->nullable();
-        });
-        Schema::table('categories', function (Blueprint $table){
-            $table->string('logo')->nullable();
-        });
     }
 };
