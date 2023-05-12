@@ -14,11 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('locations', function (Blueprint $table) {
-            $table->decimal('coords_latitude', 10, 8)->change();
-            $table->decimal('coords_longitude', 10, 8)->change();
-        });
-        Schema::table('categories', function (Blueprint $table) {
-            $table->dropColumn('logo');
+            $table->decimal('coords_latitude', 15, 10)->change();
+            $table->decimal('coords_longitude', 15, 10)->change();
         });
     }
 

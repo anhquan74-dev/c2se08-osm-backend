@@ -17,9 +17,6 @@ return new class extends Migration
             $table->decimal('coords_latitude', 10, 8)->change();
             $table->decimal('coords_longitude', 10, 8)->change();
         });
-        Schema::table('categories', function (Blueprint $table) {
-            $table->dropColumn('logo');
-        });
     }
 
     /**

@@ -163,12 +163,12 @@ class UserController extends Controller
         $customer->save();
         Location::create([
             'user_id' => $customer->id,
-            'address' => $request->address,
-            'province_name' => $request->province_name,
-            'district_name' => $request->district_name,
-            'coords_latitude' => $request->coords_latitude,
-            'coords_longitude' => $request->coords_longitude,
-            'is_primary' => $request->is_primary,
+            'address' => $request->input('location.address'),
+            'province_name' => $request->input('location.province_name'),
+            'district_name' => $request->input('location.district_name'),
+            'coords_latitude' => $request->input('location.coords_latitude'),
+            'coords_longitude' => $request->input('location.coords_longitude'),
+            'is_primary' => $request->input('location.is_primary'),
         ]);
         return response()->json([
             'data' => $customer,
@@ -424,12 +424,12 @@ class UserController extends Controller
         $provider->assignRole('provider');
         Location::create([
             'user_id' => $provider->id,
-            'address' => $request->address,
-            'province_name' => $request->province_name,
-            'district_name' => $request->district_name,
-            'coords_latitude' => $request->coords_latitude,
-            'coords_longitude' => $request->coords_longitude,
-            'is_primary' => $request->is_primary,
+            'address' => $request->input('location.address'),
+            'province_name' => $request->input('location.province_name'),
+            'district_name' => $request->input('location.district_name'),
+            'coords_latitude' => $request->input('location.coords_latitude'),
+            'coords_longitude' => $request->input('location.coords_longitude'),
+            'is_primary' => $request->input('location.is_primary'),
         ]);
         $dataReturn = User::with(['roles', 'location'])->where('id', '=', $provider->id)->get();
         return response()->json([
