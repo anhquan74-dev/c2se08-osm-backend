@@ -47,14 +47,4 @@ class Appointment extends Model
         'cancel_date',
     ];
 
-    protected $appends = ['image_url'];
-    protected $hidden = ['attachPhoto'];
-    public function getImageUrlAttribute(){
-        $image = $this->attachPhoto;
-        if($image){
-            $service = new ImageService();
-            return $service->getImageUrl($image->id);
-        }
-        return null;
-    }
 }
