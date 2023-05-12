@@ -10,6 +10,7 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenBlacklistedException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Facades\JWTFactory;
+use Tymon\JWTAuth\JWT;
 use Tymon\JWTAuth\JWTAuth;
 use Illuminate\Support\Facades\Validator;
 
@@ -18,7 +19,6 @@ class AuthController extends BaseController
     public function __construct()
     {
         parent::__construct();
-        $this->middleware('auth:api', ['except' => ['login']]);
     }
 
     // Login
@@ -57,8 +57,16 @@ class AuthController extends BaseController
 
     public function logout()
     {
-        auth()->logout();
-
+        try{
+            $payload = auth()->payload();
+            auth()->logout();
+        } catch (TokenInvalidException $e) {
+            return $this->responseWithError(1002, 403);
+        } catch (JWTException $e) {
+            return $this->responseWithError(1003, 403);
+        } catch (\Exception $e) {
+            return $this->responseWithError(1001, 403);
+        }
         return response()->json(['message' => 'Successfully logged out']);
     }
 
@@ -66,10 +74,10 @@ class AuthController extends BaseController
     public function refresh()
     {
         try {
-            $accessToken = auth()->refresh(true, true);
-            // $user = auth()->user();
-            // $refresh_ttl = config('jwt.refresh_ttl');
-            // $refreshToken = auth()->setTTL(config('jwt.refresh_ttl'))->claims(['type' => 'refresh'])->login($user);
+            $payload = auth()->payload();
+            $user = auth()->user();
+            $accessToken = auth()->claims(['type' => 'access', 'user' => $user->id,
+                'role' => $user->roles[0]->name])->login($user);
             return $this->responseWithAccessTokenWhenRefresh($accessToken);
         } catch (TokenInvalidException $e) {
             return $this->responseWithError(1002, 403);
