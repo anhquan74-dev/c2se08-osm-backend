@@ -54,7 +54,9 @@ class UserController extends Controller
     public function getCustomerById(Request $request)
     {
         if ($request->id) {
-            $customerInfo = User::with(['location'])->where('id', $request->id)->get()->map(function ($customerInfo) {
+            $customerInfo = User::with(['location', 'avatar', 'roles'])->whereHas('roles', function ($query) {
+                return $query->where('name', '=', 'customer');
+            })->where('id', $request->id)->get()->map(function ($customerInfo) {
                 unset($customerInfo->email_verified_at);
                 unset($customerInfo->remember_token);
                 unset($customerInfo->is_favorite);
@@ -86,6 +88,46 @@ class UserController extends Controller
             'message' => 'Missing customer id parameter!',
         ]);
     }
+
+    // Get admin by Id
+    public function getAdminById(Request $request)
+    {
+        if ($request->id) {
+            $adminInfo = User::with('roles')->whereHas('roles', function ($query) {
+                return $query->where('name', '=', 'admin');
+            })->where('id', $request->id)->get()->map(function ($adminInfo) {
+                unset($adminInfo->email_verified_at);
+                unset($adminInfo->remember_token);
+                unset($adminInfo->is_favorite);
+                unset($adminInfo->is_working);
+                unset($adminInfo->total_rate);
+                unset($adminInfo->total_star);
+                unset($adminInfo->avg_star);
+                unset($adminInfo->clicks);
+                unset($adminInfo->views);
+                unset($adminInfo->click_rate);
+                unset($adminInfo->introduction);
+                unset($adminInfo->password);
+                return $adminInfo;
+            });
+            if ($adminInfo->isEmpty()) {
+                return response()->json([
+                    'statusCode' => 404,
+                    'message' => 'Not found!',
+                ]);
+            }
+            return response()->json([
+                'data' => $adminInfo[0],
+                'statusCode' => 200,
+                'message' => 'Get admin info successfully!',
+            ]);
+        }
+        return response()->json([
+            'statusCode' => 400,
+            'message' => 'Missing admin id parameter!',
+        ]);
+    }
+
     // Create a new customer
     public function createNewCustomer(Request $request)
     {
@@ -250,7 +292,7 @@ class UserController extends Controller
         $filter = $request->filter;
         $limit  = $request->limit ?? 10;
         $page   = $request->page ?? 1;
-        $user   = User::with(['avatar', 'roles', 'location'])->whereHas('roles', function ($query) {
+        $user   = User::with(['location', 'avatar', 'roles'])->whereHas('roles', function ($query) {
             return $query->where('name', '=', 'customer');
         });
         if ($filter) {
@@ -307,7 +349,9 @@ class UserController extends Controller
     public function getProviderById(Request $request)
     {
         if ($request->id) {
-            $providerWithServiceBannerLocation = User::with(['service','location'])->where('id', $request->id)->get();
+            $providerWithServiceBannerLocation = User::with(['location', 'avatar', 'banner', 'roles', 'service'])->whereHas('roles', function ($query) {
+                return $query->where('name', '=', 'customer');
+            })->where('id', $request->id)->get();
             if ($providerWithServiceBannerLocation->isEmpty()) {
                 return response()->json([
                     'statusCode' => 404,
@@ -315,7 +359,7 @@ class UserController extends Controller
                 ]);
             }
             return response()->json([
-                'data' => $providerWithServiceBannerLocation,
+                'data' => $providerWithServiceBannerLocation[0],
                 'statusCode' => 200,
                 'message' => 'Get provider info successfully!',
             ]);
@@ -371,11 +415,11 @@ class UserController extends Controller
         $imageBanners = $request->file('banner');
         if (count($imageBanners)) {
             foreach ($imageBanners as $imageBanner)
-            try {
-                $service->uploadImage($imageBanner, $provider->id, 'provider');
-            } catch (\Exception $e) {
-                Log::error($e->getMessage());
-            }
+                try {
+                    $service->uploadImage($imageBanner, $provider->id, 'provider');
+                } catch (\Exception $e) {
+                    Log::error($e->getMessage());
+                }
         }
         $provider->assignRole('provider');
         Location::create([
@@ -593,5 +637,4 @@ class UserController extends Controller
         }
         return $providers;
     }
-
 }
