@@ -22,33 +22,54 @@ class PackageController extends Controller
         ]);
     }
     // Get package by Id
+    // public function getPackageById(Request $request)
+    // {
+    //     if ($request->id) {
+    //         $packageInfo = Package::join('services', 'services.id', '=', 'packages.service_id')
+    //             ->join('users', 'users.id', '=', 'services.provider_id')
+    //             ->where('packages.id', '=', $request->id)
+    //             ->select(
+    //                 'packages.*',
+    //                 'users.id as provider_id',
+    //                 'users.email',
+    //                 'users.full_name',
+    //                 'users.birthday',
+    //                 'users.gender',
+    //                 'users.phone_number',
+    //                 'users.avatar',
+    //                 'users.introduction',
+    //                 'users.is_favorite',
+    //                 'users.is_working',
+    //                 'users.total_rate',
+    //                 'users.total_star',
+    //                 'users.avg_star',
+    //                 'users.clicks',
+    //                 'users.views',
+    //                 'users.click_rate',
+    //                 'users.is_valid as is_valid_provider',
+    //             )
+    //             ->get();
+    //         if (!$packageInfo) {
+    //             return response()->json([
+    //                 'statusCode' => 404,
+    //                 'message' => 'Not found!',
+    //             ]);
+    //         }
+    //         return response()->json([
+    //             'data' => $packageInfo,
+    //             'statusCode' => 200,
+    //             'message' => 'Get package info successfully!',
+    //         ]);
+    //     }
+    //     return response()->json([
+    //         'statusCode' => 400,
+    //         'message' => 'Missing package id parameter!',
+    //     ]);
+    // }
     public function getPackageById(Request $request)
     {
         if ($request->id) {
-            $packageInfo = Package::join('services', 'services.id', '=', 'packages.service_id')
-                ->join('users', 'users.id', '=', 'services.provider_id')
-                ->where('packages.id', '=', $request->id)
-                ->select(
-                    'packages.*',
-                    'users.id as provider_id',
-                    'users.email',
-                    'users.full_name',
-                    'users.birthday',
-                    'users.gender',
-                    'users.phone_number',
-                    'users.avatar',
-                    'users.introduction',
-                    'users.is_favorite',
-                    'users.is_working',
-                    'users.total_rate',
-                    'users.total_star',
-                    'users.avg_star',
-                    'users.clicks',
-                    'users.views',
-                    'users.click_rate',
-                    'users.is_valid as is_valid_provider',
-                )
-                ->get();
+            $packageInfo = Package::find($request->id);
             if (!$packageInfo) {
                 return response()->json([
                     'statusCode' => 404,
@@ -76,28 +97,7 @@ class PackageController extends Controller
             ]);
         }
         $packages = Package::join('services', 'services.id', '=', 'packages.service_id')
-            ->join('users', 'users.id', '=', 'services.provider_id')
             ->where('services.id', '=', $request->service_id)
-            ->select(
-                'packages.*',
-                'users.id as provider_id',
-                'users.email',
-                'users.full_name',
-                'users.birthday',
-                'users.gender',
-                'users.phone_number',
-                'users.avatar',
-                'users.introduction',
-                'users.is_favorite',
-                'users.is_working',
-                'users.total_rate',
-                'users.total_star',
-                'users.avg_star',
-                'users.clicks',
-                'users.views',
-                'users.click_rate',
-                'users.is_valid as is_valid_provider',
-            )
             ->get();
         return response()->json([
             'data' => $packages,
