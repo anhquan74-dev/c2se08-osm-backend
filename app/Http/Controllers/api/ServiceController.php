@@ -91,10 +91,6 @@ class ServiceController extends Controller
         $validator = Validator::make($request->all(), [
             'category_id' => 'required|numeric|integer',
             'provider_id' => 'required|numeric|integer',
-            'avg_price' => 'numeric|integer',
-            'max_price' => 'numeric|integer',
-            'min_price' => 'numeric|integer',
-            'is_negotiable' => 'integer|between:0,1',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors());
@@ -125,6 +121,7 @@ class ServiceController extends Controller
             'avg_star' => 0,
             'number_of_packages' => 0,
             'is_valid' => true,
+            'name' => $checkExistCategory->name
         ]);
         return response()->json([
             'data' => $service,
