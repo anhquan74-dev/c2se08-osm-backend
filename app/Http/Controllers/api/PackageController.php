@@ -285,4 +285,16 @@ class PackageController extends Controller
         }
         return $packages;
     }
+    // getAllPackagesByServiceIdCategoryId
+    public function getAllPackagesByServiceIdCategoryId(Request $request)
+    {
+        $serviceFind = Service::where('category_id', '=', $request->category_id)
+            ->where('category_id', '=', $request->category_id)->get();
+        $service = Service::with('package')->where('id', '=', $serviceFind[0]->id)->get();
+        return response()->json([
+            'statusCode' => 400,
+            'data' => $service,
+            'message' => 'Missing package id parameter!',
+        ]);
+    }
 }
