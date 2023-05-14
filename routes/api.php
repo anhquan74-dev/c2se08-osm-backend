@@ -23,6 +23,7 @@ Route::post('/refresh', [AuthController::class, 'refresh']);
 
 
 
+
 Route::middleware([
     'admin.auth',
 ])->group(function () {
@@ -93,10 +94,11 @@ Route::middleware(['or-middleware:customer|provider|admin'])->group(function () 
     Route::get('/services/{id}', [ServiceController::class, 'getServiceById']);
     Route::get('/services-by-provider/{provider_id}', [ServiceController::class, 'getAllServicesByProviderId']);
     Route::get('/services-by-category/{category_id}', [ServiceController::class, 'getAllServicesByCategoryId']);
+    Route::get('/service-count', [ServiceController::class, 'getTotalService']);
     Route::post('/services', [ServiceController::class, 'createNewService']);
     Route::post('/services/{id}', [ServiceController::class, 'updateService']);
     Route::post('/hard-delete-service/{id}', [ServiceController::class, 'hardDeleteService']);
-    Route::get('/service-count', [ServiceController::class, 'getTotalService']);
+    Route::post('/hard-delete-service-by-category-id/{category_id}', [ServiceController::class, 'hardDeleteServiceByCategory']);
 
 
     // Package's routes
