@@ -121,7 +121,7 @@ class ServiceController extends Controller
             'avg_star' => 0,
             'number_of_packages' => 0,
             'is_valid' => true,
-            // 'name' => $checkExistCategory->name
+            'name' => $checkExistCategory->name
         ]);
         return response()->json([
             'data' => $service,
