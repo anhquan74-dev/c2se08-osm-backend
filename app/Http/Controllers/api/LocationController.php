@@ -52,8 +52,6 @@ class LocationController extends Controller
             ]);
         }
 
-       
-
         $locations = Location::where('user_id', '=', $request->user_id)->get();
         if (count($locations) == 0) {
             return response()->json([
@@ -61,6 +59,7 @@ class LocationController extends Controller
                 'message' => 'Location not found!',
             ]);
         }
+        
         return response()->json([
             'data' => $locations,
             'statusCode' => 200,

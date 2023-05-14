@@ -64,6 +64,15 @@ class ServiceController extends Controller
             ]);
         }
         $services = Service::where('provider_id', '=', $request->provider_id)->get();
+
+        if (count($services) == 0) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Service not found!',
+            ]);
+        }
+        
+
         return response()->json([
             'data' => $services,
             'statusCode' => 200,
@@ -80,6 +89,14 @@ class ServiceController extends Controller
             ]);
         }
         $services = Service::where('category_id', '=', $request->category_id)->get();
+
+        if (count($services) == 0) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Service not found!',
+            ]);
+        }
+
         return response()->json([
             'data' => $services,
             'statusCode' => 200,
