@@ -133,7 +133,7 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|max:255|unique:users',
-            // 'password' => 'required|string|min:6|confirmed',
+            'password' => 'required|string|min:6',
             'full_name' => 'required|string|min:2|max:255',
             'birthday' => 'date_format:Y-m-d H:i:s',
             'avatar' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -374,7 +374,7 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|max:255|unique:users',
-            // 'password' => 'required|string|min:6|confirmed',
+            'password' => 'required|string|min:6',
             'full_name' => 'required|string|min:2|max:255',
             'birthday' => 'date_format:Y-m-d H:i:s',
             // 'introduction' => 'string|max:500',
@@ -583,6 +583,11 @@ class UserController extends Controller
             $providers->whereHas('location', function ($query) use ($filter) {
                 // $query->where('province_name', '=', $filter['province_name']);
                 $query->where('province_name', 'LIKE', '%' . $filter['province_name'] . '%');
+            });
+        }
+        if (isset($filter['district_name'])) {
+            $providers->whereHas('location', function ($query) use ($filter) {
+                $query->where('district_name', 'LIKE', '%' . $filter['district_name'] . '%');
             });
         }
         if (isset($filter['avg_star'])) {
