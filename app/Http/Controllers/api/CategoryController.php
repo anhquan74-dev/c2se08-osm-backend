@@ -240,8 +240,9 @@ class CategoryController extends Controller
         $dataCategoryReturn = array();
         $providerId = $request->provider_id;
         $serviceInfo = DB::select('SELECT * FROM services where provider_id = ? ', [$providerId]);
+
         foreach ($serviceInfo as $item) {
-            $dataCategory = DB::select('SELECT * FROM categories WHERE ID = ?', [$item->id]);
+            $dataCategory = DB::select('SELECT * FROM categories WHERE id = ?', [$item->category_id]);
             $countPackage = Package::where('service_id', '=', $item->id)->count();
             $object = (object) [
                 'dataCategory' => $dataCategory,

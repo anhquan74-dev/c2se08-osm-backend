@@ -20,7 +20,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
 Route::post('/refresh', [AuthController::class, 'refresh']);
 
-Route::post('/services', [ServiceController::class, 'createNewService']);
+
 
 
 
@@ -94,6 +94,7 @@ Route::middleware(['or-middleware:customer|provider|admin'])->group(function () 
     Route::get('/services/{id}', [ServiceController::class, 'getServiceById']);
     Route::get('/services-by-provider/{provider_id}', [ServiceController::class, 'getAllServicesByProviderId']);
     Route::get('/services-by-category/{category_id}', [ServiceController::class, 'getAllServicesByCategoryId']);
+    Route::post('/services', [ServiceController::class, 'createNewService']);
     Route::post('/services/{id}', [ServiceController::class, 'updateService']);
     Route::post('/hard-delete-service/{id}', [ServiceController::class, 'hardDeleteService']);
     Route::get('/service-count', [ServiceController::class, 'getTotalService']);
