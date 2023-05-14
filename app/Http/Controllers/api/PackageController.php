@@ -96,6 +96,7 @@ class PackageController extends Controller
                 'message' => 'Missing service_id parameter!',
             ]);
         }
+<<<<<<< HEAD
         $packages = Package::join('services', 'services.id', '=', 'packages.service_id')
             ->where('services.id', '=', $request->service_id)
             ->get();
@@ -105,6 +106,9 @@ class PackageController extends Controller
                     'message' => 'Package not found!',
                 ]);
             }
+=======
+        $packages = Package::where('service_id', '=', $request->service_id)->get();
+>>>>>>> ca2681a5a345ec3f64d2cad2ae7ce05b22958463
         return response()->json([
             'data' => $packages,
             'statusCode' => 200,
@@ -290,5 +294,17 @@ class PackageController extends Controller
             $packages->where('is_valid', $filter['is_valid']);
         }
         return $packages;
+    }
+    // getAllPackagesByServiceIdCategoryId
+    public function getAllPackagesByServiceIdCategoryId(Request $request)
+    {
+        $serviceFind = Service::where('category_id', '=', $request->category_id)
+            ->where('category_id', '=', $request->category_id)->get();
+        $service = Service::with('package')->where('id', '=', $serviceFind[0]->id)->get();
+        return response()->json([
+            'statusCode' => 400,
+            'data' => $service,
+            'message' => 'Missing package id parameter!',
+        ]);
     }
 }
