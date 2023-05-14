@@ -585,6 +585,11 @@ class UserController extends Controller
                 $query->where('province_name', 'LIKE', '%' . $filter['province_name'] . '%');
             });
         }
+        if (isset($filter['district_name'])) {
+            $providers->whereHas('location', function ($query) use ($filter) {
+                $query->where('district_name', 'LIKE', '%' . $filter['district_name'] . '%');
+            });
+        }
         if (isset($filter['avg_star'])) {
             $providers->where('avg_star', '=', $filter['avg_star']);
         }
