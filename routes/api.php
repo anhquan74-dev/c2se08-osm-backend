@@ -105,6 +105,7 @@ Route::middleware(['or-middleware:customer|provider|admin'])->group(function () 
     Route::get('/packages', [PackageController::class, 'getAllPackages']);
     Route::get('/packages/{id}', [PackageController::class, 'getPackageById']);
     Route::get('/packages-by-service/{service_id}', [PackageController::class, 'getAllPackagesByServiceId']);
+    Route::get('/packages-by-service-category', [PackageController::class, 'getAllPackagesByServiceIdCategoryId']);
     Route::post('/packages', [PackageController::class, 'createNewPackage']);
     Route::post('/packages/search', [PackageController::class, 'searchPaginationPackages']);
     Route::post('/packages/{id}', [PackageController::class, 'updatePackage']);

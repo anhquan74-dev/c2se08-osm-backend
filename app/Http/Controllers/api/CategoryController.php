@@ -55,6 +55,8 @@ class CategoryController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|min:2|max:255',
             'logo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'view_priority' => 'numeric|integer',
+            'is_valid' => 'integer|between:0,1',
         ]);
         if ($validator->fails()) {
             return response()->json([
