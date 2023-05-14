@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\Package;
 use App\Models\Service;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -201,6 +202,34 @@ class ServiceController extends Controller
         return response()->json([
             'statusCode' => 400,
             'message' => 'Missing service id parameter!',
+        ]);
+    }
+    // Hard delete service by category id
+    public function hardDeleteServiceByCategory(Request $request)
+    {
+        if ($request->category_id) {
+            $categoryId = $request->category_id;
+            $checkCategory = Category::where('id', $categoryId)->first();
+            if ($checkCategory) {
+                $checkService = Service::where('category_id', $categoryId)->get();
+                foreach ($checkService as $item) {
+                    Package::where('service_id', '=', $item->id)->delete();
+                }
+                Service::where('category_id', $categoryId)->delete();
+                return response()->json([
+                    'statusCode' => 200,
+                    'message' => 'Deleted services successfully!',
+                ]);
+            } else {
+                return response()->json([
+                    "statusCode" => 404,
+                    "message" => "Can't find the category you want to delete!"
+                ]);
+            }
+        }
+        return response()->json([
+            'statusCode' => 400,
+            'message' => 'Missing category id parameter!',
         ]);
     }
 }
