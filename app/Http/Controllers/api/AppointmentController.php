@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use Validator;
 use App\Models\Appointment;
+use App\Models\Location;
 use App\Models\Package;
 use App\Models\User;
 
@@ -122,9 +123,9 @@ class AppointmentController extends Controller
             'package_id' => 'required|numeric',
             'customer_id' => 'required|numeric',
             'note_for_provider' => 'string|min:2|max:255',
-            'location' => 'string|min:2|max:255',
-            'price' => 'required|numeric',
-            'price_unit' => 'string|min:2|max:255',
+            // 'location' => 'string|min:2|max:255',
+            // 'price' => 'required|numeric',
+            // 'price_unit' => 'string|min:2|max:255',
             'date' => 'date_format:Y-m-d H:i:s',
             'status' => 'string|min:2|max:255',
             $input_data, [
@@ -162,20 +163,27 @@ class AppointmentController extends Controller
             'package_id' => $request->package_id,
             'customer_id' => $request->customer_id,
             'note_for_provider' => $request->note_for_provider,
-            'location' => $request->location,
+            // 'location' => $request->location,
             'date' => $request->date,
             'price' => $request->price,
             'price_unit' => $request->price_unit,
             'status' => $request->status,
-            'offer_date' => $request->offer_date,
+            'date' => $request->date,
+        ]);
+        Location::create([
+            'address' => $request->input('location.address'),
+            'province_name' => $request->input('location.province_name'),
+            'district_name' => $request->input('location.district_name'),
+            'coords_latitude' => $request->input('location.coords_latitude'),
+            'coords_longitude' => $request->input('location.coords_longitude'),
+            'is_primary' => $request->input('location.is_primary'),
+            'type' => $request->type,
         ]);
         $imageService = new ImageService();
         // create attach_photos
-        if ($request->has('attach_photos')) {
-            $photos = $request->attach_photos;
-            foreach ($photos as $photo) {
-                $imageService->uploadImage($attach_photo, $appointment->id, 'appointment');
-            }
+        if ($request->hasFile('attach_photos')) {
+            $photo = $request->file('attach_photos');
+            $imageService->uploadImage($photo, $appointment->id, 'appointment');
         }
         $appointmentCurrent = Appointment::find($appointment->id);
         return response()->json([

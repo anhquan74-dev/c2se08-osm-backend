@@ -27,5 +27,6 @@ class Location extends Model
         'coords_latitude',
         'coords_longitude',
         'is_primary',
+        'type'
     ];
 }

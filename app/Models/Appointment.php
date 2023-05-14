@@ -19,10 +19,15 @@ class Appointment extends Model
         return $this->hasOne(Feedback::class, 'appointment_id');
     }
     // 1 - n with AttachPhoto Table
+    // public function attachPhoto(): HasMany
+    // {
+    //     return $this->hasMany(Image::class, 'parent_id')->where('parent_type', '=', 'appointment');
+    // }
     public function attachPhoto(): HasMany
     {
-        return $this->hasMany(Image::class, 'parent_id')->where('parent_type', '=', 'appointment');
+        return $this->hasOne(Image::class, 'parent_id', 'id')->where('parent_type', '=', 'appointment');
     }
+
     // Belong to Package Table
     public function package(): BelongsTo
     {
@@ -46,5 +51,4 @@ class Appointment extends Model
         'complete_date',
         'cancel_date',
     ];
-
 }
