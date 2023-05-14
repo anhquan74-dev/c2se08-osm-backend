@@ -246,18 +246,36 @@ class PackageController extends Controller
             });
         }
         if (isset($filter['province_name'])) {
+            // $packages->whereHas('provider', function ($query) use ($filter) {
+            //     $query->join('locations', 'locations.user_id', 'users.id')->where('locations.province_name', '=', $filter['province_name']);
+            // });
             $packages->whereHas('provider', function ($query) use ($filter) {
-                $query->join('locations', 'locations.user_id', 'users.id')->where('locations.province_name', '=', $filter['province_name']);
+                $query->join('locations', 'locations.user_id', 'users.id')->where('locations.province_name', 'LIKE', '%' . $filter['province_name'] . '%');
+            });
+        }
+        if (isset($filter['district_name'])) {
+            // $packages->whereHas('provider', function ($query) use ($filter) {
+            //     $query->join('locations', 'locations.user_id', 'users.id')->where('locations.district_name', '=', $filter['district_name']);
+            // });
+            $packages->whereHas('provider', function ($query) use ($filter) {
+                $query->join('locations', 'locations.user_id', 'users.id')->where('locations.district_name', 'LIKE', '%' . $filter['district_name'] . '%');
             });
         }
         if (isset($filter['avg_star'])) {
             $packages->where('avg_star', '=', $filter['avg_star']);
         }
-        if (isset($filter['price_min'])) {
-            $packages->where('price_min', '=', $filter['price_min']);
-        }
-        if (isset($filter['price_max'])) {
-            $packages->where('price_max', '=', $filter['price_max']);
+        // if (isset($filter['price_min'])) {
+        //     $packages->where('price_min', '=', $filter['price_min']);
+        // }
+        // if (isset($filter['price_max'])) {
+        //     $packages->where('price_max', '=', $filter['price_max']);
+        // }
+        if (isset($filter['price_min']) && isset($filter['price_max'])) {
+            $packages->whereBetween('price', [$filter['price_min'], $filter['price_max']]);
+        } else if (isset($filter['price_min'])) {
+            $packages->where('price', ">=", $filter['price_min']);
+        } else if (isset($filter['price_max'])) {
+            $packages->where('price', "<=", $filter['price_max']);
         }
         if (isset($filter['name'])) {
             $packages->where('name', 'LIKE', '%' . $filter['name'] . '%');
