@@ -50,11 +50,12 @@ class User extends Authenticatable implements JWTSubject
     // 1 - n with banner
     public function banner(): HasMany
     {
-        return $this->hasMany(Image::class, 'parent_id','id') ->where('parent_type', '=', 'provider');
+        return $this->hasMany(Image::class, 'parent_id', 'id')->where('parent_type', '=', 'provider');
     }
 
-    public function avatar() {
-        return $this->hasOne(Image::class, 'parent_id','id')->where('parent_type','=', 'avatar');
+    public function avatar()
+    {
+        return $this->hasOne(Image::class, 'parent_id', 'id')->where('parent_type', '=', 'avatar');
     }
 
     // 1 - n with service
