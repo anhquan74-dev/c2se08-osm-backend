@@ -4,8 +4,11 @@ namespace App\Http\Controllers\api;
 
 use App\Models\Category;
 use App\Http\Controllers\Controller;
+use App\Models\Package;
+use App\Models\User;
 use App\Services\ImageService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Validator;
@@ -214,5 +217,42 @@ class CategoryController extends Controller
             $categories->where('is_valid', $filter['is_valid']);
         }
         return $categories;
+    }
+    // Get category that provider doesn't have
+    public function getCategoriesProviderDoNotHave(Request $request)
+    {
+        $dataReturn = array();
+        $providerId = $request->provider_id;
+        $serviceInfo = DB::select('SELECT id FROM categories EXCEPT SELECT category_id FROM services where provider_id = ? ', [$providerId]);
+        foreach ($serviceInfo as $item) {
+            // array_push($dataReturn, $item->id);
+            $data = DB::select('SELECT * FROM categories WHERE ID = ?', [$item->id]);
+            array_push($dataReturn, $data);
+        }
+        return response()->json([
+            'data' => $dataReturn,
+            'statusCode' => 200,
+            'message' => 'successfully!',
+        ]);
+    }
+    public function getCategoriesForProvider(Request $request)
+    {
+        $dataCategoryReturn = array();
+        $providerId = $request->provider_id;
+        $serviceInfo = DB::select('SELECT * FROM services where provider_id = ? ', [$providerId]);
+        foreach ($serviceInfo as $item) {
+            $dataCategory = DB::select('SELECT * FROM categories WHERE ID = ?', [$item->id]);
+            $countPackage = Package::where('service_id', '=', $item->id)->count();
+            $object = (object) [
+                'dataCategory' => $dataCategory,
+                'countPackage' => $countPackage,
+            ];
+            array_push($dataCategoryReturn, $object);
+        }
+        return response()->json([
+            'data' => $dataCategoryReturn,
+            'statusCode' => 200,
+            'message' => 'successfully!',
+        ]);
     }
 }

@@ -15,7 +15,7 @@ use App\Http\Controllers\api\MessageController;
 use App\Http\Controllers\api\NotifyController;
 use Illuminate\Support\Facades\Route;
 
-
+// Auth's routes
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
 Route::post('/refresh', [AuthController::class, 'refresh']);
@@ -64,6 +64,8 @@ Route::middleware(['or-middleware:customer|provider|admin'])->group(function () 
     // Category's routes
     Route::get('/categories', [CategoryController::class, 'getAllCategories']);
     Route::get('/categories/{id}', [CategoryController::class, 'getCategoryById']);
+    Route::get('/categories-provider-not-have/{provider_id}', [CategoryController::class, 'getCategoriesProviderDoNotHave']);
+    Route::get('/categories-by-provider/{provider_id}', [CategoryController::class, 'getCategoriesForProvider']);
     Route::post('/categories', [CategoryController::class, 'createNewCategory']);
     Route::post('/categories/search', [CategoryController::class, 'searchPaginationCategories']);
     Route::post('/categories/{id}', [CategoryController::class, 'updateCategory']);
@@ -145,9 +147,6 @@ Route::middleware(['or-middleware:customer|provider|admin'])->group(function () 
     Route::post('/messages', [MessageController::class, 'createMessage']);
     Route::get('/messages-by-customer-provider', [MessageController::class, 'getMessages']);
     Route::post('/hard-delete-message/{id}', [MessageController::class, 'hardDeleteMessage']);
-
-    // need test
-    // Auth routes
 });
 
 
