@@ -273,9 +273,9 @@ class PackageController extends Controller
         if (isset($filter['price_min']) && isset($filter['price_max'])) {
             $packages->whereBetween('price', [$filter['price_min'], $filter['price_max']]);
         } else if (isset($filter['price_min'])) {
-            $packages->whereBetween('price', ">=", $filter['price_min']);
+            $packages->where('price', ">=", $filter['price_min']);
         } else if (isset($filter['price_max'])) {
-            $packages->whereBetween('price', "<=", $filter['price_max']);
+            $packages->where('price', "<=", $filter['price_max']);
         }
         if (isset($filter['name'])) {
             $packages->where('name', 'LIKE', '%' . $filter['name'] . '%');
