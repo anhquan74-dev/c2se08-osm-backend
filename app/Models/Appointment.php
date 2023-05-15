@@ -70,5 +70,6 @@ class Appointment extends Model
         'offer_date',
         'complete_date',
         'cancel_date',
+        'job_status'
     ];
 }

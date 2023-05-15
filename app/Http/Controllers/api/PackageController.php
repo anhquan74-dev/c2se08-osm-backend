@@ -96,9 +96,7 @@ class PackageController extends Controller
                 'message' => 'Missing service_id parameter!',
             ]);
         }
-        $packages = Package::join('services', 'services.id', '=', 'packages.service_id')
-            ->where('services.id', '=', $request->service_id)
-            ->get();
+        $packages = Package::where('service_id', '=', $request->service_id)->get();
         if (count($packages) == 0) {
             return response()->json([
                 'statusCode' => 400,
