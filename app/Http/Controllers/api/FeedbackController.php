@@ -89,7 +89,7 @@ class FeedbackController extends Controller
     public function getAllFeedbacksByPackage(Request $request)
     {
         if ($request->package_id) {
-            $feedbacks = Feedback::with(['appointment.user.avatar'])->join('appointments', 'appointments.id', '=', 'feedback.appointment_id')
+            $feedbacks = Feedback::with(['appointment.user.avatar', 'appointment.user:id,full_name'])->join('appointments', 'appointments.id', '=', 'feedback.appointment_id')
                 ->join('packages', 'packages.id', '=', 'appointments.package_id')
                 ->where('appointments.package_id', '=', $request->package_id)
                 ->get();
