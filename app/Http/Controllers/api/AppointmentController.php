@@ -108,13 +108,65 @@ class AppointmentController extends Controller
                 'message' => 'Missing status parameter!',
             ]);
         }
-        $appointments = Appointment::where('status', '=', $request->status)->get();
+        $appointments = Appointment::with('attachPhoto')->where('status', '=', $request->status)->get();
         return response()->json([
             'data' => $appointments,
             'statusCode' => 200,
             'message' => 'Get all appointments successful!',
         ]);
     }
+    // Get all appointments by status
+    public function getAllAppointmentsByStatusForCustomer(Request $request)
+    {
+        if (!$request->status) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Missing status parameter!',
+            ]);
+        }
+        if ($request->status === 'new-or-offered') {
+            $appointments = Appointment::with([
+                'attachPhoto', 'feedback', 'location' => function ($query) {
+                    $query->select(['id', 'address']);
+                }, 'service.provider.avatar' => function ($query) {
+                    $query->get();
+                }, 'package' => function ($query) {
+                    $query->select('packages.id', 'packages.name');
+                }
+            ])->where('status', '=', 'new')->orWhere('status', '=', 'offered')->get();
+        } else {
+            $appointments = Appointment::with([
+                'attachPhoto', 'feedback', 'location' => function ($query) {
+                    $query->select(['id', 'address']);
+                }, 'service.provider.avatar' => function ($query) {
+                    $query->get();
+                }, 'package' => function ($query) {
+                    $query->select('packages.id', 'packages.name');
+                }
+            ])->where('status', '=', $request->status)->get();
+        }
+        return response()->json([
+            'data' => $appointments,
+            'statusCode' => 200,
+            'message' => 'Get all appointments successful!',
+        ]);
+    }
+
+    // get total appointment by status
+    public function getTotalAppointmentsByStatus(Request $request)
+    {
+        if ($request->status === 'new-or-offered') {
+            $appointments = Appointment::where('status', '=', 'new')->orWhere('status', '=', 'offered')->get();
+        } else {
+            $appointments = Appointment::where('status', '=', $request->status)->get();
+        }
+        return response()->json([
+            'data' => count($appointments),
+            'statusCode' => 200,
+            'message' => 'Get total appointments by status successful!',
+        ]);
+    }
+
     // Create a new appointment
     public function createNewAppointment(Request $request)
     {
@@ -158,19 +210,7 @@ class AppointmentController extends Controller
                 'message' => 'Can not find the corresponding customer!',
             ]);
         }
-        // create appointment
-        $appointment = Appointment::create([
-            'package_id' => $request->package_id,
-            'customer_id' => $request->customer_id,
-            'note_for_provider' => $request->note_for_provider,
-            // 'location' => $request->location,
-            'date' => $request->date,
-            'price' => $request->price,
-            'price_unit' => $request->price_unit,
-            'status' => $request->status,
-            'date' => $request->date,
-        ]);
-        Location::create([
+        $location = Location::create([
             'address' => $request->input('location.address'),
             'province_name' => $request->input('location.province_name'),
             'district_name' => $request->input('location.district_name'),
@@ -179,6 +219,19 @@ class AppointmentController extends Controller
             'is_primary' => $request->input('location.is_primary'),
             'type' => $request->type,
         ]);
+        // create appointment
+        $appointment = Appointment::create([
+            'package_id' => $request->package_id,
+            'customer_id' => $request->customer_id,
+            'note_for_provider' => $request->note_for_provider,
+            'location' => $location->id,
+            'date' => $request->date,
+            'price' => $request->price,
+            'price_unit' => $request->price_unit,
+            'status' => $request->status,
+            'date' => $request->date,
+        ]);
+
         $imageService = new ImageService();
         // create attach_photos
         if ($request->hasFile('attach_photos')) {

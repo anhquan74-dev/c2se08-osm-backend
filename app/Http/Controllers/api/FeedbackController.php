@@ -7,6 +7,7 @@ use App\Models\Appointment;
 use Illuminate\Http\Request;
 use Validator;
 use App\Models\Feedback;
+use App\Models\User;
 
 class FeedbackController extends Controller
 {
@@ -83,6 +84,38 @@ class FeedbackController extends Controller
         return response()->json([
             'statusCode' => 400,
             'message' => 'Missing service id parameter!',
+        ]);
+    }
+    //Get all feedbacks by package_id
+    public function getAllFeedbacksByPackage(Request $request)
+    {
+        $infoArray = [];
+        if ($request->package_id) {
+            $feedbacks = Feedback::join('appointments', 'appointments.id', '=', 'feedback.appointment_id')
+                ->join('packages', 'packages.id', '=', 'appointments.package_id')
+                ->where('appointments.package_id', '=', $request->package_id)
+                ->select('feedback.*')
+                ->get();
+            foreach ($feedbacks as $feedback) {
+                $userInfo = User::with('avatar')->join('appointments', 'appointments.customer_id', '=', 'users.id')
+                    ->where('appointments.id', '=', $feedback->appointment_id)
+                    ->select('users.full_name')
+                    ->first();
+                $object = (object) [
+                    'feedback' => $feedback,
+                    'customerInfo' => $userInfo,
+                ];
+                array_push($infoArray, $object);
+            };
+            return response()->json([
+                'feedbackList' => $infoArray,
+                'statusCode' => 200,
+                'message' => 'Get all feedbacks info by package_id successfully!',
+            ]);
+        }
+        return response()->json([
+            'statusCode' => 400,
+            'message' => 'Missing package id parameter!',
         ]);
     }
     // Get total feedbacks by provider_id

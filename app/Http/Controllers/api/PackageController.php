@@ -97,6 +97,14 @@ class PackageController extends Controller
             ]);
         }
         $packages = Package::where('service_id', '=', $request->service_id)->get();
+
+        if (count($packages) == 0) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Package not found!',
+            ]);
+        }
+
         return response()->json([
             'data' => $packages,
             'statusCode' => 200,
@@ -109,7 +117,7 @@ class PackageController extends Controller
         $validator = Validator::make($request->all(), [
             'service_id' => 'required|numeric|integer',
             'name' => 'required|string|min:2|max:255',
-            'description' => 'string|max:500',
+            // 'description' => 'string|max:500',
             'price' => 'required|numeric|integer',
             'is_negotiable' => 'integer|between:0,1',
         ]);
@@ -131,7 +139,7 @@ class PackageController extends Controller
             'total_rate' => 0,
             'total_star' => 0,
             'avg_star' => 0,
-            'is_negotiable' => false,
+            'is_negotiable' => $request->is_negotiable,
             'view_priority' => 0,
             'is_valid' => true,
         ]);
@@ -290,9 +298,9 @@ class PackageController extends Controller
             ->where('category_id', '=', $request->category_id)->get();
         $service = Service::with('package')->where('id', '=', $serviceFind[0]->id)->get();
         return response()->json([
-            'statusCode' => 400,
+            'statusCode' => 200,
             'data' => $service,
-            'message' => 'Missing package id parameter!',
+            'message' => 'Successfully!',
         ]);
     }
 }

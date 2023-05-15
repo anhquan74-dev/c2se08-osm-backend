@@ -23,7 +23,7 @@ class Appointment extends Model
     // {
     //     return $this->hasMany(Image::class, 'parent_id')->where('parent_type', '=', 'appointment');
     // }
-    public function attachPhoto(): HasMany
+    public function attachPhoto(): HasOne
     {
         return $this->hasOne(Image::class, 'parent_id', 'id')->where('parent_type', '=', 'appointment');
     }
@@ -38,11 +38,31 @@ class Appointment extends Model
     {
         return $this->belongsTo(User::class, 'customer_id');
     }
+
+    //
+    public function service()
+    {
+        return $this->hasOneThrough(
+            Service::class,
+            Package::class,
+            'id', # foreign key on intermediary -- packages
+            'id', # foreign key on target -- services
+            'package_id', # local key on this -- appointments (appointment - package_id)
+            'service_id' # local key on intermediary -- packages (package - service_id)
+        );
+    }
+
+    //
+    public function location(): BelongsTo
+    {
+        return $this->belongsTo(Location::class, 'location_id');
+    }
+
     protected $fillable = [
         'package_id',
         'customer_id',
+        'location_id',
         'note_for_provider',
-        'location',
         'date',
         'price',
         'price_unit',
@@ -50,5 +70,6 @@ class Appointment extends Model
         'offer_date',
         'complete_date',
         'cancel_date',
+        'job_status'
     ];
 }

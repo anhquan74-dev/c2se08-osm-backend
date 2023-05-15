@@ -117,18 +117,21 @@ Route::middleware(['or-middleware:customer|provider|admin'])->group(function () 
     Route::get('/appointments', [AppointmentController::class, 'getAllAppointments']);
     Route::get('/appointments-count-by-month', [AppointmentController::class, 'getTotalAppointmentByMonthsFromNow']);
     Route::get('/appointments-by-status/{status}', [AppointmentController::class, 'getAllAppointmentsByStatus']);
+    Route::get('/appointments-customer/{status}', [AppointmentController::class, 'getAllAppointmentsByStatusForCustomer']);
     Route::get('/appointments/{id}', [AppointmentController::class, 'getAppointmentById']);
     Route::get('/appointments-by-customer/{customer_id}', [AppointmentController::class, 'getAllAppointmentsByCustomerId']);
     Route::get('/appointments-by-package/{package_id}', [AppointmentController::class, 'getAllAppointmentsByPackageId']);
     Route::post('/appointments', [AppointmentController::class, 'createNewAppointment']);
     Route::post('/appointments/{id}', [AppointmentController::class, 'updateAppointment']);
     Route::post('/hard-delete-appointment/{id}', [AppointmentController::class, 'hardDeleteAppointment']);
+    Route::get('/appointments-count/{status}', [AppointmentController::class, 'getTotalAppointmentsByStatus']);
 
     // Feedback's routes
     Route::get('/feedbacks', [FeedbackController::class, 'getAllFeedbacks']);
     Route::get('/feedbacks/{id}', [FeedbackController::class, 'getFeedbackById']);
     Route::get('/feedbacks-provider-count/{provider_id}', [FeedbackController::class, 'getTotalFeedbackByProviderId']);
     Route::get('/feedbacks-by-service/{service_id}', [FeedbackController::class, 'getAllFeedbacksByServiceId']);
+    Route::get('/feedbacks-by-package/{package_id}', [FeedbackController::class, 'getAllFeedbacksByPackage']);
     Route::get('/feedbacks-by-appointment/{appointment_id}', [FeedbackController::class, 'getAllFeedbacksByAppointmentId']);
     Route::post('/feedbacks', [FeedbackController::class, 'createNewFeedback']);
     Route::post('/feedbacks/{id}', [FeedbackController::class, 'updateFeedback']);
