@@ -257,6 +257,7 @@ class AppointmentController extends Controller
                     'price' => 'numeric',
                     'price_unit' => 'string|max:255',
                     'status' => 'string|max:255',
+                    'job_status' => 'string|max:255',
                 ]);
                 if ($validator->fails()) {
                     return response()->json([
@@ -266,15 +267,14 @@ class AppointmentController extends Controller
                     ]);
                 }
                 Appointment::where('id', $request->id)->update([
-                    'note_for_provider' => $request->note_for_provider,
-                    'location' => $request->location,
-                    'date' => $request->date,
+                    // 'note_for_provider' => $request->note_for_provider,
+                    // 'date' => $request->date,
                     'price' => $request->price,
-                    'price_unit' => $request->price_unit,
                     'status' => $request->status,
-                    'offer_date' => $request->offer_date,
+                    // 'offer_date' => $request->offer_date,
                     'complete_date' => $request->complete_date,
                     'cancel_date' => $request->cancel_date,
+                    'job_status' => $request->job_status
                 ]);
                 return response()->json([
                     'statusCode' => 200,
