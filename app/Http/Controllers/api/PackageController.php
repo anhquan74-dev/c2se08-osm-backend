@@ -139,7 +139,7 @@ class PackageController extends Controller
             'total_rate' => 0,
             'total_star' => 0,
             'avg_star' => 0,
-            'is_negotiable' => false,
+            'is_negotiable' => $request->is_negotiable,
             'view_priority' => 0,
             'is_valid' => true,
         ]);
