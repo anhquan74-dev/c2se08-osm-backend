@@ -15,6 +15,7 @@ class Feedback extends Model
     {
         return $this->belongsTo(Appointment::class, 'appointment_id');
     }
+
     protected $fillable = [
         'appointment_id',
         'comment',

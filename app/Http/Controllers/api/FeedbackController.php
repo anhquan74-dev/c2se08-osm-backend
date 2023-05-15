@@ -89,10 +89,16 @@ class FeedbackController extends Controller
     public function getAllFeedbacksByPackage(Request $request)
     {
         if ($request->package_id) {
-            $feedbacks = Feedback::join('appointments', 'appointments.id', '=', 'feedback.appointment_id')
+            $feedbacks = Feedback::with(['appointment.user.avatar'])->join('appointments', 'appointments.id', '=', 'feedback.appointment_id')
+                ->join('packages', 'packages.id', '=', 'appointments.package_id')
                 ->where('appointments.package_id', '=', $request->package_id)
-                ->select('feedback.*')
                 ->get();
+            // ->join('appointments', 'appointments.id', '=', 'feedback.appointment_id')
+            // ->join('packages', 'packages.id', '=', 'appointments.package_id')
+            // ->join('services', 'services.id', '=', 'packages.service_id')
+            // ->join('users', 'users.id', '=', 'services.provider_id')
+            // ->where('appointments.package_id', '=', $request->package_id)
+            // ->select('feedback.*, users.full_name, ')
             if ($feedbacks->isEmpty()) {
                 return response()->json([
                     'statusCode' => 404,
