@@ -124,6 +124,7 @@ Route::middleware(['or-middleware:customer|provider|admin'])->group(function () 
     Route::post('/appointments', [AppointmentController::class, 'createNewAppointment']);
     Route::post('/appointments/{id}', [AppointmentController::class, 'updateAppointment']);
     Route::post('/hard-delete-appointment/{id}', [AppointmentController::class, 'hardDeleteAppointment']);
+    Route::get('/appointments-count/{status}', [AppointmentController::class, 'getTotalAppointmentsByStatus']);
 
     // Feedback's routes
     Route::get('/feedbacks', [FeedbackController::class, 'getAllFeedbacks']);

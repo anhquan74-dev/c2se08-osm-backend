@@ -151,6 +151,22 @@ class AppointmentController extends Controller
             'message' => 'Get all appointments successful!',
         ]);
     }
+
+    // get total appointment by status
+    public function getTotalAppointmentsByStatus(Request $request)
+    {
+        if ($request->status === 'new-or-offered') {
+            $appointments = Appointment::where('status', '=', 'new')->orWhere('status', '=', 'offered')->get();
+        } else {
+            $appointments = Appointment::where('status', '=', $request->status)->get();
+        }
+        return response()->json([
+            'data' => count($appointments),
+            'statusCode' => 200,
+            'message' => 'Get total appointments by status successful!',
+        ]);
+    }
+
     // Create a new appointment
     public function createNewAppointment(Request $request)
     {
