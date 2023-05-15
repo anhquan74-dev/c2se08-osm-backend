@@ -130,6 +130,7 @@ Route::middleware(['or-middleware:customer|provider|admin'])->group(function () 
     Route::get('/feedbacks/{id}', [FeedbackController::class, 'getFeedbackById']);
     Route::get('/feedbacks-provider-count/{provider_id}', [FeedbackController::class, 'getTotalFeedbackByProviderId']);
     Route::get('/feedbacks-by-service/{service_id}', [FeedbackController::class, 'getAllFeedbacksByServiceId']);
+    Route::get('/feedbacks-by-package/{package_id}', [FeedbackController::class, 'getAllFeedbacksByPackage']);
     Route::get('/feedbacks-by-appointment/{appointment_id}', [FeedbackController::class, 'getAllFeedbacksByAppointmentId']);
     Route::post('/feedbacks', [FeedbackController::class, 'createNewFeedback']);
     Route::post('/feedbacks/{id}', [FeedbackController::class, 'updateFeedback']);

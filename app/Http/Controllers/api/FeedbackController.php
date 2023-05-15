@@ -85,6 +85,31 @@ class FeedbackController extends Controller
             'message' => 'Missing service id parameter!',
         ]);
     }
+    //Get all feedbacks by package_id
+    public function getAllFeedbacksByPackage(Request $request)
+    {
+        if ($request->package_id) {
+            $feedbacks = Feedback::join('appointments', 'appointments.id', '=', 'feedback.appointment_id')
+                ->where('appointments.package_id', '=', $request->package_id)
+                ->select('feedback.*')
+                ->get();
+            if ($feedbacks->isEmpty()) {
+                return response()->json([
+                    'statusCode' => 404,
+                    'message' => 'Not found!',
+                ]);
+            }
+            return response()->json([
+                'data' => $feedbacks,
+                'statusCode' => 200,
+                'message' => 'Get all feedbacks info by package_id successfully!',
+            ]);
+        }
+        return response()->json([
+            'statusCode' => 400,
+            'message' => 'Missing package id parameter!',
+        ]);
+    }
     // Get total feedbacks by provider_id
     public function getTotalFeedbackByProviderId(Request $request)
     {
