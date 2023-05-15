@@ -302,9 +302,9 @@ class PackageController extends Controller
             ->where('category_id', '=', $request->category_id)->get();
         $service = Service::with('package')->where('id', '=', $serviceFind[0]->id)->get();
         return response()->json([
-            'statusCode' => 400,
+            'statusCode' => 200,
             'data' => $service,
-            'message' => 'Missing package id parameter!',
+            'message' => 'Successfully!',
         ]);
     }
 }
