@@ -85,6 +85,37 @@ class FeedbackController extends Controller
             'message' => 'Missing service id parameter!',
         ]);
     }
+    //Get all feedbacks by package_id
+    public function getAllFeedbacksByPackage(Request $request)
+    {
+        if ($request->package_id) {
+            $feedbacks = Feedback::with(['appointment.user.avatar'])->join('appointments', 'appointments.id', '=', 'feedback.appointment_id')
+                ->join('packages', 'packages.id', '=', 'appointments.package_id')
+                ->where('appointments.package_id', '=', $request->package_id)
+                ->get();
+            // ->join('appointments', 'appointments.id', '=', 'feedback.appointment_id')
+            // ->join('packages', 'packages.id', '=', 'appointments.package_id')
+            // ->join('services', 'services.id', '=', 'packages.service_id')
+            // ->join('users', 'users.id', '=', 'services.provider_id')
+            // ->where('appointments.package_id', '=', $request->package_id)
+            // ->select('feedback.*, users.full_name, ')
+            if ($feedbacks->isEmpty()) {
+                return response()->json([
+                    'statusCode' => 404,
+                    'message' => 'Not found!',
+                ]);
+            }
+            return response()->json([
+                'data' => $feedbacks,
+                'statusCode' => 200,
+                'message' => 'Get all feedbacks info by package_id successfully!',
+            ]);
+        }
+        return response()->json([
+            'statusCode' => 400,
+            'message' => 'Missing package id parameter!',
+        ]);
+    }
     // Get total feedbacks by provider_id
     public function getTotalFeedbackByProviderId(Request $request)
     {
