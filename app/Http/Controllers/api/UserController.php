@@ -349,7 +349,7 @@ class UserController extends Controller
     public function getProviderById(Request $request)
     {
         if ($request->id) {
-            $providerWithServiceBannerLocation = User::with(['location', 'avatar', 'banner', 'service'])->whereHas('roles', function ($query) {
+            $providerWithServiceBannerLocation = User::with(['location', 'roles', 'avatar', 'banner', 'service'])->whereHas('roles', function ($query) {
                 return $query->where('name', '=', 'provider');
             })->where('id', $request->id)->get();
             if ($providerWithServiceBannerLocation->isEmpty()) {
@@ -507,6 +507,35 @@ class UserController extends Controller
                 $providerUpdate->is_valid = $request->is_valid;
                 $providerUpdate->save();
                 return response()->json([
+                    'statusCode' => 200,
+                    'message' => 'Provider updated successfully!',
+                ]);
+            } else {
+                return response()->json([
+                    "statusCode" => 404,
+                    "message" => "Can't find the provider you want to update!"
+                ]);
+            }
+        }
+        return response()->json([
+            'statusCode' => 400,
+            'message' => 'Missing provider id parameter!',
+        ]);
+    }
+    // updateWorkingStatus
+    public function updateWorkingStatus(Request $request)
+    {
+        if ($request->id) {
+            $providerUpdate = User::find($request->id);
+            if ($providerUpdate) {
+                if ($providerUpdate->is_working == 1) {
+                    $providerUpdate->is_working = 0;
+                } else {
+                    $providerUpdate->is_working = 1;
+                }
+                $providerUpdate->save();
+                return response()->json([
+                    'data' => $providerUpdate->is_working,
                     'statusCode' => 200,
                     'message' => 'Provider updated successfully!',
                 ]);

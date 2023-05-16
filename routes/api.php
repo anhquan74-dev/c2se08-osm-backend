@@ -58,6 +58,7 @@ Route::middleware(['or-middleware:customer|provider|admin'])->group(function () 
     Route::post('/providers/{id}', [UserController::class, 'updateProvider']);
     Route::post('/hard-delete-provider/{id}', [UserController::class, 'hardDeleteProvider']);
     Route::get('/provider-count', [UserController::class, 'getTotalProvider']);
+    Route::post('/provider-working-status/{id}', [UserController::class, 'updateWorkingStatus']);
 
     Route::get('/admins/{id}', [UserController::class, 'getAdminById']);
 
