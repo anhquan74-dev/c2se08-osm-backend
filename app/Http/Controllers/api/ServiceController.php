@@ -64,17 +64,23 @@ class ServiceController extends Controller
             ]);
         }
         $services = Service::where('provider_id', '=', $request->provider_id)->get();
-
         if (count($services) == 0) {
             return response()->json([
                 'statusCode' => 400,
                 'message' => 'Service not found!',
             ]);
         }
-
-
+        $result = [];
+        foreach ($services as $service) {
+            $totalPackages = Package::where('service_id', '=', $service->id)->count();
+            $object = (object) [
+                'service' => $service,
+                'totalPackages' => $totalPackages,
+            ];
+            array_push($result, $object);
+        }
         return response()->json([
-            'data' => $services,
+            'data' => $result,
             'statusCode' => 200,
             'message' => 'Get all services successful!',
         ]);
@@ -204,6 +210,7 @@ class ServiceController extends Controller
         if ($request->id) {
             $checkService = Service::where('id', $request->id)->first();
             if ($checkService) {
+                Package::where('service_id', '=', $checkService->id)->delete();
                 Service::where('id', $request->id)->delete();
                 return response()->json([
                     'statusCode' => 200,

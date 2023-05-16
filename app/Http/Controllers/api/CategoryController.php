@@ -223,16 +223,15 @@ class CategoryController extends Controller
     // Get category that provider doesn't have
     public function getCategoriesProviderDoNotHave(Request $request)
     {
-        $dataReturn = array();
         $providerId = $request->provider_id;
-        $serviceInfo = DB::select('SELECT id FROM categories EXCEPT SELECT category_id FROM services where provider_id = ? ', [$providerId]);
-        foreach ($serviceInfo as $item) {
-            // array_push($dataReturn, $item->id);
-            $data = DB::select('SELECT * FROM categories WHERE ID = ?', [$item->id]);
-            array_push($dataReturn, $data);
-        }
+        $categories = DB::select('SELECT *
+                                    FROM categories
+                                    WHERE categories.id NOT IN (
+                                        SELECT category_id
+                                        FROM services
+                                        WHERE provider_id = ' . $providerId . ')');
         return response()->json([
-            'data' => $dataReturn,
+            'data' => $categories,
             'statusCode' => 200,
             'message' => 'successfully!',
         ]);

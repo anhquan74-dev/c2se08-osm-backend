@@ -111,7 +111,7 @@ class FeedbackController extends Controller
             foreach ($feedbacks as $feedback) {
                 $userInfo = User::with('avatar')->join('appointments', 'appointments.customer_id', '=', 'users.id')
                     ->where('appointments.id', '=', $feedback->appointment_id)
-                    ->select('users.full_name')
+                    ->select('users.id', 'users.full_name')
                     ->first();
                 $object = (object) [
                     'feedback' => $feedback,

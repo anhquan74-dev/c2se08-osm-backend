@@ -492,6 +492,7 @@ class UserController extends Controller
                     'is_primary' => $request->input('location.is_primary'),
                 ]);
                 $providerUpdate->full_name = $request->full_name;
+                $providerUpdate->password = Hash::make($request->password);
                 $providerUpdate->birthday = $request->birthday;
                 $providerUpdate->gender = $request->gender;
                 $providerUpdate->phone_number = $request->phone_number;
