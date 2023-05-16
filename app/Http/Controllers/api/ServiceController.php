@@ -71,7 +71,7 @@ class ServiceController extends Controller
                 'message' => 'Service not found!',
             ]);
         }
-        
+
 
         return response()->json([
             'data' => $services,
@@ -247,6 +247,38 @@ class ServiceController extends Controller
         return response()->json([
             'statusCode' => 400,
             'message' => 'Missing category id parameter!',
+        ]);
+    }
+
+    // Get service by provider_id & category_id
+    public function getServicesByProviderAndCategory(Request $request)
+    {
+        if (!$request->provider_id) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Missing provider_id parameter!',
+            ]);
+        }
+        if (!$request->category_id) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Missing category_id parameter!',
+            ]);
+        }
+        $service = Service::where('provider_id', '=', $request->provider_id)->where('category_id', '=', $request->category_id)->get();
+
+        if (
+            count($service) == 0
+        ) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Service not found!',
+            ]);
+        }
+        return response()->json([
+            'data' => $service,
+            'statusCode' => 200,
+            'message' => 'Get service successful!',
         ]);
     }
 }

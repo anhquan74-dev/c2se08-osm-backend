@@ -94,6 +94,7 @@ Route::middleware(['or-middleware:customer|provider|admin'])->group(function () 
     Route::get('/services/{id}', [ServiceController::class, 'getServiceById']);
     Route::get('/services-by-provider/{provider_id}', [ServiceController::class, 'getAllServicesByProviderId']);
     Route::get('/services-by-category/{category_id}', [ServiceController::class, 'getAllServicesByCategoryId']);
+    Route::get('/service-by-provider-category', [ServiceController::class, 'getServicesByProviderAndCategory']);
     Route::get('/service-count', [ServiceController::class, 'getTotalService']);
     Route::post('/services', [ServiceController::class, 'createNewService']);
     Route::post('/services/{id}', [ServiceController::class, 'updateService']);
