@@ -156,8 +156,6 @@ class PackageController extends Controller
             $packageUpdate = Package::find($request->id);
             if ($packageUpdate) {
                 $validator = Validator::make($request->all(), [
-                    'name' => 'string|min:2|max:255',
-                    'description' => 'string|max:500',
                     'price' => 'numeric|integer',
                     'is_negotiable' => 'integer|between:0,1',
                     'total_rate' => 'numeric|integer',
