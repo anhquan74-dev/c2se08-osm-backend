@@ -349,7 +349,7 @@ class UserController extends Controller
     public function getProviderById(Request $request)
     {
         if ($request->id) {
-            $providerWithServiceBannerLocation = User::with(['location', 'avatar', 'banner', 'roles', 'service'])->whereHas('roles', function ($query) {
+            $providerWithServiceBannerLocation = User::with(['location', 'avatar', 'banner', 'service'])->whereHas('roles', function ($query) {
                 return $query->where('name', '=', 'provider');
             })->where('id', $request->id)->get();
             if ($providerWithServiceBannerLocation->isEmpty()) {
@@ -558,7 +558,7 @@ class UserController extends Controller
         $filter = $request->filter;
         $limit  = $request->limit ?? 10;
         $page   = $request->page ?? 1;
-        $providers = User::with(['avatar', 'roles', 'location', 'service'])->whereHas('roles', function ($query) {
+        $providers = User::with(['avatar', 'location', 'service'])->whereHas('roles', function ($query) {
             return $query->where('name', '=', 'provider');
         });
         if ($filter) {

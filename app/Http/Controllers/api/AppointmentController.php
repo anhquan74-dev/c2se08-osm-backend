@@ -10,6 +10,7 @@ use Validator;
 use App\Models\Appointment;
 use App\Models\Location;
 use App\Models\Package;
+use App\Models\Service;
 use App\Models\User;
 
 class AppointmentController extends Controller
@@ -128,8 +129,6 @@ class AppointmentController extends Controller
             $appointments = Appointment::with([
                 'attachPhoto', 'feedback', 'location' => function ($query) {
                     $query->select(['id', 'address']);
-                }, 'service.provider.avatar' => function ($query) {
-                    $query->get();
                 }, 'package' => function ($query) {
                     $query->select('packages.id', 'packages.name');
                 }
@@ -138,15 +137,30 @@ class AppointmentController extends Controller
             $appointments = Appointment::with([
                 'attachPhoto', 'feedback', 'location' => function ($query) {
                     $query->select(['id', 'address']);
-                }, 'service.provider.avatar' => function ($query) {
-                    $query->get();
                 }, 'package' => function ($query) {
                     $query->select('packages.id', 'packages.name');
                 }
             ])->where('status', '=', $request->status)->get();
         }
+        $appointments->map(function ($appointment) {
+            $provider = User::with('avatar')
+                ->join('services', 'services.provider_id', 'users.id')
+                ->join('packages', 'packages.service_id', 'services.id')
+                ->join('appointments', 'appointments.package_id', 'packages.id')
+                ->where('appointments.id', '=', $appointment->id)
+                ->select('users.id', 'users.full_name')
+                ->first();
+            $service = Service::join('packages', 'packages.service_id', 'services.id')
+                ->join('appointments', 'appointments.package_id', 'packages.id')
+                ->where('appointments.id', '=', $appointment->id)
+                ->select('services.id', 'services.name')
+                ->first();
+            $appointment->provider = $provider;
+            $appointment->service = $service;
+            return $appointment;
+        });
         return response()->json([
-            'data' => $appointments,
+            'data' =>  $appointments,
             'statusCode' => 200,
             'message' => 'Get all appointments successful!',
         ]);
@@ -224,11 +238,12 @@ class AppointmentController extends Controller
             'package_id' => $request->package_id,
             'customer_id' => $request->customer_id,
             'note_for_provider' => $request->note_for_provider,
-            'location' => $location->id,
+            'location_id' => $location->id,
             'date' => $request->date,
             'price' => $request->price,
             'price_unit' => $request->price_unit,
             'status' => $request->status,
+            'job_status' => $request->status,
             'date' => $request->date,
         ]);
 
@@ -253,9 +268,9 @@ class AppointmentController extends Controller
             if ($appointmentUpdate) {
                 $validator = Validator::make($request->all(), [
                     'note_for_provider' => 'string|min:2|max:255',
-                    'location' => 'string|min:2|max:255',
+                    // 'location' => 'string|min:2|max:255',
                     'price' => 'numeric',
-                    'price_unit' => 'string|max:255',
+                    // 'price_unit' => 'string|max:255',
                     'status' => 'string|max:255',
                     'job_status' => 'string|max:255',
                 ]);

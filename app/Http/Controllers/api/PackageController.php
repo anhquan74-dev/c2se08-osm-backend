@@ -4,6 +4,7 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Feedback;
 use Illuminate\Http\Request;
 use Validator;
 use App\Models\Package;
@@ -105,8 +106,21 @@ class PackageController extends Controller
             ]);
         }
 
+        $result = [];
+        // $feedbacks = [];
+        foreach ($packages as $package) {
+            $feedbacks = Feedback::join('appointments', 'feedback.appointment_id', 'appointments.id')
+                ->join('packages', 'appointments.package_id', 'packages.id')->where('packages.id', $package->id)->select('feedback.*')->get();
+            $object = (object) [
+                'package' => $package,
+                'feedbacks' => $feedbacks,
+            ];
+            array_push($result, $object);
+        }
+
+
         return response()->json([
-            'data' => $packages,
+            'data' => $result,
             'statusCode' => 200,
             'message' => 'Get all packages successful!',
         ]);
@@ -230,7 +244,8 @@ class PackageController extends Controller
         $filter = $request->filter;
         $limit  = $request->limit ?? 10;
         $page   = $request->page ?? 1;
-        $packages = Package::with(['service', 'provider']);
+        // $packages = Package::with(['service', 'provider']);
+        $packages = Package::with(['provider:users.id,full_name']);
         if ($filter) {
             $packages = $this->_filterPackage($packages, $filter);
         }

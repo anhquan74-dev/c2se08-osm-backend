@@ -18,7 +18,7 @@ class CategoryController extends Controller
     // Get all categories
     public function getAllCategories()
     {
-        $categories = Category::with('logo')->get();
+        $categories = Category::get();
         return response()->json([
             'data' => $categories,
             'statusCode' => 200,
