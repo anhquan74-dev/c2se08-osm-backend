@@ -293,8 +293,8 @@ class PackageController extends Controller
     public function getAllPackagesByServiceIdCategoryId(Request $request)
     {
         $serviceFind = Service::where('category_id', '=', $request->category_id)
-            ->where('category_id', '=', $request->category_id)->get();
-        $service = Service::with('package')->where('id', '=', $serviceFind[0]->id)->get();
+            ->where('provider_id', '=', $request->provider_id)->first();
+        $service = Service::with('package')->where('id', '=', $serviceFind->id)->get();
         return response()->json([
             'statusCode' => 200,
             'data' => $service,
