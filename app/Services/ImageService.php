@@ -48,16 +48,10 @@ class ImageService
         $image->mime =  $uploadResponse['format'];
         $image->parent_type = $parent;
         $image->parent_id = $parent_id;
-        $image->save();
-
-        $url = $this->cloudinary->url(
-            $uploadResponse['public_id'],
-            ['secure' => true]
-        );
-        // Lấy URL của hình ảnh từ Cloudinary
-        $image->url = $url;
-        return $image;
-    }
+        $image->url = $uploadResponse['url'];
+		$image->save();
+		return $image;
+	}
 
 
 

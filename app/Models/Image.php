@@ -24,13 +24,6 @@ class Image extends Model
 		'mime',
 		'parent_type',
 		'parent_id',
+        'url'
 	];
-    protected $appends = ['url'];
-
-    public function getUrlAttribute()
-    {
-        $service = new ImageService();
-        return $service->getImageUrl($this->id);
-    }
-
 }

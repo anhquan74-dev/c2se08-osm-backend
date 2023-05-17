@@ -12,7 +12,7 @@ class ImageController extends Controller
 		$image = $request->image;
 		$imageService = new ImageService();
 
-		return $imageService->uploadImage($image);
+		return $imageService->uploadImage($image, null, null);
 	}
 
 	public function getImageUrl($id){
