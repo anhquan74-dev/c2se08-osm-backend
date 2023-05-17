@@ -188,9 +188,9 @@ class FeedbackController extends Controller
             $feedbackUpdate = Feedback::find($request->id);
             if ($feedbackUpdate) {
                 $validator = Validator::make($request->all(), [
-                    'comment' => 'string|min:2|max:255',
+                    // 'comment' => 'string|min:2|max:255',
                     'reply' => 'string|min:2|max:255',
-                    'star' => 'numeric|integer',
+                    // 'star' => 'numeric|integer',
                     'reply_at' => 'date'
                 ]);
                 if ($validator->fails()) {
@@ -200,10 +200,11 @@ class FeedbackController extends Controller
                         "errors" => $validator->errors()
                     ]);
                 }
+                // if(isset())
                 Feedback::where('id', $request->id)->update([
-                    'comment' => $request->comment,
+                    // 'comment' => $request->comment,
                     'reply' => $request->reply,
-                    'star' => $request->star,
+                    // 'star' => $request->star,
                     'reply_at' => $request->reply_at,
                 ]);
                 return response()->json([
