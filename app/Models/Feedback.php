@@ -10,7 +10,7 @@ class Feedback extends Model
 {
     use HasFactory;
     // Relationship
-    // Belong to Appointment 1 - 1 
+    // Belong to Appointment 1 - 1
     public function appointment(): BelongsTo
     {
         return $this->belongsTo(Appointment::class, 'appointment_id');
@@ -22,5 +22,6 @@ class Feedback extends Model
         'reply',
         'star',
         'reply_at',
+        'rating',
     ];
 }
