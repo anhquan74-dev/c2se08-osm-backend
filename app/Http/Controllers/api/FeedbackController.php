@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Module\Sentiment;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
 use Validator;
@@ -169,11 +170,15 @@ class FeedbackController extends Controller
                 'message' => 'Can not find the corresponding appointment!',
             ]);
         }
+        $sentiment = new Sentiment();
+        $scores = $sentiment->score($request->comment);
+        $comment_rating = 100 * ((float)$scores['pos'] - (float)$scores['neg']);
         $feedback = Feedback::create([
             'appointment_id' => $request->appointment_id,
             'comment' => $request->comment,
             'reply' => $request->reply,
             'star' => $request->star,
+            'rating' => $comment_rating,
         ]);
         return response()->json([
             'data' => $feedback,
