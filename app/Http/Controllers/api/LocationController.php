@@ -51,7 +51,15 @@ class LocationController extends Controller
                 'message' => 'Missing user_id parameter!',
             ]);
         }
+
         $locations = Location::where('user_id', '=', $request->user_id)->get();
+        if (count($locations) == 0) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Location not found!',
+            ]);
+        }
+        
         return response()->json([
             'data' => $locations,
             'statusCode' => 200,

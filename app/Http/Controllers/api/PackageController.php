@@ -4,6 +4,7 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Feedback;
 use Illuminate\Http\Request;
 use Validator;
 use App\Models\Package;
@@ -96,11 +97,30 @@ class PackageController extends Controller
                 'message' => 'Missing service_id parameter!',
             ]);
         }
-        $packages = Package::join('services', 'services.id', '=', 'packages.service_id')
-            ->where('services.id', '=', $request->service_id)
-            ->get();
+        $packages = Package::where('service_id', '=', $request->service_id)->get();
+
+        if (count($packages) == 0) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Package not found!',
+            ]);
+        }
+
+        $result = [];
+        // $feedbacks = [];
+        foreach ($packages as $package) {
+            $feedbacks = Feedback::join('appointments', 'feedback.appointment_id', 'appointments.id')
+                ->join('packages', 'appointments.package_id', 'packages.id')->where('packages.id', $package->id)->select('feedback.*')->get();
+            $object = (object) [
+                'package' => $package,
+                'feedbacks' => $feedbacks,
+            ];
+            array_push($result, $object);
+        }
+
+
         return response()->json([
-            'data' => $packages,
+            'data' => $result,
             'statusCode' => 200,
             'message' => 'Get all packages successful!',
         ]);
@@ -111,7 +131,7 @@ class PackageController extends Controller
         $validator = Validator::make($request->all(), [
             'service_id' => 'required|numeric|integer',
             'name' => 'required|string|min:2|max:255',
-            'description' => 'string|max:500',
+            // 'description' => 'string|max:500',
             'price' => 'required|numeric|integer',
             'is_negotiable' => 'integer|between:0,1',
         ]);
@@ -133,7 +153,7 @@ class PackageController extends Controller
             'total_rate' => 0,
             'total_star' => 0,
             'avg_star' => 0,
-            'is_negotiable' => false,
+            'is_negotiable' => $request->is_negotiable,
             'view_priority' => 0,
             'is_valid' => true,
         ]);
@@ -150,8 +170,6 @@ class PackageController extends Controller
             $packageUpdate = Package::find($request->id);
             if ($packageUpdate) {
                 $validator = Validator::make($request->all(), [
-                    'name' => 'string|min:2|max:255',
-                    'description' => 'string|max:500',
                     'price' => 'numeric|integer',
                     'is_negotiable' => 'integer|between:0,1',
                     'total_rate' => 'numeric|integer',
@@ -226,7 +244,8 @@ class PackageController extends Controller
         $filter = $request->filter;
         $limit  = $request->limit ?? 10;
         $page   = $request->page ?? 1;
-        $packages = Package::with(['service', 'provider']);
+        // $packages = Package::with(['service', 'provider']);
+        $packages = Package::with(['provider:users.id,full_name']);
         if ($filter) {
             $packages = $this->_filterPackage($packages, $filter);
         }
@@ -284,5 +303,17 @@ class PackageController extends Controller
             $packages->where('is_valid', $filter['is_valid']);
         }
         return $packages;
+    }
+    // getAllPackagesByServiceIdCategoryId
+    public function getAllPackagesByServiceIdCategoryId(Request $request)
+    {
+        $serviceFind = Service::where('category_id', '=', $request->category_id)
+            ->where('provider_id', '=', $request->provider_id)->first();
+        $service = Service::with('package')->where('id', '=', $serviceFind->id)->get();
+        return response()->json([
+            'statusCode' => 200,
+            'data' => $service,
+            'message' => 'Successfully!',
+        ]);
     }
 }

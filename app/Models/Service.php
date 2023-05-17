@@ -24,7 +24,7 @@ class Service extends Model
     //
     public function package(): HasMany
     {
-        return $this->hasMany(Package::class, 'package_id');
+        return $this->hasMany(Package::class, 'service_id');
     }
     protected $fillable = [
         'category_id',

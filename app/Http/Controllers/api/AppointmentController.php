@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use Validator;
 use App\Models\Appointment;
+use App\Models\Location;
 use App\Models\Package;
+use App\Models\Service;
 use App\Models\User;
 
 class AppointmentController extends Controller
@@ -107,13 +109,78 @@ class AppointmentController extends Controller
                 'message' => 'Missing status parameter!',
             ]);
         }
-        $appointments = Appointment::where('status', '=', $request->status)->get();
+        $appointments = Appointment::with('attachPhoto')->where('status', '=', $request->status)->get();
         return response()->json([
             'data' => $appointments,
             'statusCode' => 200,
             'message' => 'Get all appointments successful!',
         ]);
     }
+    // Get all appointments by status
+    public function getAllAppointmentsByStatusForCustomer(Request $request)
+    {
+        if (!$request->status) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Missing status parameter!',
+            ]);
+        }
+        if ($request->status === 'new-or-offered') {
+            $appointments = Appointment::with([
+                'attachPhoto', 'feedback', 'location' => function ($query) {
+                    $query->select(['id', 'address']);
+                }, 'package' => function ($query) {
+                    $query->select('packages.id', 'packages.name');
+                }
+            ])->where('status', '=', 'new')->orWhere('status', '=', 'offered')->get();
+        } else {
+            $appointments = Appointment::with([
+                'attachPhoto', 'feedback', 'location' => function ($query) {
+                    $query->select(['id', 'address']);
+                }, 'package' => function ($query) {
+                    $query->select('packages.id', 'packages.name');
+                }
+            ])->where('status', '=', $request->status)->get();
+        }
+        $appointments->map(function ($appointment) {
+            $provider = User::with('avatar')
+                ->join('services', 'services.provider_id', 'users.id')
+                ->join('packages', 'packages.service_id', 'services.id')
+                ->join('appointments', 'appointments.package_id', 'packages.id')
+                ->where('appointments.id', '=', $appointment->id)
+                ->select('users.id', 'users.full_name')
+                ->first();
+            $service = Service::join('packages', 'packages.service_id', 'services.id')
+                ->join('appointments', 'appointments.package_id', 'packages.id')
+                ->where('appointments.id', '=', $appointment->id)
+                ->select('services.id', 'services.name')
+                ->first();
+            $appointment->provider = $provider;
+            $appointment->service = $service;
+            return $appointment;
+        });
+        return response()->json([
+            'data' =>  $appointments,
+            'statusCode' => 200,
+            'message' => 'Get all appointments successful!',
+        ]);
+    }
+
+    // get total appointment by status
+    public function getTotalAppointmentsByStatus(Request $request)
+    {
+        if ($request->status === 'new-or-offered') {
+            $appointments = Appointment::where('status', '=', 'new')->orWhere('status', '=', 'offered')->get();
+        } else {
+            $appointments = Appointment::where('status', '=', $request->status)->get();
+        }
+        return response()->json([
+            'data' => count($appointments),
+            'statusCode' => 200,
+            'message' => 'Get total appointments by status successful!',
+        ]);
+    }
+
     // Create a new appointment
     public function createNewAppointment(Request $request)
     {
@@ -122,9 +189,9 @@ class AppointmentController extends Controller
             'package_id' => 'required|numeric',
             'customer_id' => 'required|numeric',
             'note_for_provider' => 'string|min:2|max:255',
-            'location' => 'string|min:2|max:255',
-            'price' => 'required|numeric',
-            'price_unit' => 'string|min:2|max:255',
+            // 'location' => 'string|min:2|max:255',
+            // 'price' => 'required|numeric',
+            // 'price_unit' => 'string|min:2|max:255',
             'date' => 'date_format:Y-m-d H:i:s',
             'status' => 'string|min:2|max:255',
             $input_data, [
@@ -157,25 +224,34 @@ class AppointmentController extends Controller
                 'message' => 'Can not find the corresponding customer!',
             ]);
         }
+        $location = Location::create([
+            'address' => $request->input('location.address'),
+            'province_name' => $request->input('location.province_name'),
+            'district_name' => $request->input('location.district_name'),
+            'coords_latitude' => $request->input('location.coords_latitude'),
+            'coords_longitude' => $request->input('location.coords_longitude'),
+            'is_primary' => $request->input('location.is_primary'),
+            'type' => $request->type,
+        ]);
         // create appointment
         $appointment = Appointment::create([
             'package_id' => $request->package_id,
             'customer_id' => $request->customer_id,
             'note_for_provider' => $request->note_for_provider,
-            'location' => $request->location,
+            'location_id' => $location->id,
             'date' => $request->date,
             'price' => $request->price,
             'price_unit' => $request->price_unit,
             'status' => $request->status,
-            'offer_date' => $request->offer_date,
+            'job_status' => $request->status,
+            'date' => $request->date,
         ]);
+
         $imageService = new ImageService();
         // create attach_photos
-        if ($request->has('attach_photos')) {
-            $photos = $request->attach_photos;
-            foreach ($photos as $photo) {
-                $imageService->uploadImage($attach_photo, $appointment->id, 'appointment');
-            }
+        if ($request->hasFile('attach_photos')) {
+            $photo = $request->file('attach_photos');
+            $imageService->uploadImage($photo, $appointment->id, 'appointment');
         }
         $appointmentCurrent = Appointment::find($appointment->id);
         return response()->json([
@@ -192,10 +268,11 @@ class AppointmentController extends Controller
             if ($appointmentUpdate) {
                 $validator = Validator::make($request->all(), [
                     'note_for_provider' => 'string|min:2|max:255',
-                    'location' => 'string|min:2|max:255',
+                    // 'location' => 'string|min:2|max:255',
                     'price' => 'numeric',
-                    'price_unit' => 'string|max:255',
+                    // 'price_unit' => 'string|max:255',
                     'status' => 'string|max:255',
+                    'job_status' => 'string|max:255',
                 ]);
                 if ($validator->fails()) {
                     return response()->json([
@@ -205,15 +282,14 @@ class AppointmentController extends Controller
                     ]);
                 }
                 Appointment::where('id', $request->id)->update([
-                    'note_for_provider' => $request->note_for_provider,
-                    'location' => $request->location,
-                    'date' => $request->date,
+                    // 'note_for_provider' => $request->note_for_provider,
+                    // 'date' => $request->date,
                     'price' => $request->price,
-                    'price_unit' => $request->price_unit,
                     'status' => $request->status,
-                    'offer_date' => $request->offer_date,
+                    // 'offer_date' => $request->offer_date,
                     'complete_date' => $request->complete_date,
                     'cancel_date' => $request->cancel_date,
+                    'job_status' => $request->job_status
                 ]);
                 return response()->json([
                     'statusCode' => 200,

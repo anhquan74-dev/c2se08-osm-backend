@@ -18,7 +18,7 @@ class CategoryController extends Controller
     // Get all categories
     public function getAllCategories()
     {
-        $categories = Category::with('logo')->get();
+        $categories = Category::get();
         return response()->json([
             'data' => $categories,
             'statusCode' => 200,
@@ -55,6 +55,8 @@ class CategoryController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|min:2|max:255',
             'logo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'view_priority' => 'numeric|integer',
+            'is_valid' => 'integer|between:0,1',
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -221,16 +223,15 @@ class CategoryController extends Controller
     // Get category that provider doesn't have
     public function getCategoriesProviderDoNotHave(Request $request)
     {
-        $dataReturn = array();
         $providerId = $request->provider_id;
-        $serviceInfo = DB::select('SELECT id FROM categories EXCEPT SELECT category_id FROM services where provider_id = ? ', [$providerId]);
-        foreach ($serviceInfo as $item) {
-            // array_push($dataReturn, $item->id);
-            $data = DB::select('SELECT * FROM categories WHERE ID = ?', [$item->id]);
-            array_push($dataReturn, $data);
-        }
+        $categories = DB::select('SELECT *
+                                    FROM categories
+                                    WHERE categories.id NOT IN (
+                                        SELECT category_id
+                                        FROM services
+                                        WHERE provider_id = ' . $providerId . ')');
         return response()->json([
-            'data' => $dataReturn,
+            'data' => $categories,
             'statusCode' => 200,
             'message' => 'successfully!',
         ]);

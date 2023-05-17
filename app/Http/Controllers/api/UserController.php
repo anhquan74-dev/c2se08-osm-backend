@@ -133,7 +133,7 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|max:255|unique:users',
-            // 'password' => 'required|string|min:6|confirmed',
+            'password' => 'required|string|min:6',
             'full_name' => 'required|string|min:2|max:255',
             'birthday' => 'date_format:Y-m-d H:i:s',
             'avatar' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -349,7 +349,7 @@ class UserController extends Controller
     public function getProviderById(Request $request)
     {
         if ($request->id) {
-            $providerWithServiceBannerLocation = User::with(['location', 'avatar', 'banner', 'roles', 'service'])->whereHas('roles', function ($query) {
+            $providerWithServiceBannerLocation = User::with(['location', 'roles', 'avatar', 'banner', 'service'])->whereHas('roles', function ($query) {
                 return $query->where('name', '=', 'provider');
             })->where('id', $request->id)->get();
             if ($providerWithServiceBannerLocation->isEmpty()) {
@@ -374,7 +374,7 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|max:255|unique:users',
-            // 'password' => 'required|string|min:6|confirmed',
+            'password' => 'required|string|min:6',
             'full_name' => 'required|string|min:2|max:255',
             'birthday' => 'date_format:Y-m-d H:i:s',
             // 'introduction' => 'string|max:500',
@@ -492,6 +492,7 @@ class UserController extends Controller
                     'is_primary' => $request->input('location.is_primary'),
                 ]);
                 $providerUpdate->full_name = $request->full_name;
+                $providerUpdate->password = Hash::make($request->password);
                 $providerUpdate->birthday = $request->birthday;
                 $providerUpdate->gender = $request->gender;
                 $providerUpdate->phone_number = $request->phone_number;
@@ -507,6 +508,35 @@ class UserController extends Controller
                 $providerUpdate->is_valid = $request->is_valid;
                 $providerUpdate->save();
                 return response()->json([
+                    'statusCode' => 200,
+                    'message' => 'Provider updated successfully!',
+                ]);
+            } else {
+                return response()->json([
+                    "statusCode" => 404,
+                    "message" => "Can't find the provider you want to update!"
+                ]);
+            }
+        }
+        return response()->json([
+            'statusCode' => 400,
+            'message' => 'Missing provider id parameter!',
+        ]);
+    }
+    // updateWorkingStatus
+    public function updateWorkingStatus(Request $request)
+    {
+        if ($request->id) {
+            $providerUpdate = User::find($request->id);
+            if ($providerUpdate) {
+                if ($providerUpdate->is_working == 1) {
+                    $providerUpdate->is_working = 0;
+                } else {
+                    $providerUpdate->is_working = 1;
+                }
+                $providerUpdate->save();
+                return response()->json([
+                    'data' => $providerUpdate->is_working,
                     'statusCode' => 200,
                     'message' => 'Provider updated successfully!',
                 ]);
@@ -558,7 +588,7 @@ class UserController extends Controller
         $filter = $request->filter;
         $limit  = $request->limit ?? 10;
         $page   = $request->page ?? 1;
-        $providers = User::with(['avatar', 'roles', 'location', 'service'])->whereHas('roles', function ($query) {
+        $providers = User::with(['avatar', 'location', 'service'])->whereHas('roles', function ($query) {
             return $query->where('name', '=', 'provider');
         });
         if ($filter) {
@@ -583,6 +613,11 @@ class UserController extends Controller
             $providers->whereHas('location', function ($query) use ($filter) {
                 // $query->where('province_name', '=', $filter['province_name']);
                 $query->where('province_name', 'LIKE', '%' . $filter['province_name'] . '%');
+            });
+        }
+        if (isset($filter['district_name'])) {
+            $providers->whereHas('location', function ($query) use ($filter) {
+                $query->where('district_name', 'LIKE', '%' . $filter['district_name'] . '%');
             });
         }
         if (isset($filter['avg_star'])) {

@@ -58,6 +58,7 @@ Route::middleware(['or-middleware:customer|provider|admin'])->group(function () 
     Route::post('/providers/{id}', [UserController::class, 'updateProvider']);
     Route::post('/hard-delete-provider/{id}', [UserController::class, 'hardDeleteProvider']);
     Route::get('/provider-count', [UserController::class, 'getTotalProvider']);
+    Route::post('/provider-working-status/{id}', [UserController::class, 'updateWorkingStatus']);
 
     Route::get('/admins/{id}', [UserController::class, 'getAdminById']);
 
@@ -94,16 +95,19 @@ Route::middleware(['or-middleware:customer|provider|admin'])->group(function () 
     Route::get('/services/{id}', [ServiceController::class, 'getServiceById']);
     Route::get('/services-by-provider/{provider_id}', [ServiceController::class, 'getAllServicesByProviderId']);
     Route::get('/services-by-category/{category_id}', [ServiceController::class, 'getAllServicesByCategoryId']);
+    Route::get('/service-by-provider-category', [ServiceController::class, 'getServicesByProviderAndCategory']);
+    Route::get('/service-count', [ServiceController::class, 'getTotalService']);
     Route::post('/services', [ServiceController::class, 'createNewService']);
     Route::post('/services/{id}', [ServiceController::class, 'updateService']);
     Route::post('/hard-delete-service/{id}', [ServiceController::class, 'hardDeleteService']);
-    Route::get('/service-count', [ServiceController::class, 'getTotalService']);
+    Route::post('/hard-delete-service-by-category-id/{category_id}', [ServiceController::class, 'hardDeleteServiceByCategory']);
 
 
     // Package's routes
     Route::get('/packages', [PackageController::class, 'getAllPackages']);
     Route::get('/packages/{id}', [PackageController::class, 'getPackageById']);
     Route::get('/packages-by-service/{service_id}', [PackageController::class, 'getAllPackagesByServiceId']);
+    Route::get('/packages-by-service-category', [PackageController::class, 'getAllPackagesByServiceIdCategoryId']);
     Route::post('/packages', [PackageController::class, 'createNewPackage']);
     Route::post('/packages/search', [PackageController::class, 'searchPaginationPackages']);
     Route::post('/packages/{id}', [PackageController::class, 'updatePackage']);
@@ -115,18 +119,21 @@ Route::middleware(['or-middleware:customer|provider|admin'])->group(function () 
     Route::get('/appointments', [AppointmentController::class, 'getAllAppointments']);
     Route::get('/appointments-count-by-month', [AppointmentController::class, 'getTotalAppointmentByMonthsFromNow']);
     Route::get('/appointments-by-status/{status}', [AppointmentController::class, 'getAllAppointmentsByStatus']);
+    Route::get('/appointments-customer/{status}', [AppointmentController::class, 'getAllAppointmentsByStatusForCustomer']);
     Route::get('/appointments/{id}', [AppointmentController::class, 'getAppointmentById']);
     Route::get('/appointments-by-customer/{customer_id}', [AppointmentController::class, 'getAllAppointmentsByCustomerId']);
     Route::get('/appointments-by-package/{package_id}', [AppointmentController::class, 'getAllAppointmentsByPackageId']);
     Route::post('/appointments', [AppointmentController::class, 'createNewAppointment']);
     Route::post('/appointments/{id}', [AppointmentController::class, 'updateAppointment']);
     Route::post('/hard-delete-appointment/{id}', [AppointmentController::class, 'hardDeleteAppointment']);
+    Route::get('/appointments-count/{status}', [AppointmentController::class, 'getTotalAppointmentsByStatus']);
 
     // Feedback's routes
     Route::get('/feedbacks', [FeedbackController::class, 'getAllFeedbacks']);
     Route::get('/feedbacks/{id}', [FeedbackController::class, 'getFeedbackById']);
     Route::get('/feedbacks-provider-count/{provider_id}', [FeedbackController::class, 'getTotalFeedbackByProviderId']);
     Route::get('/feedbacks-by-service/{service_id}', [FeedbackController::class, 'getAllFeedbacksByServiceId']);
+    Route::get('/feedbacks-by-package/{package_id}', [FeedbackController::class, 'getAllFeedbacksByPackage']);
     Route::get('/feedbacks-by-appointment/{appointment_id}', [FeedbackController::class, 'getAllFeedbacksByAppointmentId']);
     Route::post('/feedbacks', [FeedbackController::class, 'createNewFeedback']);
     Route::post('/feedbacks/{id}', [FeedbackController::class, 'updateFeedback']);
