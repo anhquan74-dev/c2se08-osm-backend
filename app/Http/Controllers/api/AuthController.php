@@ -101,7 +101,7 @@ class AuthController extends BaseController
             $payload = auth()->payload();
             auth()->logout();
         } catch (\Exception $e) {
-            return $this->responseWithError(1001, 403);
+            return $this->responseWithError(1001, 401);
         }
         return response()->json(['message' => 'Successfully logged out']);
     }
@@ -118,11 +118,11 @@ class AuthController extends BaseController
             ])->login($user);
             return $this->responseWithAccessTokenWhenRefresh($accessToken);
         } catch (TokenInvalidException $e) {
-            return $this->responseWithError(1002, 403);
+            return $this->responseWithError(1002, 401);
         } catch (JWTException $e) {
-            return $this->responseWithError(1003, 403);
+            return $this->responseWithError(1003, 401);
         } catch (\Exception $e) {
-            return $this->responseWithError(1001, 403);
+            return $this->responseWithError(1001, 401);
         }
     }
 }

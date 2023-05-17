@@ -174,8 +174,77 @@ class AppointmentController extends Controller
         } else {
             $appointments = Appointment::where('status', '=', $request->status)->get();
         }
+
         return response()->json([
             'data' => count($appointments),
+            'statusCode' => 200,
+            'message' => 'Get total appointments by status successful!',
+        ]);
+    }
+
+    // get total appointment by status
+    public function getTotalAppointmentsByUser(Request $request)
+    {
+        $isCustomer = User::with('roles')->whereHas('roles', function ($query) {
+            return $query->where('name', '=', 'customer');
+        })->where('id', $request->user_id)->count();
+
+        if ($isCustomer) {
+            $appointed = Appointment::join('users', 'users.id', '=', 'appointments.customer_id')
+                ->where('users.id', $request->user_id)
+                ->where('status', '=', 'appointed')->get();
+            $done = Appointment::join('users', 'users.id', '=', 'appointments.customer_id')
+                ->where('users.id', $request->user_id)
+                ->where('status', '=', 'done')->get();
+            $canceled = Appointment::join('users', 'users.id', '=', 'appointments.customer_id')
+                ->where('users.id', $request->user_id)
+                ->where('status', '=', 'canceled')->get();
+            $newOrOffered = Appointment::join('users', 'users.id', '=', 'appointments.customer_id')
+                ->where('users.id', $request->user_id)
+                ->where('status', '=', 'new')->orWhere('status', '=', 'offered')->get();
+            $result = (object) [
+                'newOrOffered' => count($newOrOffered),
+                'appointed' => count($appointed),
+                'done' => count($done),
+                'canceled' => count($canceled)
+            ];
+        } else {
+            $new = Appointment::join('packages', 'packages.id', '=', 'appointments.package_id')
+                ->join('services', 'services.id', '=', 'packages.service_id')
+                ->join('users', 'users.id', '=', 'services.provider_id')
+                ->where('users.id', $request->user_id)
+                ->where('status', '=', 'new')->get();
+            $offered = Appointment::join('packages', 'packages.id', '=', 'appointments.package_id')
+                ->join('services', 'services.id', '=', 'packages.service_id')
+                ->join('users', 'users.id', '=', 'services.provider_id')
+                ->where('users.id', $request->user_id)
+                ->where('status', '=', 'offered')->get();
+            $appointed = Appointment::join('packages', 'packages.id', '=', 'appointments.package_id')
+                ->join('services', 'services.id', '=', 'packages.service_id')
+                ->join('users', 'users.id', '=', 'services.provider_id')
+                ->where('users.id', $request->user_id)
+                ->where('status', '=', 'appointed')->get();
+            $done = Appointment::join('packages', 'packages.id', '=', 'appointments.package_id')
+                ->join('services', 'services.id', '=', 'packages.service_id')
+                ->join('users', 'users.id', '=', 'services.provider_id')
+                ->where('users.id', $request->user_id)
+                ->where('status', '=', 'done')->get();
+            $canceled = Appointment::join('packages', 'packages.id', '=', 'appointments.package_id')
+                ->join('services', 'services.id', '=', 'packages.service_id')
+                ->join('users', 'users.id', '=', 'services.provider_id')
+                ->where('users.id', $request->user_id)
+                ->where('status', '=', 'canceled')->get();
+            $result = (object) [
+                'new' => count($new),
+                'offered' => count($offered),
+                'appointed' => count($appointed),
+                'done' => count($done),
+                'canceled' => count($canceled)
+            ];
+        }
+
+        return response()->json([
+            'data' => $result,
             'statusCode' => 200,
             'message' => 'Get total appointments by status successful!',
         ]);

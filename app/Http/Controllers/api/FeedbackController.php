@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Module\Sentiment;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
 use Validator;
@@ -169,11 +170,15 @@ class FeedbackController extends Controller
                 'message' => 'Can not find the corresponding appointment!',
             ]);
         }
+        $sentiment = new Sentiment();
+        $scores = $sentiment->score($request->comment);
+        $comment_rating = 100 * ((float)$scores['pos'] - (float)$scores['neg']);
         $feedback = Feedback::create([
             'appointment_id' => $request->appointment_id,
             'comment' => $request->comment,
             'reply' => $request->reply,
             'star' => $request->star,
+            'rating' => $comment_rating,
         ]);
         return response()->json([
             'data' => $feedback,
@@ -188,9 +193,9 @@ class FeedbackController extends Controller
             $feedbackUpdate = Feedback::find($request->id);
             if ($feedbackUpdate) {
                 $validator = Validator::make($request->all(), [
-                    'comment' => 'string|min:2|max:255',
+                    // 'comment' => 'string|min:2|max:255',
                     'reply' => 'string|min:2|max:255',
-                    'star' => 'numeric|integer',
+                    // 'star' => 'numeric|integer',
                     'reply_at' => 'date'
                 ]);
                 if ($validator->fails()) {
@@ -200,10 +205,11 @@ class FeedbackController extends Controller
                         "errors" => $validator->errors()
                     ]);
                 }
+                // if(isset())
                 Feedback::where('id', $request->id)->update([
-                    'comment' => $request->comment,
+                    // 'comment' => $request->comment,
                     'reply' => $request->reply,
-                    'star' => $request->star,
+                    // 'star' => $request->star,
                     'reply_at' => $request->reply_at,
                 ]);
                 return response()->json([
