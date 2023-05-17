@@ -45,6 +45,7 @@ class ImageService {
 		$image->mime =  $uploadResponse['format'];
         $image->parent_type = $parent;
         $image->parent_id = $parent_id;
+        $image->url = $uploadResponse['url'];
 		$image->save();
 		return $image;
 	}
