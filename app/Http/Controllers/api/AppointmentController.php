@@ -263,22 +263,22 @@ class AppointmentController extends Controller
             // 'price_unit' => 'string|min:2|max:255',
             'date' => 'date_format:Y-m-d H:i:s',
             'status' => 'string|min:2|max:255',
-            $input_data, [
-                'attach_photos.*' => 'mimes:jpg,jpeg,png,bmp,gif,svg|max:2048'
-            ], [
-                'attach_photos.*.mimes' => 'Only jpeg,png,jpg,gif and svg images are allowed',
-                'attach_photos.*.max' => 'Sorry! Maximum allowed size for an image is 2MB',
-            ]
+            // $input_data, [
+            //     'attach_photos.*' => 'mimes:jpg,jpeg,png,bmp,gif,svg|max:2048'
+            // ], [
+            //     'attach_photos.*.mimes' => 'Only jpeg,png,jpg,gif and svg images are allowed',
+            //     'attach_photos.*.max' => 'Sorry! Maximum allowed size for an image is 2MB',
+            // ]
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors());
         }
-        if ($request->file('attach_photos') == null) {
-            return response()->json([
-                'statusCode' => 400,
-                'message' => 'Missing attach photos!',
-            ]);
-        }
+        // if ($request->file('attach_photos') == null) {
+        //     return response()->json([
+        //         'statusCode' => 400,
+        //         'message' => 'Missing attach photos!',
+        //     ]);
+        // }
         $checkExistPackage = Package::find($request->package_id);
         if (!$checkExistPackage) {
             return response()->json([
@@ -336,9 +336,9 @@ class AppointmentController extends Controller
             $appointmentUpdate = Appointment::find($request->id);
             if ($appointmentUpdate) {
                 $validator = Validator::make($request->all(), [
-                    'note_for_provider' => 'string|min:2|max:255',
+                    // 'note_for_provider' => 'string|min:2|max:255',
                     // 'location' => 'string|min:2|max:255',
-                    'price' => 'numeric',
+                    // 'price' => 'numeric',
                     // 'price_unit' => 'string|max:255',
                     'status' => 'string|max:255',
                     'job_status' => 'string|max:255',
@@ -383,12 +383,10 @@ class AppointmentController extends Controller
             $checkAppointment = Appointment::where('id', $request->id)->first();
             if ($checkAppointment) {
                 // Delete file in server
-                $attachPhotos = $checkAppointment->attachPhotos;
+                $attachPhoto = $checkAppointment->attachPhoto;
                 $service = new ImageService();
-                foreach ($attachPhotos as $attachPhoto) {
-                    $service->deleteImage($attachPhoto->id);
-                    $attachPhoto->delete();
-                }
+                $service->deleteImage($attachPhoto->id);
+                $attachPhoto->delete();
                 // Delete appointment
                 Appointment::where('id', $request->id)->delete();
                 // Delete attach_photo of appointment
