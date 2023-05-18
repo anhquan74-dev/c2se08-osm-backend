@@ -257,7 +257,7 @@ class AppointmentController extends Controller
         $validator = Validator::make($request->all(), [
             'package_id' => 'required|numeric',
             'customer_id' => 'required|numeric',
-            'note_for_provider' => 'string|min:2|max:255',
+            // 'note_for_provider' => 'string|min:2|max:255',
             // 'location' => 'string|min:2|max:255',
             // 'price' => 'required|numeric',
             // 'price_unit' => 'string|min:2|max:255',

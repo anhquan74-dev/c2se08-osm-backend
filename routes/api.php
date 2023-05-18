@@ -114,6 +114,7 @@ Route::middleware(['or-middleware:customer|provider|admin'])->group(function () 
     Route::post('/packages/{id}', [PackageController::class, 'updatePackage']);
     Route::post('/hard-delete-package/{id}', [PackageController::class, 'hardDeletePackage']);
     Route::get('/post-count', [PostController::class, 'getTotalPost']);
+    Route::get('/packages/min-price/{provider_id}', [PackageController::class, 'getMinPriceForProvider']);
 
 
     // Appointment's routes

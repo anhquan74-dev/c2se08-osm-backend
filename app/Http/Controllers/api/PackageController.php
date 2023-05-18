@@ -316,4 +316,27 @@ class PackageController extends Controller
             'message' => 'Successfully!',
         ]);
     }
+
+    // getMinPriceForProvider
+    public function getMinPriceForProvider(Request $request)
+    {
+        $result = Package::join('services', 'services.id', 'packages.service_id')
+            ->join('users', 'users.id', 'services.provider_id')
+            ->where('users.id', $request->provider_id)
+            ->where('packages.is_negotiable', 0)
+            ->select('packages.*')
+            ->min('price');
+        if ($result) {
+            return response()->json([
+                'statusCode' => 200,
+                'data' => $result,
+                'message' => 'Successfully!',
+            ]);
+        }
+        return response()->json([
+            'statusCode' => 200,
+            'data' =>  0,
+            'message' => 'Chưa có package nào có giá!',
+        ]);
+    }
 }
