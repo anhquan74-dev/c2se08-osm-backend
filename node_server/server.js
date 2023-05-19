@@ -16,11 +16,12 @@ io.on("connection", (socket) => {
     socket.on("provider_send_price", () => {
         io.emit("customer_refresh_request_new");
     });
+    //
     socket.on("provider_cancel_request", () => {
-        io.emit("customer_refresh_request");
+        io.emit("customer_refresh_request_canceled");
     });
     socket.on("customer_cancel_request", () => {
-        io.emit("provider_refresh_request");
+        io.emit("provider_refresh_request_canceled");
     });
     socket.on("customer_accept_price", () => {
         io.emit("provider_refresh_request");
