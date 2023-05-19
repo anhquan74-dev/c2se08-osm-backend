@@ -24,7 +24,7 @@ io.on("connection", (socket) => {
         io.emit("provider_refresh_request_canceled");
     });
     socket.on("customer_accept_price", () => {
-        io.emit("provider_refresh_request");
+        io.emit("provider_refresh_request_appointed");
     });
     socket.on("disconnect", () => {});
 });
