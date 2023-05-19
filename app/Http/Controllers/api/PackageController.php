@@ -88,6 +88,30 @@ class PackageController extends Controller
             'message' => 'Missing package id parameter!',
         ]);
     }
+    //
+    public function getAllPackagesByProviderId(Request $request)
+    {
+        if ($request->provider_id) {
+            $packages = Package::join('services', 'services.id', 'packages.service_id')
+                ->join('users', 'users.id', 'services.provider_id')
+                ->where('users.id', '=', $request->provider_id)->select('packages.*')->get();
+            if (!$packages) {
+                return response()->json([
+                    'statusCode' => 404,
+                    'message' => 'Not found!',
+                ]);
+            }
+            return response()->json([
+                'data' => $packages,
+                'statusCode' => 200,
+                'message' => 'Get package info successfully!',
+            ]);
+        }
+        return response()->json([
+            'statusCode' => 400,
+            'message' => 'Missing package id parameter!',
+        ]);
+    }
     // Get all packages by service_id
     public function getAllPackagesByServiceId(Request $request)
     {

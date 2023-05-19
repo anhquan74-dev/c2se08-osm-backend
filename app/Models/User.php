@@ -97,7 +97,7 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
-    protected $appends =['min_price'];
+    protected $appends = ['min_price'];
 
     public function getJWTIdentifier()
     {
@@ -110,16 +110,14 @@ class User extends Authenticatable implements JWTSubject
     }
 
 
-    public function getMinPriceAttribute(){
+    public function getMinPriceAttribute()
+    {
         if (!$this->hasRole('provider')) return null;
-        $packages = $this->service->pluck('package');
-        $min_price = null;
-        foreach($packages as $package){
-            $prices = $package->pluck('price')->toArray();
-            if (count($prices)) {
-                $min_price = !isset($min_price) ? min($prices) : ((min($prices) < $min_price) ? min($prices) : $min_price);
-            }
-        }
-        return $min_price;
+        $minPrice = $this->service->flatMap(function ($service) {
+            return $service['package'];
+        })->filter(function ($package) {
+            return $package['is_negotiable'] === 0;
+        })->pluck('price')->min();
+        return $minPrice;
     }
 }
