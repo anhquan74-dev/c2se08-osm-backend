@@ -112,12 +112,16 @@ class User extends Authenticatable implements JWTSubject
 
     public function getMinPriceAttribute()
     {
+        // $this->makeHidden(['service']);
+
         if (!$this->hasRole('provider')) return null;
         $minPrice = $this->service->flatMap(function ($service) {
             return $service['package'];
         })->filter(function ($package) {
             return $package['is_negotiable'] === 0;
         })->pluck('price')->min();
+        // $this->setVisible(['service']);
+
         return $minPrice;
     }
 }
