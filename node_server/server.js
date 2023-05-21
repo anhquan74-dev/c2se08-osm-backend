@@ -38,6 +38,14 @@ io.on("connection", (socket) => {
     socket.on("customer_confirmed_done", () => {
         io.emit("provider_refresh_request_done");
     });
+    // customer send new message
+    socket.on("customer_send_message", () => {
+        io.emit("provider_refresh_messages");
+    });
+    // provider send new message
+    socket.on("provider_send_message", () => {
+        io.emit("customer_refresh_messages");
+    });
     socket.on("disconnect", () => {});
 });
 
