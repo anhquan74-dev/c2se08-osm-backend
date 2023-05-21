@@ -37,7 +37,7 @@ class PostController extends Controller
     public function getPostById(Request $request)
     {
         if ($request->id) {
-            $postInfo = Post::find($request->id);
+            $postInfo = Post::with(['image', 'category:categories.id,name'])->find($request->id);
             if (!$postInfo) {
                 return response()->json([
                     'statusCode' => 404,
@@ -64,7 +64,7 @@ class PostController extends Controller
                 'message' => 'Missing category_id parameter!',
             ]);
         }
-        $posts = Post::where('category_id', '=', $request->category_id)->get();
+        $posts = Post::with(['image', 'category:categories.id,name'])->where('category_id', '=', $request->category_id)->get();
         return response()->json([
             'data' => $posts,
             'statusCode' => 200,
@@ -75,11 +75,11 @@ class PostController extends Controller
     public function createNewPost(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'required|string|min:2|max:255',
-            'post_content' => 'string|max:500',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'author_id' => 'required|numeric|integer',
-            'date' => 'date_format:Y-m-d H:i:s',
+            // 'title' => 'required|string|min:2|max:255',
+            // 'post_content' => 'string|max:500',
+            // 'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            // 'author_id' => 'required|numeric|integer',
+            // 'date' => 'date_format:Y-m-d H:i:s',
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -88,22 +88,21 @@ class PostController extends Controller
                 "errors" => $validator->errors()
             ]);
         }
-        $checkExistAuthor = User::find($request->author_id);
-        if (!$checkExistAuthor) {
-            return response()->json([
-                'statusCode' => 404,
-                'message' => 'Can not find the corresponding author!',
-            ]);
-        }
+        // $checkExistAuthor = User::find($request->author_id);
+        // if (!$checkExistAuthor) {
+        //     return response()->json([
+        //         'statusCode' => 404,
+        //         'message' => 'Can not find the corresponding author!',
+        //     ]);
+        // }
         if ($request->has('image')) {
 
             $post = Post::create([
                 'title' => $request->title,
-                'content' => $request->post_content,
-                'author_id' => $request->author_id,
+                'content' => $request->content,
                 'date' => $request->date,
-                'tags' => $request->tags,
-                'is_valid' => true,
+                'category_id' => $request->category_id,
+                'is_valid' => $request->is_valid,
             ]);
             $image = $request->file('image');
             $service = new ImageService();
@@ -128,10 +127,10 @@ class PostController extends Controller
 
                 if ($request->file('image') == null) {
                     $validatorUpdate = Validator::make($request->all(), [
-                        'title' => 'string|min:2|max:255',
-                        'post_content' => 'string|max:500',
-                        'date' => 'date_format:Y-m-d H:i:s',
-                        'is_valid' => 'integer|between:0,1'
+                        // 'title' => 'string|min:2|max:255',
+                        // 'post_content' => 'string|max:500',
+                        // 'date' => 'date_format:Y-m-d H:i:s',
+                        // 'is_valid' => 'integer|between:0,1'
                     ]);
                     if ($validatorUpdate->fails()) {
                         return response()->json([
@@ -140,10 +139,10 @@ class PostController extends Controller
                             "errors" => $validatorUpdate->errors()
                         ]);
                     }
+                    $postUpdate->category_id = $request->category_id;
                     $postUpdate->title = $request->title;
-                    $postUpdate->content = $request->post_content;
+                    $postUpdate->content = $request->content;
                     $postUpdate->date = $request->date;
-                    $postUpdate->tags = $request->tags;
                     $postUpdate->is_valid = $request->is_valid;
                     $postUpdate->save();
                     return response()->json([
@@ -152,13 +151,7 @@ class PostController extends Controller
                     ]);
                 }
                 if ($request->hasFile('image')) {
-                    $validatorUpdate = Validator::make($request->all(), [
-                        'title' => 'string|min:2|max:255',
-                        'content' => 'string|max:500',
-                        'date' => 'date_format:Y-m-d H:i:s',
-                        'is_valid' => 'integer|between:0,1',
-                        'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                    ]);
+                    $validatorUpdate = Validator::make($request->all(), []);
                     if ($validatorUpdate->fails()) {
                         return response()->json([
                             "statusCode" => 400,
@@ -166,17 +159,17 @@ class PostController extends Controller
                             "errors" => $validatorUpdate->errors()
                         ]);
                     }
+                    $postUpdate->category_id = $request->category_id;
                     $postUpdate->title = $request->title;
-                    $postUpdate->content = $request->post_content;
+                    $postUpdate->content = $request->content;
                     $postUpdate->date = $request->date;
-                    $postUpdate->tags = $request->tags;
                     $postUpdate->is_valid = $request->is_valid;
                     $postUpdate->save();
                     $image = $postUpdate->image;
                     $imageService = new ImageService();
                     $imageService->deleteImage($image->id);
                     $image->delete();
-                    $imageService->uploadImage($request->file('image'),$postUpdate->id,'post');
+                    $imageService->uploadImage($request->file('image'), $postUpdate->id, 'post');
                     return response()->json([
                         'statusCode' => 200,
                         'message' => 'Post updated successfully!',
@@ -227,7 +220,7 @@ class PostController extends Controller
         $filter = $request->filter;
         $limit  = $request->limit ?? 10;
         $page   = $request->page ?? 1;
-        $posts = Post::all()->toQuery();
+        $posts = Post::with(['image', 'category:categories.id,name']);
         if ($filter) {
             $posts = $this->_filterPost($posts, $filter);
         }
