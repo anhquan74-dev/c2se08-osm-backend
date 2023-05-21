@@ -48,20 +48,20 @@ class Package extends Model
         'is_valid',
     ];
 
-    // protected $appends = ['rating'];
+    protected $appends = ['rating'];
 
-    // public function getRatingAttribute()
-    // {
-    //     $this->makeHidden(['appointment']);
+    public function getRatingAttribute()
+    {
+        // $this->makeHidden(['appointment']);
 
-    //     $feedbacksWithStar = $this->appointment->filter(function ($appointment) {
-    //         $feedback = $appointment->feedback;
+        $feedbacksWithStar = $this->appointment->filter(function ($appointment) {
+            $feedback = $appointment->feedback;
 
-    //         return $feedback !== null && $feedback->star > 0;
-    //     })->pluck('feedback.star')->avg();
+            return $feedback !== null && $feedback->star > 0;
+        })->pluck('feedback.star')->avg();
 
-    //     $this->setVisible(['appointment']);
+        // $this->setVisible(['appointment']);
 
-    //     return $feedbacksWithStar;
-    // }
+        return $feedbacksWithStar;
+    }
 }

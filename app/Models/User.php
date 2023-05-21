@@ -97,7 +97,8 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
-    protected $appends = ['min_price'];
+    protected $appends = ['min_price', 'star'];
+    // protected $appends = ['min_price'];
 
     public function getJWTIdentifier()
     {
@@ -123,5 +124,26 @@ class User extends Authenticatable implements JWTSubject
         // $this->setVisible(['service']);
 
         return $minPrice;
+    }
+
+    public function getStarAttribute()
+    {
+        $feedbacksWithStar = $this->service->flatMap(function ($service) {
+            if ($service->package) {
+                return $service->package->flatMap(function ($package) {
+                    if ($package->appointment) {
+                        return $package->appointment->map(function ($appointment) {
+                            if ($appointment->feedback) {
+                                return $appointment->feedback;
+                            }
+                        });
+                    }
+                });
+            }
+        })->filter(function ($feedback) {
+            return $feedback !== null && $feedback->star > 0;
+        })->pluck('star')->avg();
+
+        return $feedbacksWithStar;
     }
 }
