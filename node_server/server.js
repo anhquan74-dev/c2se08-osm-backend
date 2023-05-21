@@ -42,7 +42,13 @@ io.on("connection", (socket) => {
     socket.on("customer_feedback_done", () => {
         io.emit("provider_feedback_refresh_request_done");
     });
-    socket.on("disconnect", () => {});
+    // customer send new message
+    socket.on("customer_send_message", () => {
+        io.emit("provider_refresh_messages");
+    });
+    // provider send new message
+    socket.on("provider_send_message", () => {
+        io.emit("customer_refresh_messages");
+    });
 });
-
 // create server using socket io?
