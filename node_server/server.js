@@ -38,6 +38,10 @@ io.on("connection", (socket) => {
     socket.on("customer_confirmed_done", () => {
         io.emit("provider_refresh_request_done");
     });
+    // customer feedback done appointment
+    socket.on("customer_feedback_done", () => {
+        io.emit("provider_feedback_refresh_request_done");
+    });
     socket.on("disconnect", () => {});
 });
 

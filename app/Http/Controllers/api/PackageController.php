@@ -194,14 +194,14 @@ class PackageController extends Controller
             $packageUpdate = Package::find($request->id);
             if ($packageUpdate) {
                 $validator = Validator::make($request->all(), [
-                    'price' => 'numeric|integer',
-                    'is_negotiable' => 'integer|between:0,1',
-                    'total_rate' => 'numeric|integer',
-                    'total_star' => 'numeric|integer',
-                    'avg_star' => 'numeric',
-                    'is_negotiable' => 'integer|between:0,1',
-                    'view_priority' => 'numeric',
-                    'is_valid' => 'integer|between:0,1',
+                    // 'price' => 'numeric|integer',
+                    // 'is_negotiable' => 'integer|between:0,1',
+                    // 'total_rate' => 'numeric|integer',
+                    // 'total_star' => 'numeric|integer',
+                    // 'avg_star' => 'numeric',
+                    // 'is_negotiable' => 'integer|between:0,1',
+                    // 'view_priority' => 'numeric',
+                    // 'is_valid' => 'integer|between:0,1',
                 ]);
                 if ($validator->fails()) {
                     return response()->json([
