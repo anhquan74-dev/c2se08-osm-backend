@@ -157,6 +157,7 @@ Route::middleware(['or-middleware:customer|provider|admin'])->group(function () 
 
     // Message's routes
     Route::post('/messages', [MessageController::class, 'createMessage']);
+    Route::get('/get-list-customer-chat-by-provider/{provider_id}', [MessageController::class, 'getListCustomerChatWithProvider']);
     Route::get('/messages-by-customer-provider', [MessageController::class, 'getMessages']);
     Route::post('/hard-delete-message/{id}', [MessageController::class, 'hardDeleteMessage']);
 });

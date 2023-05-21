@@ -23,5 +23,6 @@ class Message extends Model
         'customer_id',
         'provider_id',
         'content',
+        'sender',
     ];
 }
