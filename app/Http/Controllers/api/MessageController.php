@@ -37,6 +37,7 @@ class MessageController extends Controller
             ]);
         }
         $favorite = Message::create([
+            'sender' => $request->sender,
             'provider_id' => $request->provider_id,
             'customer_id' => $request->customer_id,
             'content' => $request->content,
@@ -68,6 +69,33 @@ class MessageController extends Controller
             'data' => $messages,
             'statusCode' => 200,
             'message' => 'Get all messages successful!',
+        ]);
+    }
+    // getListCustomerChatWithProvider
+    public function getListCustomerChatWithProvider(Request $request)
+    {
+        if (!$request->provider_id) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Missing provider_id parameter!',
+            ]);
+        }
+
+        $customerInfo = [];
+        $customerIDs = Message::where('provider_id', '=', $request->provider_id)->select('customer_id')
+            ->distinct()
+            ->get();
+        foreach ($customerIDs as $customerID) {
+            $userInfo = User::with('avatar')
+                ->where('id', '=', $customerID->customer_id)
+                ->select('users.id', 'users.full_name')
+                ->first();
+
+            array_push($customerInfo, $userInfo);
+        };
+        return response()->json([
+            'data' => $customerInfo,
+            'statusCode' => 200,
         ]);
     }
     // Hard delete message
