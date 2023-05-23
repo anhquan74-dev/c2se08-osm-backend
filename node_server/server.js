@@ -43,8 +43,9 @@ io.on("connection", (socket) => {
         io.emit("provider_feedback_refresh_request_done");
     });
     // customer send new message
-    socket.on("customer_send_message", () => {
-        io.emit("provider_refresh_messages");
+    socket.on("customer_send_message", ({ customerId, message }) => {
+        console.log("cusID: ", { customerId, message });
+        io.emit("provider_refresh_messages", { customerId, message });
     });
     // provider send new message
     socket.on("provider_send_message", () => {
