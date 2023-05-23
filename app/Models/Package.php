@@ -47,4 +47,21 @@ class Package extends Model
         'view_priority',
         'is_valid',
     ];
+
+    protected $appends = ['rating'];
+
+    public function getRatingAttribute()
+    {
+        // $this->makeHidden(['appointment']);
+
+        $feedbacksWithStar = $this->appointment->filter(function ($appointment) {
+            $feedback = $appointment->feedback;
+
+            return $feedback !== null && $feedback->star > 0;
+        })->pluck('feedback.star')->avg();
+
+        // $this->setVisible(['appointment']);
+
+        return $feedbacksWithStar;
+    }
 }

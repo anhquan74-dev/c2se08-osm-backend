@@ -180,6 +180,30 @@ class FeedbackController extends Controller
             'star' => $request->star,
             'rating' => $comment_rating,
         ]);
+        // get current provider id
+        $currentProviderId = Appointment::join('packages', 'packages.id', '=', 'appointments.package_id')
+            ->join('services', 'services.id', '=', 'packages.service_id')
+            ->join('users', 'services.provider_id', '=', 'users.id')
+            ->where('appointments.id', '=', $request->appointment_id)
+            ->select('users.id')
+            ->first();
+        // get feedback list of provider
+        $feedbacksList = Feedback::join('appointments', 'appointments.id', '=', 'feedback.appointment_id')
+            ->join('packages', 'packages.id', '=', 'appointments.package_id')
+            ->join('services', 'services.id', '=', 'packages.service_id')
+            ->join('users', 'services.provider_id', '=', 'users.id')
+            ->select('feedback.*')
+            ->where('services.provider_id', '=', $currentProviderId->id)
+            ->get();
+        $count = $feedbacksList->count();
+        $totalStarOfProvider = 0;
+        foreach ($feedbacksList as $item) {
+            $totalStarOfProvider += $item->star;
+        }
+        $avgStarOfProvider = $totalStarOfProvider / $count;
+        User::where('id', $currentProviderId->id)->update([
+            'avg_star' => $avgStarOfProvider,
+        ]);
         return response()->json([
             'data' => $feedback,
             'statusCode' => 201,
