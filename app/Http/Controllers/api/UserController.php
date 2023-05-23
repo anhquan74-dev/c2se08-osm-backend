@@ -237,6 +237,7 @@ class UserController extends Controller
                     $customerUpdate->phone_number = $request->phone_number;
                     $customerUpdate->is_valid = $request->is_valid;
                     $customerUpdate->save();
+
                     $service = new ImageService();
                     try {
                         $service->uploadImage($image, $customerUpdate->id, 'avatar');
@@ -249,6 +250,17 @@ class UserController extends Controller
                         'statusCode' => 200,
                         'message' => 'Customer updated successfully!',
                     ]);
+                }
+                $oldLocation = count($customerUpdate->location) ? $customerUpdate->location[0] : null;
+                if ($request->has('location.address')) {
+                    $oldLocation->user_id = $customer->id;
+                    $oldLocation->address = $request->input('location.address');
+                    $oldLocation->province_name = $request->input('location.province_name');
+                    $oldLocation->district_name = $request->input('location.district_name');
+                    $oldLocation->coords_latitude = $request->input('location.coords_latitude');
+                    $oldLocation->coords_longitude = $request->input('location.coords_longitude');
+                    $oldLocation->is_primary = $request->input('location.is_primary');
+                    $oldLocation->save();
                 }
             } else {
                 return response()->json([
