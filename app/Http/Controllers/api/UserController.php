@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Image;
 use App\Models\Location;
 use App\Models\User;
 use App\Services\ImageService;
@@ -209,6 +210,7 @@ class UserController extends Controller
                     ]);
                 }
                 if ($request->hasFile('avatar')) {
+                    Image::where('parent_type', 'avatar')->where('parent_id', $request->id)->delete();
                     $validatorUpdate = Validator::make($request->all(), [
                         'full_name' => 'string|min:2|max:255',
                         'birthday' => 'date_format:Y-m-d H:i:s',
@@ -253,7 +255,7 @@ class UserController extends Controller
                 }
                 $oldLocation = count($customerUpdate->location) ? $customerUpdate->location[0] : null;
                 if ($request->has('location.address')) {
-                    $oldLocation->user_id = $customer->id;
+                    $oldLocation->user_id = $customerUpdate->id;
                     $oldLocation->address = $request->input('location.address');
                     $oldLocation->province_name = $request->input('location.province_name');
                     $oldLocation->district_name = $request->input('location.district_name');
@@ -487,6 +489,7 @@ class UserController extends Controller
                     ]);
                 }
                 if ($request->hasFile('avatar')) {
+                    Image::where('parent_type', 'avatar')->where('parent_id', $request->id)->delete();
                     $image = $request->file('avatar');
                     $image = (new ImageService())->uploadImage($image, $providerUpdate->id, 'avatar');
                 }
@@ -527,6 +530,7 @@ class UserController extends Controller
                 $providerUpdate->click_rate = $request->click_rate;
                 $providerUpdate->is_valid = $request->is_valid;
                 $providerUpdate->save();
+
                 return response()->json([
                     'statusCode' => 200,
                     'message' => 'Provider updated successfully!',

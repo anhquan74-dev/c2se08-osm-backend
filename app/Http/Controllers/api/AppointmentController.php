@@ -143,6 +143,10 @@ class AppointmentController extends Controller
             ])->where('status', '=', $request->status)->get();
         }
         $appointments->map(function ($appointment) {
+            $customer = User::with('avatar')->join('appointments', 'appointments.customer_id', 'users.id')
+                ->where('appointments.id', '=', $appointment->id)
+                ->select('users.id', 'users.full_name', 'users.phone_number')
+                ->first();
             $provider = User::with('avatar')
                 ->join('services', 'services.provider_id', 'users.id')
                 ->join('packages', 'packages.service_id', 'services.id')
@@ -157,6 +161,7 @@ class AppointmentController extends Controller
                 ->first();
             $appointment->provider = $provider;
             $appointment->service = $service;
+            $appointment->customer = $customer;
             return $appointment;
         });
         return response()->json([
