@@ -161,15 +161,18 @@ class UserController extends Controller
         }
         $customer->assignRole('customer');
         $customer->save();
-        Location::create([
-            'user_id' => $customer->id,
-            'address' => $request->input('location.address'),
-            'province_name' => $request->input('location.province_name'),
-            'district_name' => $request->input('location.district_name'),
-            'coords_latitude' => $request->input('location.coords_latitude'),
-            'coords_longitude' => $request->input('location.coords_longitude'),
-            'is_primary' => $request->input('location.is_primary'),
-        ]);
+        if ($request->has('location')) {
+            // $locationArr = $request->location
+            Location::create([
+                'user_id' => $customer->id,
+                'address' => $request->input('location.address'),
+                'province_name' => $request->input('location.province_name'),
+                'district_name' => $request->input('location.district_name'),
+                'coords_latitude' => $request->input('location.coords_latitude'),
+                'coords_longitude' => $request->input('location.coords_longitude'),
+                'is_primary' => $request->input('location.is_primary'),
+            ]);
+        }
         return response()->json([
             'data' => $customer,
             'statusCode' => 201,
@@ -209,7 +212,7 @@ class UserController extends Controller
                     $validatorUpdate = Validator::make($request->all(), [
                         'full_name' => 'string|min:2|max:255',
                         'birthday' => 'date_format:Y-m-d H:i:s',
-                        'avatar' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                        'avatar' => 'image|mimes:jpeg,png,jpg,gif,svg',
                     ]);
                     if ($validatorUpdate->fails()) {
                         return response()->json([
@@ -240,6 +243,8 @@ class UserController extends Controller
                     } catch (\Exception $e) {
                         Log::error($e->getMessage());
                     }
+                    // $location = Location::where('user_id', $request->id);
+                    // $location->save();
                     return response()->json([
                         'statusCode' => 200,
                         'message' => 'Customer updated successfully!',
@@ -412,15 +417,18 @@ class UserController extends Controller
                 Log::error($e->getMessage());
             }
         }
-        $imageBanners = $request->file('banner');
-        if (count($imageBanners)) {
-            foreach ($imageBanners as $imageBanner)
-                try {
-                    $service->uploadImage($imageBanner, $provider->id, 'provider');
-                } catch (\Exception $e) {
-                    Log::error($e->getMessage());
-                }
+        if ($request->file('banner')) {
+            $imageBanners = $request->file('banner');
+            if (count($imageBanners)) {
+                foreach ($imageBanners as $imageBanner)
+                    try {
+                        $service->uploadImage($imageBanner, $provider->id, 'provider');
+                    } catch (\Exception $e) {
+                        Log::error($e->getMessage());
+                    }
+            }
         }
+
         $provider->assignRole('provider');
         Location::create([
             'user_id' => $provider->id,
@@ -446,7 +454,7 @@ class UserController extends Controller
             if ($providerUpdate) {
                 $validatorUpdate = Validator::make($request->all(), [
                     'full_name' => 'string|min:2|max:255',
-                    'avatar' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                    'avatar' => 'image|mimes:jpeg,png,jpg,gif,svg',
                     'birthday' => 'date_format:Y-m-d H:i:s',
                     'introduction' => 'string|max:500',
                     'is_favorite' => 'integer|between:0,1',
