@@ -8,6 +8,7 @@ use App\Models\Appointment;
 use Illuminate\Http\Request;
 use Validator;
 use App\Models\Feedback;
+use App\Models\Package;
 use App\Models\User;
 
 class FeedbackController extends Controller
@@ -188,22 +189,44 @@ class FeedbackController extends Controller
             ->select('users.id')
             ->first();
         // get feedback list of provider
-        $feedbacksList = Feedback::join('appointments', 'appointments.id', '=', 'feedback.appointment_id')
+        $feedbacksListOfProvider = Feedback::join('appointments', 'appointments.id', '=', 'feedback.appointment_id')
             ->join('packages', 'packages.id', '=', 'appointments.package_id')
             ->join('services', 'services.id', '=', 'packages.service_id')
             ->join('users', 'services.provider_id', '=', 'users.id')
             ->select('feedback.*')
             ->where('services.provider_id', '=', $currentProviderId->id)
             ->get();
-        $count = $feedbacksList->count();
+        $count = $feedbacksListOfProvider->count();
         $totalStarOfProvider = 0;
-        foreach ($feedbacksList as $item) {
+        foreach ($feedbacksListOfProvider as $item) {
             $totalStarOfProvider += $item->star;
         }
         $avgStarOfProvider = $totalStarOfProvider / $count;
         User::where('id', $currentProviderId->id)->update([
             'avg_star' => $avgStarOfProvider,
         ]);
+
+        // get current pacakge id
+        $currentPackageId = Appointment::join('packages', 'packages.id', '=', 'appointments.package_id')
+            ->where('appointments.id', '=', $request->appointment_id)
+            ->select('packages.id')
+            ->first();
+        // get feedback list of package
+        $feedbacksListOfPackage = Feedback::join('appointments', 'appointments.id', '=', 'feedback.appointment_id')
+            ->join('packages', 'packages.id', '=', 'appointments.package_id')
+            ->select('feedback.*')
+            ->where('packages.id', '=', $currentPackageId->id)
+            ->get();
+        $count = $feedbacksListOfPackage->count();
+        $totalStarOfPackage = 0;
+        foreach ($feedbacksListOfPackage as $item) {
+            $totalStarOfPackage += $item->star;
+        }
+        $avgStarOfPackage = $totalStarOfPackage / $count;
+        Package::where('id', $currentPackageId->id)->update([
+            'avg_star' => $avgStarOfPackage,
+        ]);
+
         return response()->json([
             'data' => $feedback,
             'statusCode' => 201,
