@@ -247,7 +247,7 @@ class UserController extends Controller
                     ]);
                 }
                 $oldLocation = count($customerUpdate->location) ? $customerUpdate->location[0] : null;
-                if ($request->has('location.address')) {
+                if ($request->has('location')) {
                     $oldLocation->user_id = $customer->id;
                     $oldLocation->address = $request->input('location.address');
                     $oldLocation->province_name = $request->input('location.province_name');
