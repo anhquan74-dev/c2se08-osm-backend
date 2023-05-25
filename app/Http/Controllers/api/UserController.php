@@ -204,10 +204,7 @@ class UserController extends Controller
                     $customerUpdate->phone_number = $request->phone_number;
                     $customerUpdate->is_valid = $request->is_valid;
                     $customerUpdate->save();
-                    return response()->json([
-                        'statusCode' => 200,
-                        'message' => 'Customer updated successfully!',
-                    ]);
+
                 }
                 if ($request->hasFile('avatar')) {
                     Image::where('parent_type', 'avatar')->where('parent_id', $request->id)->delete();
@@ -246,16 +243,9 @@ class UserController extends Controller
                     } catch (\Exception $e) {
                         Log::error($e->getMessage());
                     }
-                    // $location = Location::where('user_id', $request->id);
-                    // $location->save();
-                    return response()->json([
-                        'statusCode' => 200,
-                        'message' => 'Customer updated successfully!',
-                    ]);
                 }
                 $oldLocation = count($customerUpdate->location) ? $customerUpdate->location[0] : null;
                 if ($request->has('location')) {
-                    $oldLocation->user_id = $customer->id;
                     $oldLocation->address = $request->input('location.address');
                     $oldLocation->province_name = $request->input('location.province_name');
                     $oldLocation->district_name = $request->input('location.district_name');
@@ -264,6 +254,10 @@ class UserController extends Controller
                     $oldLocation->is_primary = $request->input('location.is_primary');
                     $oldLocation->save();
                 }
+                return response()->json([
+                    'statusCode' => 200,
+                    'message' => 'Customer updated successfully!',
+                ]);
             } else {
                 return response()->json([
                     "statusCode" => 404,

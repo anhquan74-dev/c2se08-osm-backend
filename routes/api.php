@@ -39,6 +39,7 @@ Route::middleware([
     'customer.auth',
 ])->group(function () {
 });
+Route::post('/customers/{id}', [UserController::class, 'updateCustomer']);
 
 Route::middleware(['or-middleware:customer|provider|admin'])->group(function () {
     // Customer's routes
@@ -46,7 +47,6 @@ Route::middleware(['or-middleware:customer|provider|admin'])->group(function () 
     Route::get('/customers/{id}', [UserController::class, 'getCustomerById']);
     Route::post('/customers', [UserController::class, 'createNewCustomer']);
     Route::post('/customers/search', [UserController::class, 'searchPaginationCustomers']);
-    Route::post('/customers/{id}', [UserController::class, 'updateCustomer']);
     Route::post('/hard-delete-customer/{id}', [UserController::class, 'hardDeleteCustomer']);
     Route::get('/customer-count', [UserController::class, 'getTotalCustomer']);
 
