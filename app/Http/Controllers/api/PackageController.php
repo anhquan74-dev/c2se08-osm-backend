@@ -154,7 +154,7 @@ class PackageController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'service_id' => 'required|numeric|integer',
-            'name' => 'required|string|min:2|max:255',
+            // 'name' => 'required|string|min:2|max:255',
             // 'description' => 'string|max:500',
             'price' => 'required|numeric|integer',
             'is_negotiable' => 'integer|between:0,1',

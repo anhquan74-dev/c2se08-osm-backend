@@ -53,9 +53,9 @@ class CategoryController extends Controller
     public function createNewCategory(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|min:2|max:255',
+            // 'name' => 'required|string|min:2|max:255',
             'logo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'view_priority' => 'numeric|integer',
+            // 'view_priority' => 'numeric|integer',
             'is_valid' => 'integer|between:0,1',
         ]);
         if ($validator->fails()) {
@@ -98,7 +98,7 @@ class CategoryController extends Controller
                     $validatorUpdate = Validator::make($request->all(), [
                         'name' => 'string|min:2|max:255',
                         'total_provider' => 'numeric|integer',
-                        'view_priority' => 'numeric|integer',
+                        // 'view_priority' => 'numeric|integer',
                         'is_valid' => 'integer|between:0,1'
                     ]);
                     if ($validatorUpdate->fails()) {
@@ -122,7 +122,7 @@ class CategoryController extends Controller
                         'name' => 'string|min:2|max:255',
                         'logo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                         'total_provider' => 'numeric|integer',
-                        'view_priority' => 'numeric|integer',
+                        // 'view_priority' => 'numeric|integer',
                         'is_valid' => 'integer|between:0,1'
                     ]);
                     if ($validatorUpdate->fails()) {
@@ -171,8 +171,8 @@ class CategoryController extends Controller
             if ($checkCategory) {
                 $image = $checkCategory->image;
                 Category::where('id', $request->id)->delete();
-                (new ImageService())->deleteImage($image->id);
-                $image->delete();
+                // (new ImageService())->deleteImage($image->id);
+                // $image->delete();
                 return response()->json([
                     'statusCode' => 200,
                     'message' => 'Deleted category successfully!',
