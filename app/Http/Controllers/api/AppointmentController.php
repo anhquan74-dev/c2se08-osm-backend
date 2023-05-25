@@ -125,14 +125,16 @@ class AppointmentController extends Controller
                 'message' => 'Missing status parameter!',
             ]);
         }
-        if ($request->status === 'new-or-offered') {
+        if ($request->status == 'new-or-offered') {
             $appointments = Appointment::with([
                 'attachPhoto', 'feedback', 'location' => function ($query) {
                     $query->select(['id', 'address']);
                 }, 'package' => function ($query) {
                     $query->select('packages.id', 'packages.name');
                 }
-            ])->where('status', '=', 'new')->orWhere('status', '=', 'offered')->get();
+            ])->where('customer_id', $request->userId)->where('status', '=', 'new')->orWhere('status', '=', 'offered')->get();
+            //             ->join('users', 'users.id', 'appointments.customer_id')->
+            // ->join('users', 'users.id', 'appointments.customer_id')->
         } else {
             $appointments = Appointment::with([
                 'attachPhoto', 'feedback', 'location' => function ($query) {
@@ -140,13 +142,13 @@ class AppointmentController extends Controller
                 }, 'package' => function ($query) {
                     $query->select('packages.id', 'packages.name');
                 }
-            ])->where('status', '=', $request->status)->get();
+            ])->where('customer_id', $request->userId)->where('status', '=', $request->status)->get();
         }
         $appointments->map(function ($appointment) {
-            $customer = User::with('avatar')->join('appointments', 'appointments.customer_id', 'users.id')
-                ->where('appointments.id', '=', $appointment->id)
-                ->select('users.id', 'users.full_name', 'users.phone_number')
-                ->first();
+            // $customer = User::with('avatar')->join('appointments', 'appointments.customer_id', 'users.id')
+            //     ->where('appointments.id', '=', $appointment->id)
+            //     ->select('users.id', 'users.full_name', 'users.phone_number')
+            //     ->first();
             $provider = User::with('avatar')
                 ->join('services', 'services.provider_id', 'users.id')
                 ->join('packages', 'packages.service_id', 'services.id')
@@ -161,11 +163,68 @@ class AppointmentController extends Controller
                 ->first();
             $appointment->provider = $provider;
             $appointment->service = $service;
-            $appointment->customer = $customer;
+            // $appointment->customer = $customer;
             return $appointment;
         });
         return response()->json([
             'data' =>  $appointments,
+            'statusCode' => 200,
+            'message' => 'Get all appointments successful!',
+        ]);
+    }
+
+    // Get all appointments by status for provider
+    public function getAllAppointmentsByStatusForProvider(Request $request)
+    {
+        if (!$request->status) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Missing status parameter!',
+            ]);
+        }
+
+        $appointments = Appointment::with([
+            'attachPhoto', 'feedback', 'location' => function ($query) {
+                $query->select(['id', 'address']);
+            }, 'package' => function ($query) {
+                $query->select('packages.id', 'packages.name');
+            }
+        ])->where('status', '=', $request->status)
+            ->get();
+
+        $appointmentsResults = Appointment::join('packages', 'packages.id', 'appointments.package_id')
+            ->join('services', 'services.id', 'packages.service_id')
+            ->join('users', 'users.id', 'services.provider_id')
+            ->where('users.id', '=', $request->userId)
+            ->where('status', '=', $request->status)->select('appointments.*')->get();
+
+        $results = [];
+
+        foreach ($appointments as $appointment) {
+            foreach ($appointmentsResults as $appointmentResult) {
+                if ($appointment->id == $appointmentResult->id) {
+                    array_push($results, $appointment);
+                }
+            }
+        };
+
+
+        // $results->map(function ($appointment) {
+        //     $customer = User::with('avatar')->join('appointments', 'appointments.customer_id', 'users.id')
+        //         ->where('appointments.id', '=', $appointment->id)
+        //         ->select('users.id', 'users.full_name', 'users.phone_number')
+        //         ->first();
+        //     $service = Service::join('packages', 'packages.service_id', 'services.id')
+        //         ->join('appointments', 'appointments.package_id', 'packages.id')
+        //         ->where('appointments.id', '=', $appointment->id)
+        //         ->select('services.id', 'services.name')
+        //         ->first();
+        //     $appointment->service = $service;
+        //     $appointment->customer = $customer;
+        //     return $appointment;
+        // });
+        return response()->json([
+            'data' =>  $results,
             'statusCode' => 200,
             'message' => 'Get all appointments successful!',
         ]);

@@ -305,7 +305,7 @@ class PackageController extends Controller
             });
         }
         if (isset($filter['avg_star'])) {
-            $packages->where('avg_star', '=', $filter['avg_star']);
+            $packages->whereRaw('ROUND(avg_star) = ?', $filter['avg_star']);
         }
         // if (isset($filter['price_min'])) {
         //     $packages->where('price_min', '=', $filter['price_min']);

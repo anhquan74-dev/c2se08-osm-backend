@@ -204,7 +204,6 @@ class UserController extends Controller
                     $customerUpdate->phone_number = $request->phone_number;
                     $customerUpdate->is_valid = $request->is_valid;
                     $customerUpdate->save();
-
                 }
                 if ($request->hasFile('avatar')) {
                     Image::where('parent_type', 'avatar')->where('parent_id', $request->id)->delete();
@@ -641,7 +640,7 @@ class UserController extends Controller
             });
         }
         if (isset($filter['avg_star'])) {
-            $providers->where('avg_star', '=', $filter['avg_star']);
+            $providers->whereRaw('ROUND(avg_star) = ?', $filter['avg_star']);
         }
         if (isset($filter['price_min'])) {
             $providers->whereHas('service', function ($query) use ($filter) {
