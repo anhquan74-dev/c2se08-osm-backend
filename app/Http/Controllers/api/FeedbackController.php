@@ -142,6 +142,7 @@ class FeedbackController extends Controller
                 ->join('users', 'services.provider_id', '=', 'users.id')
                 ->where('services.provider_id', '=', $request->provider_id)
                 ->count();
+
             return response()->json([
                 'data' => $feedbacksCount,
                 'statusCode' => 200,

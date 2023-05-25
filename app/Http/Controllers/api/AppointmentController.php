@@ -182,7 +182,7 @@ class AppointmentController extends Controller
                 'message' => 'Missing status parameter!',
             ]);
         }
-
+        // array
         $appointments = Appointment::with([
             'attachPhoto', 'feedback', 'location' => function ($query) {
                 $query->select(['id', 'address']);
@@ -191,7 +191,7 @@ class AppointmentController extends Controller
             }
         ])->where('status', '=', $request->status)
             ->get();
-
+        //array
         $appointmentsResults = Appointment::join('packages', 'packages.id', 'appointments.package_id')
             ->join('services', 'services.id', 'packages.service_id')
             ->join('users', 'users.id', 'services.provider_id')
@@ -208,6 +208,20 @@ class AppointmentController extends Controller
             }
         };
 
+        foreach ($results as $appointment) {
+            $customer = User::with('avatar')->join('appointments', 'appointments.customer_id', 'users.id')
+                ->where('appointments.id', '=', $appointment->id)
+                ->select('users.id', 'users.full_name', 'users.phone_number')
+                ->first();
+            $service = Service::join('packages', 'packages.service_id', 'services.id')
+                ->join('appointments', 'appointments.package_id', 'packages.id')
+                ->where('appointments.id', '=', $appointment->id)
+                ->select('services.id', 'services.name')
+                ->first();
+            $appointment->service = $service;
+            $appointment->customer = $customer;
+        }
+        // return $appointment;
 
         // $results->map(function ($appointment) {
         //     $customer = User::with('avatar')->join('appointments', 'appointments.customer_id', 'users.id')
