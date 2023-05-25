@@ -500,14 +500,6 @@ class UserController extends Controller
                             }
                     }
                 }
-                Location::where('user_id', $request->id)->update([
-                    'address' => $request->input('location.address'),
-                    'province_name' => $request->input('location.province_name'),
-                    'district_name' => $request->input('location.district_name'),
-                    'coords_latitude' => $request->input('location.coords_latitude'),
-                    'coords_longitude' => $request->input('location.coords_longitude'),
-                    'is_primary' => $request->input('location.is_primary'),
-                ]);
                 $providerUpdate->full_name = $request->full_name;
                 $providerUpdate->password = Hash::make($request->password);
                 $providerUpdate->birthday = $request->birthday;
@@ -524,6 +516,16 @@ class UserController extends Controller
                 $providerUpdate->click_rate = $request->click_rate;
                 $providerUpdate->is_valid = $request->is_valid;
                 $providerUpdate->save();
+                $oldLocation = count($providerUpdate->location) ? $providerUpdate->location[0] : null;
+                if ($request->has('location')) {
+                    $oldLocation->address = $request->input('location.address');
+                    $oldLocation->province_name = $request->input('location.province_name');
+                    $oldLocation->district_name = $request->input('location.district_name');
+                    $oldLocation->coords_latitude = $request->input('location.coords_latitude');
+                    $oldLocation->coords_longitude = $request->input('location.coords_longitude');
+                    $oldLocation->is_primary = $request->input('location.is_primary');
+                    $oldLocation->save();
+                }
 
                 return response()->json([
                     'statusCode' => 200,
