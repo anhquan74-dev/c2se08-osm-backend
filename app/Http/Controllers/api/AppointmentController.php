@@ -23,8 +23,8 @@ class AppointmentController extends Controller
         for ($i = $currentMonth; $i <= $currentMonth + 11; $i++) {
             $monthNumber = $i < 12 ? $i + 1 : $i - 11;
             $yearNumber = $i < 12 ? date('Y') - 1 : date('Y');
-            $data = Appointment::whereMonth('created_at', $monthNumber)
-                ->whereYear('created_at', $yearNumber)
+            $data = Appointment::whereMonth('date', $monthNumber)
+                ->whereYear('date', $yearNumber)
                 ->where('status', '=', 'done')
                 ->count();
             $object = (object) [
